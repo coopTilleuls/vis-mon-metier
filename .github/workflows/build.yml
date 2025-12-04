@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      tags:
+        type: string
+        description: The Docker Tags (see docker/metadata-action@v4 for available values)
+        required: true
+
+jobs:
+  build-push-php:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3.5.2
+
+    - name: Build/Push
+      uses: coopTilleuls/action-docker-build-push@v10
+      with:
+        IMAGE_NAME: pays-de-blain-vis-mon-metier
+        BUILD_CONTEXT: .
+        BUILD_TARGET: frankenphp_prod
+        REGISTRY_JSON_KEY: ${{ secrets.GITHUB_TOKEN }}
+        IMAGE_REPOSITORY: ghcr.io/cooptilleuls
+        SKIP_CHECKOUT: "true"
+        # Deactivate Trivy
+        SECURITY_SCAN: "false"
+    # - name: Build/Push
+    #   uses: coopTilleuls/action-docker-build-push@v10
+    #   with:
+    #     IMAGE_NAME: postgres17-awscli
+    #     BUILD_CONTEXT: SRE
+    #     REGISTRY_JSON_KEY: ${{ secrets.GITHUB_TOKEN }}
+    #     IMAGE_REPOSITORY: ghcr.io/cooptilleuls
+    #     SKIP_CHECKOUT: "true"
+    #     # Deactivate Trivy
+    #     SECURITY_SCAN: "false"

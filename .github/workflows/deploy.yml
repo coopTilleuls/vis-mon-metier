@@ -1,0 +1,158 @@
+name: Deploy
+
+on:
+  workflow_call:
+    secrets:
+      workload-identity-provider:
+        description: GCP workload identity provider
+        required: true
+      project_id:
+        description: secret
+      pgpassword:
+        description: database password
+
+
+jobs:
+  meta:
+    name: Meta
+    runs-on: ubuntu-latest
+    outputs:
+      release_name: ${{ steps.meta.outputs.release_name }}
+      environment: ${{ steps.meta.outputs.environment }}
+      namespace: ${{ steps.meta.outputs.namespace }}
+      server_name: ${{ steps.meta.outputs.server_name }}
+      mailer_dns: ${{ steps.meta.outputs.mailer_dns }}
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+      context: ${{ steps.meta.outputs.context }}
+      is_pr: ${{ steps.meta.outputs.is_pr }}
+      app_env: ${{ steps.meta.outputs.app_env }}
+
+    steps:
+      - name: Generate metadata
+        id: meta
+        run: |
+          set -xo pipefail
+          IS_PR=false
+          APP_ENV=prod
+          if [[ "${{ github.ref_type }}" == "tag"  ]]; then
+            # Tags are deployed in prod
+            ENVIRONMENT=prod
+            IMAGE_TAG=${{ github.ref_name }}
+            SERVER_NAME=${{ vars.PROD_DOMAIN }}
+            NAMESPACE=prod-${{ vars.PROJECT }}
+            RELEASE_NAME=prod
+          else
+            ENVIRONMENT=nonprod
+            APP_DEBUG=true
+            IMAGE_TAG=sha-${GITHUB_SHA::7}
+            if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+                RELEASE_NAME=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+                NAMESPACE=nonprod-${{ vars.PROJECT }}
+                IS_PR=true
+                APP_ENV=pr
+                UPDATE_DB=true
+            else
+                RELEASE_NAME=staging
+                NAMESPACE=nonprod-${{ vars.PROJECT }}
+            fi
+            SERVER_NAME=${RELEASE_NAME}.${{ vars.NONPROD_DOMAIN }}
+          fi
+
+          echo "release_name=${RELEASE_NAME}" >> $GITHUB_OUTPUT
+          echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+          echo "context=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+          echo "namespace=${NAMESPACE}" >> $GITHUB_OUTPUT
+          echo "mailer_dns=${MAILER_DSN}" >> $GITHUB_OUTPUT
+          echo "server_name=${SERVER_NAME}" >> $GITHUB_OUTPUT
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "is_pr=${IS_PR}" >> $GITHUB_OUTPUT
+          echo "app_env=${APP_ENV}" >> $GITHUB_OUTPUT
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      pull-requests: 'write'
+    environment:
+      name: ${{ needs.meta.outputs.environment }}
+    needs: ["meta"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: GKE Auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: '${{ secrets.project_id }}'
+          workload_identity_provider: '${{ secrets.workload-identity-provider }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.project_id }}
+
+      - name: Connect cluster
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
+          gcloud auth login --cred-file=$CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+          gcloud container clusters get-credentials ${{ vars.CLUSTER_NAME }} --region europe-west9 --project ${{ secrets.project_id }}
+          kubectl config view
+
+      # https://github.com/helm/helm/issues/8036
+      - name: Build helm dependencies
+        run: |
+          set -o pipefail
+          # add all repos
+          if [ -f "./helm/chart/Chart.lock" ]; then
+            yq --indent 0 '.dependencies | map(["helm", "repo", "add", .name, .repository] | join(" ")) | .[]' "./helm/chart/Chart.lock"  | sh --;
+          fi
+          helm dependency build ./helm/chart
+
+      - name: Deploy on namespace
+        id: deploy
+        shell: bash
+        run: |
+          set -o pipefail
+          if ! helm upgrade --install ${{ needs.meta.outputs.release_name }} ./helm/chart \
+            --atomic \
+            --debug \
+            --timeout 600s \
+            --namespace ${{ needs.meta.outputs.namespace }} \
+            --set=php.image.tag=${{ needs.meta.outputs.image_tag }} \
+            --set=ispr=${{ needs.meta.outputs.is_pr }} \
+            --set=php.appEnv=${{ needs.meta.outputs.app_env}} \
+            --set=mailer.dsn_name=${{ vars.MAILER_DSN_NAME }} \
+            --set=mailer.dsn_port=${{ vars.MAILER_DSN_PORT }} \
+            --set=postgres.pghost=${{ vars.PGHOST }} \
+            --set=postgres.PGUSER=${{ vars.PGDATABASE }} \
+            --set=postgres.PGDATABASE=${{ vars.PGDATABASE }} \
+            --set=postgres.PGPASSWORD=${{ secrets.PGPASSWORD }} \
+            --set=project=${{ vars.PROJECT }} \
+            --set=ingress.server_name=${{ needs.meta.outputs.server_name }} \
+            --set=ingress.hosts[0].host=${{ needs.meta.outputs.server_name }} \
+            --set=ingress.tls[0].hosts[0]=${{ needs.meta.outputs.server_name }} \
+            --values ./helm/chart/values.yaml \
+            --values ./helm/chart/values-${{ needs.meta.outputs.context }}.yaml \
+            | sed --unbuffered '/USER-SUPPLIED VALUES/,$d' ; then
+                echo "Deployment has failed!"
+                echo "Here are the last events to help diagnose the problem:"
+                kubectl get events --sort-by  --namespace ${{ needs.meta.outputs.namespace }} .metadata.creationTimestamp
+                exit 1
+          fi
+
+      - name: Output deployment URL
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          URL: ${{ needs.meta.outputs.server_name }}
+        with:
+          script: |
+            const { URL } = process.env
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Chart has been deployed with this url:\n\`\`\`\n${URL}\n\`\`\``
+            })
