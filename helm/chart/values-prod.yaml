@@ -1,0 +1,8 @@
+imagePullSecrets:
+  - name: regcred
+php:
+  dropSchema: true
+  volumes: []
+chartEnv:
+  env: prod
+

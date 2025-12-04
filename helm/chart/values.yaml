@@ -1,0 +1,255 @@
+# Default values for pays-de-blain-vis-mon-metier
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+env: sta
+
+ispr: false
+imagePullSecrets:
+  - name: regcred
+nameOverride: ""
+
+server_name: localhost
+main_url: sociale-des-scop.io
+app_svc: localhost
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+networkPolicy:
+  enabled: true
+  # Allow ingress only from specific sources (e.g., GKE Ingress Controller namespace)
+  ingress: |
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            # set on Ingress controller by FluxCD
+            service: ingress
+      ports:
+      - protocol: TCP
+        port: 80
+  # Allow egress only to necessary destinations (e.g., Database, Redis, external APIs)
+  egress: |
+    # Allow DNS resolution
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: kube-system
+        podSelector:
+          matchLabels:
+            k8s-app: kube-dns
+      ports:
+      - protocol: UDP
+        port: 53
+    # Allow to Database (adjust selector/IP)
+    - to:
+      - ipBlock:
+          cidr: {{ (lookup "v1" "Secret" .Release.Namespace "external-secrets").data.PGHOST | b64dec }}/32
+      ports:
+      - protocol: TCP
+        port: 3306
+    # Allow to Redis (adjust selector/IP)
+    # - to:
+    #   - podSelector:
+    #       matchLabels:
+    #         app: redis
+    #   ports:
+    #   - protocol: TCP
+    #     port: 6379
+    # Allow to external APIs (example: Google APIs)
+    # - to:
+    #   - ipBlock:
+    #       cidr: 0.0.0.0/0 # Too broad, restrict if possible
+    # Allow all egress for simplicity initially, tighten later
+    # Remove this line after allowing everything needed (external API, mail providers...)
+    - {} # Allows all egress
+  metabase:
+    ingress: |
+      - from:
+        - namespaceSelector:
+            matchLabels:
+              # set on Ingress controller by FluxCD
+              service: ingress
+        ports:
+        - protocol: TCP
+          port: 3000
+
+service:
+  type: ClusterIP
+  port: 80
+
+
+ingress:
+  enabled: true
+  rewriteOldPath: true
+  server_name: chart-example.local
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    nginx.ingress.kubernetes.io/proxy-body-size: 120m
+     # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+  - host: chart-example.local
+    paths:
+      - path: /
+        pathType: Prefix
+        #serviceName: pays-de-blain-vis-mon-metier
+        #servicePort: 80
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+livenessProbe:
+  timeoutSeconds: 3
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  timeoutSeconds: 3
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+caddy:
+  global_options: |
+    servers {
+      trusted_proxies static 10.2.0.0/16
+    }
+
+worker:
+  podLabels:
+    app: worker
+
+php:
+  image:
+    repository: "ghcr.io/cooptilleuls/pays-de-blain-vis-mon-metier"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "sha-f4610f0"
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 11
+  replicaCount: 2
+  podAnnotations: {}
+  podLabels:
+    app: web
+  appEnv: prod
+  app_secret: "!ChangeMe!"
+  xdebug_mode: "off"
+  appDebug: "0"
+  appSecret: ""
+  stability: "stable"
+  corsAllowOrigin: "^https?://.*?\\.chart-example\\.local$"
+  trustedHosts:
+    - "^127\\.0\\.0\\.1"
+    - "localhost"
+    - ".*\\.chart-example\\.local$"
+  trustedProxies:
+    - "127.0.0.1"
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+  host: "chart-example.local"
+  jwt:
+    secretKey: ""
+    publicKey: ""
+    passphrase: ""
+  storage:
+    bucket: ""
+    endpoint: ""
+    region: ""
+    usePathStyleEndpoint: true
+    publicKey: ""
+    secret: ""
+  mailerDsnName: ""
+  mailerDsnPort: ""
+  mailerDsn: ""
+  mailerDefaultSender: ""
+  mailerTemplateDelegationResponsabilite: ""
+#postgresql:
+#  name: "databaseName"
+#  host: "localhost"
+#  user: "cpays-de-blain-vis-mon-metier"
+#  password: "!ChangeMe!"
+#  version: "15"
+#  charset: "utf8"
+cronjobs: []
+
+external-dns:
+  enabled: false
+  resources:
+    requests:
+      memory: 50Mi
+      cpu: 50m
+    limits:
+      memory: 200Mi
+      cpu: 100m
+  domainFilters:
+    - chart-example.local
+  provider: cloudflare
+  cloudflare:
+    apiToken: ""
+  zoneIdFilters: []
+  rbac:
+    create: true
+

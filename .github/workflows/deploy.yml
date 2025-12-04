@@ -125,10 +125,7 @@ jobs:
             --set=php.appEnv=${{ needs.meta.outputs.app_env}} \
             --set=mailer.dsn_name=${{ vars.MAILER_DSN_NAME }} \
             --set=mailer.dsn_port=${{ vars.MAILER_DSN_PORT }} \
-            --set=postgres.pghost=${{ vars.PGHOST }} \
-            --set=postgres.PGUSER=${{ vars.PGDATABASE }} \
-            --set=postgres.PGDATABASE=${{ vars.PGDATABASE }} \
-            --set=postgres.PGPASSWORD=${{ secrets.PGPASSWORD }} \
+            --set=database_url=postgresql://${{ vars.PGDATABASE }}:${{ secrets.PGPASSWORD }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE }}
             --set=project=${{ vars.PROJECT }} \
             --set=ingress.server_name=${{ needs.meta.outputs.server_name }} \
             --set=ingress.hosts[0].host=${{ needs.meta.outputs.server_name }} \

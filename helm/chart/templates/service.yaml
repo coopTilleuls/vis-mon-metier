@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pays-de-blain-vis-mon-metier.fullname" . }}
+  labels:
+    {{- include "pays-de-blain-vis-mon-metier.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "pays-de-blain-vis-mon-metier.selectorLabels" . | nindent 4 }}
+    {{- with .Values.php.podLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}

@@ -1,0 +1,124 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-pays-de-blain-vis-mon-metier
+  labels:
+    {{ include "pays-de-blain-vis-mon-metier.labels" . | nindent 4 }}
+data:
+  SERVER_NAME: "{{ .Values.ingress.server_name }}:80"
+  STABILITY: {{ .Values.php.stability }}
+  XDEBUG_MODE: {{ .Values.php.xdebug_mode  | quote}}
+  COMMUNE_FILE_URL: {{ .Values.php.communeFileUrl }}
+  PROFESSION_FILE_URL: {{ .Values.php.professionFileUrl }}
+  MAILER_DEFAULT_SENDER: {{ .Values.php.mailerDefaultSender }}
+  MAILER_TEMPLATE_DELEGATION_RESPONSABILITE: {{ .Values.php.mailerTemplateDelegationResponsabilite }}
+  TRUSTED_PROXIES: {{ join ","  .Values.php.trustedProxies  }}
+  TRUSTED_HOSTS: {{ join "|" .Values.php.trustedHosts | quote }}
+  APP_ENV: {{ .Values.php.appEnv | quote}}
+  CADDY_GLOBAL_OPTIONS: {{ .Values.caddy.global_options | quote}}
+  APP_DEBUG: {{ .Values.php.appDebug  | quote}}
+  MAILER_DSN_PORT: {{ .Values.mailer.dsn_port | quote }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-psql-scripts
+  labels:
+    {{ include "pays-de-blain-vis-mon-metier.labels" . | nindent 4 }}
+data:
+  create_database_for_pr.sh: |
+    #!/bin/bash
+
+    echo $NEW_DATABASE
+    export PGUSER=$PGUSER_ADMIN
+    export PGPASSWORD=$PGPASSWORD_ADMIN
+    export PGDATABASE=template1
+
+    if $(psql  -lqt | grep -q $NEW_DATABASE) ; then
+        echo database already exist
+        exit 0
+    fi
+
+    set -ex
+    psql -c "CREATE DATABASE $NEW_DATABASE;"
+    psql -c "GRANT ALL PRIVILEGES ON DATABASE ${NEW_DATABASE} TO dev_usds;"
+    psql -d $NEW_DATABASE -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO dev_usds;"
+    psql -d $NEW_DATABASE -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO dev_usds;"
+    psql -d $NEW_DATABASE -c "GRANT ALL ON SCHEMA public TO dev_usds;"
+
+  pg_restore.sh: |
+    #!/bin/bash
+
+    set -x
+    export PGDATABASE=${NEW_DATABASE}
+    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_SQL
+    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_SQL
+    aws s3 cp s3://pays-de-blain-vis-mon-metier-et-scic-dev-share_dump/export_donnees_schema_anon.sql export_donnees_schema_anon.sql
+
+    if [[ "$PGDATABASE" =~ ^staging.* ]]; then
+        pg_restore -c  --no-owner --if-exists --schema=public -d staging_unionsocialedesscop export_donnees_schema_anon.sql || echo pass
+    else
+        pg_restore -c  --no-owner --if-exists --schema=public  -d ${PGDATABASE}  export_donnees_schema_anon.sql || echo pass
+    fi
+
+  drop-database.sh: |
+    #!/bin/bash
+
+    echo $NEW_DATABASE
+
+    export PGUSER=$PGUSER_ADMIN
+    export PGPASSWORD=$PGPASSWORD_ADMIN
+    export PGDATABASE=dev_unionsocialedesscop
+
+    set -x
+    if $(psql  -lqt | grep -q $NEW_DATABASE) ; then
+        psql -c "DROP DATABASE $NEW_DATABASE;"
+    fi
+
+  new_database-for-staging.sh: |
+    #!/bin/bash
+    set -e
+
+    echo $NEW_DATABASE
+    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_SQL
+    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_SQL
+    set -x
+    aws s3 cp s3://pays-de-blain-vis-mon-metier-et-scic-dev-share_dump/export_donnees_schema_anon.sql export_donnees_schema_anon.sql
+
+    set +x
+    export PGUSER_SITE=$PGUSER
+    export PGPASSWORD_SITE=$PGPASSWORD
+    export PGUSER=$PGUSER_ADMIN
+    export PGPASSWORD=$PGPASSWORD_ADMIN
+
+    set -x
+    export PGDATABASE=template1
+    export STAGING_DB=staging_unionsocialedesscop
+    export TMP_DB=tmp_unionsocialedesscop
+
+    psql -c "DROP DATABASE IF EXISTS ${TMP_DB};"
+    psql -c "DROP DATABASE IF EXISTS ${STAGING_DB}_old;"
+    psql -c "CREATE DATABASE ${TMP_DB};"
+    psql -d $TMP_DB -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO staging_usds;"
+    psql -d $TMP_DB -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO staging_usds;"
+    psql -d $TMP_DB -c "GRANT ALL PRIVILEGES ON SCHEMA public TO staging_usds;"
+
+    set +x
+    export PGUSER=$PGUSER_SITE
+    export PGPASSWORD=$PGPASSWORD_SITE
+
+    set -x
+    pg_restore -c  --no-owner --if-exists --schema=public -d ${TMP_DB} export_donnees_schema_anon.sql
+
+    set +x
+    export PGUSER=$PGUSER_ADMIN
+    export PGPASSWORD=$PGPASSWORD_ADMIN
+    set -x
+    psql template1 -c "SELECT pg_terminate_backend(pid) from pg_stat_activity where datname = '${STAGING_DB}' and pid <> pg_backend_pid();"
+    psql template1 -c "ALTER DATABASE  ${STAGING_DB} RENAME TO ${STAGING_DB}_old"
+    psql template1 -c "ALTER DATABASE ${TMP_DB} RENAME TO ${STAGING_DB}"
+    #psql template1 -c "ALTER DATABASE ${STAGING_DB} OWNER TO staging_usds"
+
+    psql -c "DROP DATABASE IF EXISTS ${STAGING_DB}_old;"
