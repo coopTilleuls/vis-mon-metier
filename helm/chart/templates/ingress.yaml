@@ -62,33 +62,4 @@ spec:
               {{- end }}
           {{- end }}
     {{- end }}
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-  labels:
-    {{- include "pays-de-blain-vis-mon-metier.labels" . | nindent 4 }}
-  name: metabase-{{ $fullName }}
-spec:
-  ingressClassName: {{ .Values.ingress.className }}
-  rules:
-  - host: {{ .Values.metabase.ingress.host }}
-    http:
-      paths:
-      - backend:
-          service:
-            name: {{ .Release.Name -}}-metabase
-            port:
-              number: 80
-        path: /
-        pathType: Prefix
-  tls:
-  - hosts:
-    - {{ .Values.metabase.ingress.host }}
-    secretName: {{ .Release.Name -}}-metabase-tls
 {{- end }}
