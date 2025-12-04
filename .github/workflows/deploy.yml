@@ -97,7 +97,7 @@ jobs:
         run: |
           gcloud components install gke-gcloud-auth-plugin
           gcloud auth login --cred-file=$CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
-          gcloud container clusters get-credentials ${{ vars.CLUSTER_NAME }} --region europe-west9 --project ${{ secrets.project_id }}
+          gcloud container clusters get-credentials ${{ vars.CLUSTER_NAME }} --region europe-west1 --project ${{ secrets.project_id }}
           kubectl config view
 
       # https://github.com/helm/helm/issues/8036
