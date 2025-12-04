@@ -187,7 +187,7 @@ php:
     tag: "sha-f4610f0"
   autoscaling:
     enabled: false
-    minReplicas: 2
+    minReplicas: 1
     maxReplicas: 11
   replicaCount: 2
   podAnnotations: {}
