@@ -15,7 +15,7 @@
         "export",
         "contact",
         "question",
-        "reponse",
+        "modelQuestionnaire",
         "session",
         "user",
       ]

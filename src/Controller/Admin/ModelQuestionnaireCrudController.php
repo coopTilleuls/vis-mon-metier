@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
+use App\EasyAdmin\Field\JsonField;
 use App\Entity\ModelQuestionnaire;
+use App\Form\JsonEditorType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
@@ -27,26 +30,39 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des questionnaires')
             ->setPageTitle(Crud::PAGE_NEW, 'Créer un questionnaire')
             ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le questionnaire')
-            ->setPageTitle(Crud::PAGE_DETAIL, 'Détails du questionnaire')
+            ->setPageTitle(Crud::PAGE_DETAIL, 'Questionnaire')
             ->setEntityLabelInSingular('Questionnaire')
             ->setEntityLabelInPlural('Questionnaires')
             ->setDefaultSort(['id' => 'DESC'])
+            ->addFormTheme('easyadmin/json_field.html.twig')
         ;
     }
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id')
-            ->hideOnForm();
+        yield IdField::new('id', 'id')
+        ->onlyOnIndex();
 
         yield BooleanField::new('active', 'Actif')
             ->renderAsSwitch(false);
 
-        yield ArrayField::new('questionsDisposition', 'Questions disposition')
-            ->setRequired(true);
+        if ($questionScoreFormSchema = file_get_contents(__DIR__.'/../../jsonschema/questionsScoreFormSchema.json')) {
+            yield JsonField::new('questionsScore')
+                ->setLabel(false)
+                ->setJsonSchema($questionScoreFormSchema)
+                ->setFormType(JsonEditorType::class)
+                ->setRequired(true)
+            ;
+        }
 
-        yield ArrayField::new('QuestionsScore', 'Questions score de compatibilité')
-            ->setRequired(true);
+        if ($questionDispositionSchema = file_get_contents(__DIR__.'/../../jsonschema/questionsDispositionFormSchema.json')) {
+            yield JsonField::new('questionsDisposition')
+                ->setLabel(false)
+                ->setJsonSchema($questionDispositionSchema)
+                ->setFormType(JsonEditorType::class)
+                ->setRequired(true)
+            ;
+        }
     }
 
     public function configureActions(Actions $actions): Actions
@@ -55,6 +71,9 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
                 return $action->setLabel('Ajouter un questionnaire');
-            });
+            })
+            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
+        ;
     }
 }

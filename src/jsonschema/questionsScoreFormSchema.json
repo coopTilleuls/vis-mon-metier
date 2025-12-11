@@ -1,0 +1,91 @@
+{
+    "title": "Questions score",
+    "type": "object",
+    "required": [
+        "titre",
+        "introduction",
+        "questions"
+    ],
+    "properties": {
+        "titre": {
+            "type": "string",
+            "title": "Nom du questionnaire",
+            "default": "Questions score d'intérêt"
+        },
+        "introduction": {
+            "type": "string",
+            "title": "Paragraphe d'introduction",
+            "format": "textarea",
+            "default": "Pour chaque action ci-dessous, merci d'indiquer si c'est un élément important dans votre choix d'orientation professionnelle aujourd'hui. Graduation de 1 à 4 (1 = aucune importance, 4 = très important)."
+        },
+        "questions": {
+            "type": "array",
+            "title": "Questions",
+            "format": "tabs",
+            "uniqueItems": true,
+            "options": {
+                "disable_array_delete_all_rows": true,
+                "disable_array_delete_last_row": true
+            },
+            "items": {
+                "type": "object",
+                "title": "Question",
+                "headerTemplate": "{{ self.label_employeur }}",
+                "required": [
+                    "label_participant",
+                    "label_employeur",
+                    "reponses_possibles"
+                ],
+                "properties": {
+                    "label_participant": {
+                        "type": "string",
+                        "title": "Intitulé Participant",
+                        "format": "textarea"
+                    },
+                    "label_employeur": {
+                        "type": "string",
+                        "title": "Intitulé Employeur"
+                    },
+                    "reponses_possibles": {
+                        "title": "Réponses",
+                        "type": "array",
+                        "format": "table",
+                        "minItems": 4,
+                        "maxItems": 4,
+                        "options": {
+                            "disable_array_add": true,
+                            "disable_array_delete": true,
+                            "disable_array_reorder": true
+                        },
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "valeur": {
+                                    "type": "integer",
+                                    "title": "Score",
+                                    "readonly": true
+                                },
+                                "libelle": {
+                                    "type": "string",
+                                    "title": "Libellé"
+                                }
+                            }
+                        },
+                        "default": [
+                            { "valeur": 1, "libelle": "Pas du tout" },
+                            { "valeur": 2, "libelle": "Un peu" },
+                            { "valeur": 3, "libelle": "Moyennement" },
+                            { "valeur": 4, "libelle": "Beaucoup" }
+                        ]
+                    }
+                }
+            },
+            "default": [
+                {
+                    "label_employeur": "Ce métier implique de communiquer, parler ou expliquer ?",
+                    "label_participant": "Dans votre futur métier, souhaitez-vous communiquer, parler ou expliquer ? Est-ce important pour vous ?"
+                }
+            ]
+        }
+    }
+}

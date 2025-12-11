@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\ModelQuestionnaire;
@@ -26,7 +28,6 @@ class AdminDashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
         yield MenuItem::linkToCrud('Sessions', 'fas fa-calendar-days', Session::class);
         yield MenuItem::linkToCrud('Questions', 'fas fa-question', ModelQuestionnaire::class);
     }

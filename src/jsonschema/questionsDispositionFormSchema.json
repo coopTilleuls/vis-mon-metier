@@ -1,0 +1,117 @@
+{
+    "title": "Questions Disposition",
+    "type": "object",
+    "required": [
+        "titre",
+        "introduction",
+        "questions"
+    ],
+    "properties": {
+        "titre": {
+            "type": "string",
+            "title": "Nom du questionnaire",
+            "default": "Questions disposition (logistiques et contraintes)"
+        },
+        "introduction": {
+            "type": "string",
+            "title": "Paragraphe d'introduction",
+            "format": "textarea",
+            "default": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion."
+        },
+        "questions": {
+            "type": "array",
+            "title": "Questions",
+            "format": "tabs",
+            "uniqueItems": true,
+            "options": {
+                "disable_array_delete_all_rows": true,
+                "disable_array_delete_last_row": true
+            },
+            "items": {
+                "type": "object",
+                "title": "Question",
+                "headerTemplate": "{{ self.label_employeur }}",
+                "required": [
+                    "label_participant",
+                    "label_employeur",
+                    "type_reponse"
+                ],
+                "properties": {
+                    "label_participant": {
+                        "type": "string",
+                        "title": "Intitulé Participant",
+                        "format": "textarea"
+                    },
+                    "label_employeur": {
+                        "type": "string",
+                        "title": "Intitulé Employeur"
+                    },
+                    "type_reponse": {
+                        "type": "string",
+                        "title": "Type de réponse",
+                        "default": "réponse libre",
+                        "enum": [
+                            "choix unique",
+                            "choix multiples",
+                            "réponse libre"
+                        ]
+                    },
+                    "reponses_possibles": {
+                        "title": "Réponses",
+                        "type": "array",
+                        "format": "table",
+                        "options": {
+                            "disable_array_delete_all_rows": true,
+                            "disable_array_delete_last_row": true,
+                            "disable_array_reorder": true,
+                            "dependencies": {
+                                "type_reponse": [
+                                    "choix unique",
+                                    "choix multiples"
+                                ]
+                            }
+                        },
+                        "items": {
+                            "title": "Réponse",
+                            "type": "object",
+                            "properties": {
+                                "valeur": {
+                                    "type": "integer",
+                                    "title": "Score",
+                                    "default": 1
+                                },
+                                "libelle": {
+                                    "type": "string",
+                                    "title": "Libellé"
+                                }
+                            }
+                        }
+                    },
+                    "config_texte_libre": {
+                        "type": "string",
+                        "title": "Placeholder",
+                        "default": "",
+                        "options": {
+                            "dependencies": {
+                                "type_reponse": "réponse libre"
+                            }
+                        }
+                    }
+                }
+            },
+            "default": [
+                {
+                    "label_employeur": "Ce poste est en horaires décalées ?",
+                    "label_participant": "Vous pouvez travailler en horaires atypiques, en décalés ?",
+                    "type_reponse": "choix unique",
+                    "reponses_possibles": [
+                        { "valeur": 1, "libelle": "Oui" },
+                        { "valeur": 2, "libelle": "Parfois" },
+                        { "valeur": 3, "libelle": "Non" },
+                        { "valeur": 0, "libelle": "Vous ne souhaitez pas répondre" }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,167 @@
+{# todo: detail view #}
+{#{% if ea is defined and ea.crud.currentAction == 'detail' %}#}
+{#    <div style="max-height: 500px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 4px;">#}
+{#        <pre>{{ field.value|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>#}
+{#    </div>#}
+{#{% endif %}#}
+
+{% block json_schema_editor_widget %}
+    <script defer src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+
+
+    <div class="json-editor-wrapper">
+        {# hidden default symfony field #}
+        {{ block('textarea_widget') }}
+
+        <div id="{{ editor_container_id }}">
+            <div class="text-center p-4 text-muted">
+                <i class="fas fa-circle-notch fa-spin"></i> Chargement de l'interface...
+            </div>
+        </div>
+
+        {{ form_errors(form) }}
+    </div>
+
+    <script defer>
+        (function() {
+            const containerId = '{{ editor_container_id }}';
+            const inputId = '{{ id }}';
+            const rawSchema = '{{ json_schema|raw|e("js") }}';
+            const rawOptions = '{{ editor_options|raw|e("js") }}';
+
+            const initEditor = function() {
+                JSONEditor.defaults.language = 'fr'
+                JSONEditor.defaults.languages.fr = {
+                    error_notset: 'La propriété doit être définie',
+                    error_notempty: 'Valeur requise',
+                    error_enum: 'La valeur doit faire partie des valeurs énumérées',
+                    error_const: 'La valeur doit être égale à la valeur constante',
+                    error_anyOf: 'La valeur doit correspondre à au moins l\'un des schémas fournis',
+                    error_oneOf: "{{ 'La valeur doit correspondre à exactement un des schémas fournis. Elle correspond actuellement à {{0}} des schémas.' }}",
+                    error_not: 'La valeur ne doit pas correspondre au schéma fourni',
+                    error_type_union: 'La valeur doit être l\'un des types fournis',
+                    error_type: "{{ 'La valeur doit être de type {{0}}' }}",
+                    error_disallow_union: 'La valeur ne doit pas être l\'un des types non autorisés fournis',
+                    error_disallow: "{{ 'La valeur ne doit pas être de type {{0}}' }}",
+                    error_multipleOf: "{{ 'La valeur doit être un multiple de {{0}}' }}",
+                    error_maximum_excl: "{{ 'La valeur doit être strictement inférieure à {{0}}' }}",
+                    error_maximum_incl: "{{ 'La valeur doit être inférieure ou égale à {{0}}' }}",
+                    error_minimum_excl: "{{ 'La valeur doit être strictement supérieure à {{0}}' }}",
+                    error_minimum_incl: "{{ 'La valeur doit être supérieure ou égale à {{0}}' }}",
+                    error_maxLength: "{{ 'La valeur doit contenir au maximum {{0}} caractères' }}",
+                    error_contains: 'Aucun élément ne correspond au schéma "contains"',
+                    error_minContains: "{{ 'Le nombre de correspondances ({{0}}) est inférieur au minimum requis de {{1}}' }}",
+                    error_maxContains: "{{ 'Le nombre de correspondances ({{0}}) dépasse le maximum autorisé de {{1}}' }}",
+                    error_minLength: "{{ 'La valeur doit contenir au moins {{0}} caractères' }}",
+                    error_pattern: "{{ 'La valeur doit respecter le motif {{0}}' }}",
+                    error_additionalItems: 'Aucun élément supplémentaire n\'est autorisé dans ce tableau',
+                    error_maxItems: "{{ 'La valeur doit contenir au maximum {{0}} éléments' }}",
+                    error_minItems: "{{ 'La valeur doit contenir au moins {{0}} éléments' }}",
+                    error_uniqueItems: 'Le tableau ne doit contenir que des éléments uniques',
+                    error_maxProperties: "{{ 'L\'objet doit contenir au maximum {{0}} propriétés' }}",
+                    error_minProperties: "{{ 'L\'objet doit contenir au moins {{0}} propriétés' }}",
+                    error_required: "{{ "La propriété requise '{{0}}' est manquante" }}",
+                    error_additional_properties: "{{ 'Aucune propriété supplémentaire n\'est autorisée, mais la propriété {{0}} est définie' }}",
+                    error_property_names_exceeds_maxlength: "{{ 'Le nom de la propriété {{0}} dépasse la longueur maximale (maxLength)' }}",
+                    error_property_names_enum_mismatch: "{{ 'Le nom de la propriété {{0}} ne correspond à aucune valeur de l\'énumération' }}",
+                    error_property_names_const_mismatch: "{{ 'Le nom de la propriété {{0}} ne correspond pas à la valeur constante' }}",
+                    error_property_names_pattern_mismatch: "{{ 'Le nom de la propriété {{0}} ne correspond pas au motif' }}",
+                    error_property_names_false: "{{ 'La propriété {{0}} est invalide car propertyName est défini sur false' }}",
+                    error_property_names_maxlength: "{{ 'Le nom de la propriété {{0}} ne peut pas correspondre à une maxLength invalide' }}",
+                    error_property_names_enum: "{{ 'Le nom de la propriété {{0}} ne peut pas correspondre à une énumération invalide' }}",
+                    error_property_names_pattern: "{{ 'Le nom de la propriété {{0}} ne peut pas correspondre à un motif invalide' }}",
+                    error_property_names_unsupported: "{{ 'propertyName {{0}} non supporté' }}",
+                    error_dependency: "{{ 'Doit avoir la propriété {{0}}' }}",
+                    error_date: "{{ 'La date doit être au format {{0}}' }}",
+                    error_time: "{{ 'L\'heure doit être au format {{0}}' }}",
+                    error_datetime_local: "{{ 'La date et l\'heure doivent être au format {{0}}' }}",
+                    error_invalid_epoch: 'La date doit être postérieure au 1er janvier 1970',
+                    error_ipv4: 'La valeur doit être une adresse IPv4 valide composée de 4 nombres entre 0 et 255, séparés par des points',
+                    error_ipv6: 'La valeur doit être une adresse IPv6 valide',
+                    error_hostname: 'Le nom d\'hôte a un format incorrect',
+                    upload_max_size: 'Fichier trop volumineux. La taille maximale est de ',
+                    upload_wrong_file_format: 'Format de fichier incorrect. Format(s) autorisé(s) : ',
+                    button_save: 'Enregistrer',
+                    button_copy: 'Copier',
+                    button_cancel: 'Annuler',
+                    button_add: 'Ajouter',
+                    button_delete_all: 'Tout',
+                    button_delete_all_title: 'Tout supprimer',
+                    button_delete_last: "{{ 'Dernière {{0}}' }}",
+                    button_delete_last_title: "{{ 'Supprimer le dernier {{0}}' }}",
+                    button_add_row_title: "{{ 'Ajouter {{0}}' }}",
+                    button_move_down_title: 'Déplacer vers le bas',
+                    button_move_up_title: 'Déplacer vers le haut',
+                    button_properties: 'Propriétés',
+                    button_object_properties: 'Propriétés de l\'objet',
+                    button_copy_row_title: "{{ 'Copier {{0}}' }}",
+                    button_delete_row_title: "{{ 'Supprimer {{0}}' }}",
+                    button_delete_row_title_short: 'Supprimer',
+                    button_copy_row_title_short: 'Copier',
+                    button_collapse: 'Réduire',
+                    button_expand: 'Développer',
+                    button_edit_json: 'Éditer JSON',
+                    button_upload: 'Téléverser',
+                    flatpickr_toggle_button: 'Basculer',
+                    flatpickr_clear_button: 'Effacer',
+                    choices_placeholder_text: 'Commencez à taper pour ajouter une valeur',
+                    default_array_item_title: 'élément',
+                    button_delete_node_warning: 'Êtes-vous sûr de vouloir supprimer cet élément ?',
+                    table_controls: 'Contrôles',
+                    paste_max_length_reached: "{{ 'Le texte collé dépasse la longueur maximale de {{0}} et sera tronqué.' }}"
+                };
+
+                const container = document.getElementById(containerId);
+                const input = document.getElementById(inputId);
+
+                if (!container || !input) return;
+
+                input.style.display = 'none';
+
+                let schema = {};
+                let options = {};
+                let startVal = null;
+
+                try {
+                    schema = JSON.parse(rawSchema);
+                    options = JSON.parse(rawOptions);
+                    if (input.value && input.value.trim() !== '') {
+                        startVal = JSON.parse(input.value);
+                    }
+                } catch (e) {
+                    container.innerHTML = '<div class="alert alert-danger">Configuration invalide: ' + e.message + '</div>';
+                    return;
+                }
+
+                const config = {
+                    ...options,
+                    schema: schema,
+                    startval: startVal || {},
+                };
+
+                container.innerHTML = '';
+
+                try {
+                    const editor = new JSONEditor(container, config);
+
+                    editor.on('change', function() {
+                        const errors = editor.validate();
+                        if (errors.length === 0) {
+                            input.value = JSON.stringify(editor.getValue());
+                        }
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = '<div class="alert alert-danger">Erreur JS: ' + err.message + '</div>';
+                }
+            };
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initEditor);
+            } else {
+                initEditor();
+            }
+        })();
+    </script>
+{% endblock %}
