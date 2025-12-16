@@ -1,5 +1,6 @@
 # Enable stateless CSRF protection for forms and logins/logouts
 framework:
+    trusted_proxies: '127.0.0.1,REMOTE_ADDR'
     form:
         csrf_protection:
             token_id: submit
