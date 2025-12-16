@@ -12,7 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 /**
  * @extends AbstractCrudController<ModelQuestionnaire>
@@ -40,8 +40,7 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id', 'id')
-        ->onlyOnIndex();
+        yield TextField::new('nom', 'Nom');
 
         yield BooleanField::new('active', 'Actif')
             ->renderAsSwitch(false);

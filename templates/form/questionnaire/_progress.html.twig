@@ -1,0 +1,37 @@
+<h4 class="mb-4 fw-bold text-dark">Progression</h4>
+<div class="d-flex flex-column h-100">
+    {% for step in form.vars.visible_steps %}
+        <div class="d-flex gap-3 mb-3">
+            <div class="d-flex flex-column align-items-center">
+                {% if step.is_current_step %}
+                    <div class="step-icon active">
+                        <i class="fas fa-dot-circle"></i>
+                    </div>
+                {% elseif step.index < form.vars.cursor.stepIndex %}
+                    <div class="step-icon completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                {% else %}
+                    <div class="step-icon">
+                        {{ step.index + 1 }}
+                    </div>
+                {% endif %}
+
+                {% if not loop.last %}
+                    <div class="step-line"></div>
+                {% endif %}
+            </div>
+
+            <div class="pt-1">
+                <div class="fw-bold {{ step.is_current_step ? 'text-primary' : (step.index < form.vars.cursor.stepIndex ? 'text-success' : 'text-muted') }}">
+                    {{ step.label|default(step.name|title) }}
+                </div>
+                <small class="text-muted">
+                    {% if step.name == 'contact' %}Vos informations{% endif %}
+                    {% if step.name == 'reponsesScore' %}Évaluation{% endif %}
+                    {% if step.name == 'reponsesDisposition' %}Préférences{% endif %}
+                </small>
+            </div>
+        </div>
+    {% endfor %}
+</div>

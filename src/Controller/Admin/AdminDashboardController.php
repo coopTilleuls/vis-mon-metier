@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\ModelQuestionnaire;
+use App\Entity\Questionnaire;
 use App\Entity\Session;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -30,5 +31,6 @@ class AdminDashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToCrud('Sessions', 'fas fa-calendar-days', Session::class);
         yield MenuItem::linkToCrud('Questions', 'fas fa-question', ModelQuestionnaire::class);
+        yield MenuItem::linkToCrud('Questionnaires remplis', 'fas fa-clipboard-list', Questionnaire::class);
     }
 }

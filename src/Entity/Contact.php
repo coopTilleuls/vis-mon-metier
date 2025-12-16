@@ -1,16 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\ObjectMapper\Attribute\Map;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'contact')]
 class Contact
 {
+    public const DEMANDEUR_EMPLOI = 'Demandeur d\'emploi';
+    public const SCOLAIRE_ETUDIANT = 'Scolaire, Etudiant';
+    public const SALARIE = 'Salarié';
+    public const AUTRE = 'Autre';
+    public const MAJEUR = 'Plus de 18 ans';
+    public const MINEUR = 'Moins de 18 ans';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Map(if: false)]
     private int $id;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -34,17 +46,22 @@ class Contact
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $numeroTelephone = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $adresse = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Choice(choices: [self::SALARIE, self::DEMANDEUR_EMPLOI, self::SCOLAIRE_ETUDIANT, self::AUTRE], message: 'Type invalide')]
+    private ?string $situation = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $statut = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Choice(choices: [self::MAJEUR, self::MINEUR], message: 'Type invalide')]
     private ?string $trancheAge = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    private ?User $referent = null;
+    #[ORM\ManyToOne(targetEntity: Referent::class)]
+    private ?Referent $referent = null;
+
+    #[ORM\Column(length: 255)]
+    private string $email;
+
+    #[ORM\Column(length: 255)]
+    private string $commune;
 
     public function getId(): int
     {
@@ -133,28 +150,14 @@ class Contact
         return $this;
     }
 
-    public function getAdresse(): ?string
+    public function getSituation(): ?string
     {
-        return $this->adresse;
+        return $this->situation;
     }
 
-    public function setAdresse(?string $adresse): static
+    public function setSituation(?string $situation): void
     {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(?string $statut): static
-    {
-        $this->statut = $statut;
-
-        return $this;
+        $this->situation = $situation;
     }
 
     public function getTrancheAge(): ?string
@@ -169,15 +172,42 @@ class Contact
         return $this;
     }
 
-    public function getReferent(): ?User
+    public function getReferent(): ?Referent
     {
         return $this->referent;
     }
 
-    public function setReferent(?User $referent): static
+    public function setReferent(?Referent $referent): static
     {
         $this->referent = $referent;
 
         return $this;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getCommune(): string
+    {
+        return $this->commune;
+    }
+
+    public function setCommune(string $commune): void
+    {
+        $this->commune = $commune;
+    }
+
+    public function __toString(): string
+    {
+        return "{$this->getPrenom()} {$this->getNomFamille()}";
     }
 }

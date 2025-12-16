@@ -22,3 +22,5 @@ phpstan.neon
 ###> phpunit ###
 .phpunit.cache/test-results
 ###< phpunit ###
+
+config/reference.php

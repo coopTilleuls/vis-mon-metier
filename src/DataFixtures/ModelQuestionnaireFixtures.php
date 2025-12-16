@@ -10,10 +10,12 @@ use Doctrine\Persistence\ObjectManager;
 
 class ModelQuestionnaireFixtures extends Fixture
 {
+    public const MODEL_REF = 'model';
+
     public function load(ObjectManager $manager): void
     {
         $contentDisposition = file_get_contents('questionsDisposition.json', true);
-        $contentScore = file_get_contents('questionsDisposition.json', true);
+        $contentScore = file_get_contents('questionsScore.json', true);
 
         if (false === $contentDisposition || false === $contentScore) {
             throw new \RuntimeException('Cannot read setting file(s).');
@@ -26,8 +28,10 @@ class ModelQuestionnaireFixtures extends Fixture
         $model->setActive(true);
         $model->setQuestionsDisposition($questionsDisposition);
         $model->setQuestionsScore($questionsScore);
+        $model->setNom('Questionnaire VmM 2024');
 
         $manager->persist($model);
+        $this->addReference(self::MODEL_REF, $model);
         $manager->flush();
     }
 }

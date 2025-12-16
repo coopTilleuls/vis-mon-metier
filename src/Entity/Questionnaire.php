@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -22,28 +24,33 @@ class Questionnaire
     private Session $session;
 
     #[ORM\ManyToOne(targetEntity: Contact::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Contact $contact;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Contact $contact;
 
     #[ORM\Column(length: 20)]
     #[Assert\Choice(choices: [self::TYPE_EMPLOYEUR, self::TYPE_PARTICIPANT], message: 'Type invalide')]
     private string $type;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le métier est obligatoire.')]
-    private string $metier;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $metier = null;
 
     /**
-     * @var array<array{question_id: int, ordre: int, score: int}>
+     * @var array<mixed>
      */
-    #[ORM\Column(type: 'json')]
-    private array $reponses;
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $reponsesDisposition = null;
 
     /**
-     * @var array<array{date_debut: \DateTimeImmutable, date_fin: \DateTimeImmutable}>
+     * @var array<mixed>
      */
-    #[ORM\Column(type: 'json')]
-    private array $plagesDates;
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $reponsesScore = null;
+
+    /**
+     * @var array<int, \DateTimeImmutable>
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $dates = null;
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
@@ -63,23 +70,19 @@ class Questionnaire
         return $this->session;
     }
 
-    public function setSession(Session $session): static
+    public function setSession(Session $session): void
     {
         $this->session = $session;
-
-        return $this;
     }
 
-    public function getContact(): Contact
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
 
-    public function setContact(Contact $contact): static
+    public function setContact(?Contact $contact): void
     {
         $this->contact = $contact;
-
-        return $this;
     }
 
     public function getType(): string
@@ -87,59 +90,67 @@ class Questionnaire
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(string $type): void
     {
         $this->type = $type;
-
-        return $this;
     }
 
-    public function getMetier(): string
+    public function getMetier(): ?string
     {
         return $this->metier;
     }
 
-    public function setMetier(string $metier): static
+    public function setMetier(?string $metier): void
     {
         $this->metier = $metier;
-
-        return $this;
     }
 
     /**
-     * @return array<array{question_id: int, ordre:int, score: int}>
+     * @return array<mixed>|null
      */
-    public function getReponses(): array
+    public function getReponsesDisposition(): ?array
     {
-        return $this->reponses;
+        return $this->reponsesDisposition;
     }
 
     /**
-     * @param array<array{question_id: int, ordre: int, score: int}> $reponses
+     * @param array<mixed>|null $reponsesDisposition
      */
-    public function setReponses(array $reponses): static
+    public function setReponsesDisposition(?array $reponsesDisposition): void
     {
-        $this->reponses = $reponses;
-
-        return $this;
+        $this->reponsesDisposition = $reponsesDisposition;
     }
 
     /**
-     * @return array<array{date_debut: \DateTimeImmutable, date_fin: \DateTimeImmutable}>
+     * @return array<mixed>|null
      */
-    public function getPlagesDates(): array
+    public function getReponsesScore(): ?array
     {
-        return $this->plagesDates;
+        return $this->reponsesScore;
     }
 
     /**
-     * @param array<array{date_debut: \DateTimeImmutable, date_fin: \DateTimeImmutable}> $plagesDates
+     * @param array<mixed>|null $reponsesScore
      */
-    public function setPlagesDates(array $plagesDates): static
+    public function setReponsesScore(?array $reponsesScore): void
     {
-        $this->plagesDates = $plagesDates;
+        $this->reponsesScore = $reponsesScore;
+    }
 
-        return $this;
+    /**
+     * @return array<int, \DateTimeImmutable>|null
+     */
+    public function getDates(): ?array
+    {
+        return $this->dates;
+    }
+
+    /**
+     * @param array<int, \DateTimeImmutable>|null $dates
+     */
+    public function setDates(?array $dates): void
+    {
+        $this->dates = $dates;
     }
 
     public function getCreatedAt(): \DateTimeImmutable
@@ -147,10 +158,8 @@ class Questionnaire
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
-
-        return $this;
     }
 }

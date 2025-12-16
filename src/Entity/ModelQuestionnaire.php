@@ -31,6 +31,9 @@ class ModelQuestionnaire
     #[ORM\Column]
     private bool $active = true;
 
+    #[ORM\Column]
+    private string $nom = 'Questionnaire - Vis mon Métier';
+
     public function getId(): int
     {
         return $this->id;
@@ -76,5 +79,20 @@ class ModelQuestionnaire
     public function setActive(bool $active): void
     {
         $this->active = $active;
+    }
+
+    public function getNom(): string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): void
+    {
+        $this->nom = $nom;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
     }
 }

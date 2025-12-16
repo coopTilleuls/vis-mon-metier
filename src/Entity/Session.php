@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -34,11 +36,9 @@ class Session
     #[Assert\Choice(choices: [self::STATUT_BROUILLON, self::STATUT_OUVERT, self::STATUT_FERME], message: 'Statut invalide')]
     private string $statut = self::STATUT_BROUILLON;
 
-    /**
-     * @var array<string, mixed>
-     */
-    #[ORM\Column(type: 'json')]
-    private array $configurationQuestionnaire;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ModelQuestionnaire $modelQuestionnaire;
 
     public function getId(): int
     {
@@ -94,24 +94,6 @@ class Session
     }
 
     /**
-     * @return array<string, mixed>
-     */
-    public function getConfigurationQuestionnaire(): array
-    {
-        return $this->configurationQuestionnaire;
-    }
-
-    /**
-     * @param array<string, mixed> $configurationQuestionnaire
-     */
-    public function setConfigurationQuestionnaire(array $configurationQuestionnaire): static
-    {
-        $this->configurationQuestionnaire = $configurationQuestionnaire;
-
-        return $this;
-    }
-
-    /**
      * @return string[]
      */
     public static function getStatutChoices(): array
@@ -121,5 +103,22 @@ class Session
             self::STATUT_FERME => self::STATUT_FERME,
             self::STATUT_BROUILLON => self::STATUT_BROUILLON,
         ];
+    }
+
+    public function getModelQuestionnaire(): ModelQuestionnaire
+    {
+        return $this->modelQuestionnaire;
+    }
+
+    public function setModelQuestionnaire(ModelQuestionnaire $modelQuestionnaire): static
+    {
+        $this->modelQuestionnaire = $modelQuestionnaire;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
     }
 }

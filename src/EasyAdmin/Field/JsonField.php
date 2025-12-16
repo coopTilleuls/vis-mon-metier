@@ -20,7 +20,6 @@ final class JsonField implements FieldInterface
         ->setFormType(JsonEditorType::class)
         // Add a specific CSS class so we can target it with JavaScript
 //        ->addCssClass('js-json-editor')
-        // Hide the default list view as raw JSON is ugly in tables
         ->hideOnIndex();
     }
 
