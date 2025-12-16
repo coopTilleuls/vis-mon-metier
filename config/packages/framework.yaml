@@ -2,8 +2,14 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
+    trusted_proxies: '10.0.0.0/8'
+    trusted_headers: ['forwarded', 'x-forwarded-for', 'x-forwarded-proto']
+
     # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    session:
+        handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        cookie_lifetime: 7200
+        gc_maxlifetime: 7200
 
     #esi: true
     #fragments: true
