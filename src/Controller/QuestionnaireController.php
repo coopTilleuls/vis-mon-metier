@@ -29,7 +29,7 @@ class QuestionnaireController extends AbstractController
     ) {
     }
 
-    #[Route('/questionnaire', name: 'app_questionnaire_new')]
+    #[Route('/', name: 'app_questionnaire_new')]
     public function index(Request $request): Response
     {
         $questionnaireData = new QuestionnaireDto();
@@ -59,7 +59,7 @@ class QuestionnaireController extends AbstractController
         ]);
     }
 
-    #[Route('/questionnaire/success', name: 'app_questionnaire_success')]
+    #[Route('/succes', name: 'app_questionnaire_success')]
     public function success(): Response
     {
         return $this->render('questionnaire_success.html.twig');
