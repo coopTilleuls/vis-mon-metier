@@ -10,7 +10,12 @@
 4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
 5. Run `docker compose down --remove-orphans` to stop the Docker containers.
 
-11. [Troubleshooting](docs/troubleshooting.md)
+## Start project
+1. First run migrations: `docker compose exec php bin/console doctrine:migration:migrate`
+2. You can then load fixtures: `docker compose exec php bin/console doctrine:fixtures:load --no-interaction`
+<br>Or do set your own config through `/admin/model-questionnaire` and create a set of questions.
+   Then on `/admin/session` create a session, select the created questionnaire. Make sure to set its status to "ouvert".
+3. You can access the public form on: `/` and `/?pro` and do your own questionnaire config on `/admin`
 
 ## Sanitizing code
 run: `docker compose exec php vendor/bin/php-cs-fixer --no-interaction fix`
