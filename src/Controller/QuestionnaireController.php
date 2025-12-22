@@ -7,8 +7,9 @@ namespace App\Controller;
 use App\Entity\Contact;
 use App\Entity\Questionnaire;
 use App\Entity\Session;
-use App\Form\Data\QuestionnaireDto;
+use App\Form\Dto\Questionnaire as QuestionnaireDto;
 use App\Form\Type\QuestionnaireType;
+use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Flow\FormFlowInterface;
@@ -72,12 +73,11 @@ class QuestionnaireController extends AbstractController
 
         $questionnaire->setSession($session);
         $questionnaire->setContact($contact);
-        $questionnaire->setType($isPro ? Questionnaire::TYPE_EMPLOYEUR : Questionnaire::TYPE_PARTICIPANT);
+        $questionnaire->setType($isPro ? Type::EMPLOYEUR : Type::PARTICIPANT);
         $questionnaire->setMetier($isPro ? $questionnaireData->contact->metier : null);
         $questionnaire->setReponsesDisposition($questionnaireData->reponsesDisposition->reponses);
         $questionnaire->setReponsesScore($questionnaireData->reponsesScore->reponses);
 
-        $this->entityManager->persist($contact->getReferent());
         $this->entityManager->persist($contact);
         $this->entityManager->persist($questionnaire);
         $this->entityManager->flush();

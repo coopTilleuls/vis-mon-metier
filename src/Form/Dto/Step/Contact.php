@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Data\Step;
+namespace App\Form\Dto\Step;
 
-use App\Entity\Contact;
+use App\Entity\Contact as ContactEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class ContactDto
+final class Contact
 {
     #[Assert\Length(max: 255, groups: ['contact'])]
     public ?string $nomEntreprise = null;
@@ -35,15 +35,12 @@ final class ContactDto
     #[Assert\Length(min: 10, max: 10, groups: ['contact'])]
     public ?string $numeroTelephone = null;
 
-    #[Assert\Valid(groups: ['contact'])]
-    public ?ReferentDto $referent = null;
-
     #[Assert\Choice(
         choices: [
-            Contact::SALARIE,
-            Contact::DEMANDEUR_EMPLOI,
-            Contact::SCOLAIRE_ETUDIANT,
-            Contact::AUTRE,
+            ContactEntity::SALARIE,
+            ContactEntity::DEMANDEUR_EMPLOI,
+            ContactEntity::SCOLAIRE_ETUDIANT,
+            ContactEntity::AUTRE,
         ],
         groups: ['contact']
     )]
@@ -51,8 +48,8 @@ final class ContactDto
 
     #[Assert\Choice(
         choices: [
-            Contact::MAJEUR,
-            Contact::MINEUR,
+            ContactEntity::MAJEUR,
+            ContactEntity::MINEUR,
         ],
         groups: ['contact']
     )]
@@ -67,8 +64,18 @@ final class ContactDto
     #[Assert\Length(max: 255, groups: ['contact'])]
     public ?string $commune = null;
 
-    public function __construct()
-    {
-        $this->referent = new ReferentDto();
-    }
+    #[Assert\Length(max: 255, groups: ['contact'])]
+    public ?string $prenomTuteur = null;
+
+    #[Assert\Length(max: 255, groups: ['contact'])]
+    public ?string $nomFamilleTuteur = null;
+
+    #[Assert\Length(max: 255, groups: ['contact'])]
+    public ?string $nomReferent = null;
+
+    #[Assert\Length(max: 255, groups: ['contact'])]
+    public ?string $prenomReferent = null;
+
+    #[Assert\Length(max: 255, groups: ['contact'])]
+    public ?string $structureReferent = null;
 }

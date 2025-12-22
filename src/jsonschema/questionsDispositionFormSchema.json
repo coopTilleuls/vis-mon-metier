@@ -39,12 +39,12 @@
                 "properties": {
                     "label_participant": {
                         "type": "string",
-                        "title": "Intitulé Participant",
+                        "title": "Intitulé Participant·e",
                         "format": "textarea"
                     },
                     "label_employeur": {
                         "type": "string",
-                        "title": "Intitulé Employeur"
+                        "title": "Intitulé Employeur·euse"
                     },
                     "type_reponse": {
                         "type": "string",

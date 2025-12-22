@@ -22,6 +22,9 @@ class Referent
     private ?string $fonction = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    private ?string $structure = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -108,5 +111,24 @@ class Referent
         $this->utilisateur = $utilisateur;
 
         return $this;
+    }
+
+    public function getStructure(): ?string
+    {
+        return $this->structure;
+    }
+
+    public function setStructure(?string $structure): void
+    {
+        $this->structure = $structure;
+    }
+
+    public function __toString(): string
+    {
+        if ($this->getPrenom() || $this->getNomFamille() || $this->getStructure()) {
+            return "{$this->getPrenom()} {$this->getNomFamille()} {$this->getStructure()}";
+        }
+
+        return 'Non précisé';
     }
 }

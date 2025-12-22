@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Data\Step;
+namespace App\Form\Dto\Step;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class ReponsesScoreDto
+final class ReponsesDisposition
 {
     /**
      * @var array<mixed>|null
      */
     #[Assert\All([
         new Assert\NotBlank(),
-    ], groups: ['reponsesScore'])]
+    ], groups: ['reponsesDisposition'])]
     public ?array $reponses = null;
 }

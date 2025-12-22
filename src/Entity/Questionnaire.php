@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\ValueObject\Type;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -11,7 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Questionnaire
 {
-    public const TYPE_EMPLOYEUR = 'employeur';
     public const TYPE_PARTICIPANT = 'participant';
 
     #[ORM\Id]
@@ -28,7 +28,7 @@ class Questionnaire
     private ?Contact $contact;
 
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(choices: [self::TYPE_EMPLOYEUR, self::TYPE_PARTICIPANT], message: 'Type invalide')]
+    #[Assert\Choice(choices: [Type::EMPLOYEUR, Type::PARTICIPANT], message: 'Type invalide')]
     private string $type;
 
     #[ORM\Column(length: 255, nullable: true)]

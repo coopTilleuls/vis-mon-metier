@@ -6,7 +6,7 @@ namespace App\Form\Type\Step;
 
 use App\Controller\QuestionnaireController;
 use App\Entity\Contact;
-use App\Form\Data\Step\ContactDto;
+use App\Form\Dto\Step\Contact as ContactDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -24,23 +24,32 @@ final class ContactType extends AbstractType
         $isPro = $options[QuestionnaireController::IS_PRO];
         $builder
             ->add('nomEntreprise', TextType::class, [
+                'label' => 'Nom',
                 'required' => false,
             ])
             ->add('secteurActivite', TextType::class, [
+                'label' => 'Secteur d\'activité',
                 'required' => false,
             ])
             ->add('type', TextType::class, [
                 'required' => false,
             ])
             ->add('nombreEmployes', TextType::class, [
+                'label' => 'Nombre d\'employés',
                 'required' => false,
             ])
             ->add('metier', TextType::class, [
+                'label' => 'Métier proposé à l\'immersion',
                 'required' => false,
             ])
-            ->add('prenom', TextType::class)
-            ->add('nomFamille', TextType::class)
+            ->add('prenom', TextType::class, [
+                'label' => 'Prénom',
+            ])
+            ->add('nomFamille', TextType::class, [
+                'label' => 'Nom',
+            ])
             ->add('numeroTelephone', TextType::class, [
+                'label' => 'Numéro de téléphone',
                 'required' => true,
             ])
             ->add('situation', ChoiceType::class, [
@@ -54,6 +63,7 @@ final class ContactType extends AbstractType
                 'placeholder' => 'Sélectionnez votre situation',
             ])
             ->add('trancheAge', ChoiceType::class, [
+                'label' => 'Tranche d\'âge',
                 'choices' => [
                     'Plus de 18 ans' => Contact::MAJEUR,
                     'Moins de 18 ans' => Contact::MINEUR,
@@ -61,19 +71,33 @@ final class ContactType extends AbstractType
                 'required' => false,
                 'placeholder' => 'Sélectionnez votre tranche d\'âge',
             ])
-            ->add('email', EmailType::class)
-            ->add('commune', TextType::class)
-            ->add('referent', ReferentType::class, [
+            ->add('email', EmailType::class, [
+                'label' => 'Adresse e-mail',
+            ])
+            ->add('commune', TextType::class, [
+                'label' => $isPro ? 'Adresse du lieu d\'immersion' : 'Commune',
+            ])
+            ->add('nomReferent', TextType::class, [
+                'label' => 'Nom',
+                'required' => false,
+            ])
+            ->add('prenomReferent', TextType::class, [
+                'label' => 'Prénom',
+                'required' => false,
+            ])
+            ->add('structureReferent', TextType::class, [
+                'label' => 'Structure',
+                'required' => false,
+            ])
+            ->add('prenomTuteur', TextType::class, [
+                'label' => 'Prénom',
+                'required' => false,
+            ])
+            ->add('nomFamilleTuteur', TextType::class, [
+                'label' => 'Nom',
                 'required' => false,
             ])
         ;
-
-        if (!$isPro) {
-            $builder->add('referent', ReferentType::class, [
-                'required' => false,
-                'label' => false,
-            ]);
-        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

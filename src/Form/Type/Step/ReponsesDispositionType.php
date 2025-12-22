@@ -6,7 +6,7 @@ namespace App\Form\Type\Step;
 
 use App\Controller\QuestionnaireController;
 use App\Entity\Session;
-use App\Form\Data\Step\ReponsesDispositionDto;
+use App\Form\Dto\Step\ReponsesDisposition;
 use App\Form\JsonEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -42,7 +42,7 @@ final class ReponsesDispositionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => ReponsesDispositionDto::class,
+            'data_class' => ReponsesDisposition::class,
             QuestionnaireController::SESSION_ENTITY => null,
             QuestionnaireController::IS_PRO => false,
         ]);

@@ -6,7 +6,7 @@ namespace App\Form\Type;
 
 use App\Controller\QuestionnaireController;
 use App\Entity\Session;
-use App\Form\Data\QuestionnaireDto;
+use App\Form\Dto\Questionnaire;
 use App\Form\Type\Step\ContactType;
 use App\Form\Type\Step\ReponsesDispositionType;
 use App\Form\Type\Step\ReponsesScoreType;
@@ -38,7 +38,7 @@ final class QuestionnaireType extends AbstractFlowType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => QuestionnaireDto::class,
+            'data_class' => Questionnaire::class,
             'step_property_path' => 'currentStep',
             QuestionnaireController::SESSION_ENTITY => null,
             QuestionnaireController::IS_PRO => null,

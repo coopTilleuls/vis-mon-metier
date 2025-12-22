@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\ValueObject\Type;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -32,6 +33,7 @@ class Contact
     private ?string $secteurActivite = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Choice(choices: [Type::EMPLOYEUR, Type::PARTICIPANT], message: 'Type invalide')]
     private string $type;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -54,14 +56,31 @@ class Contact
     #[Assert\Choice(choices: [self::MAJEUR, self::MINEUR], message: 'Type invalide')]
     private ?string $trancheAge = null;
 
-    #[ORM\ManyToOne(targetEntity: Referent::class)]
-    private ?Referent $referent = null;
-
     #[ORM\Column(length: 255)]
     private string $email;
 
     #[ORM\Column(length: 255)]
     private string $commune;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prenomTuteur = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nomFamilleTuteur = null;
+
+    #[ORM\ManyToOne(targetEntity: Referent::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Map(if: false)]
+    private ?Referent $referent = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nomReferent = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prenomReferent = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $structureReferent = null;
 
     public function getId(): int
     {
@@ -204,6 +223,56 @@ class Contact
     public function setCommune(string $commune): void
     {
         $this->commune = $commune;
+    }
+
+    public function getPrenomTuteur(): ?string
+    {
+        return $this->prenomTuteur;
+    }
+
+    public function setPrenomTuteur(?string $prenomTuteur): void
+    {
+        $this->prenomTuteur = $prenomTuteur;
+    }
+
+    public function getNomFamilleTuteur(): ?string
+    {
+        return $this->nomFamilleTuteur;
+    }
+
+    public function setNomFamilleTuteur(?string $nomFamilleTuteur): void
+    {
+        $this->nomFamilleTuteur = $nomFamilleTuteur;
+    }
+
+    public function getNomReferent(): ?string
+    {
+        return $this->nomReferent;
+    }
+
+    public function setNomReferent(?string $nomReferent): void
+    {
+        $this->nomReferent = $nomReferent;
+    }
+
+    public function getPrenomReferent(): ?string
+    {
+        return $this->prenomReferent;
+    }
+
+    public function setPrenomReferent(?string $prenomReferent): void
+    {
+        $this->prenomReferent = $prenomReferent;
+    }
+
+    public function getStructureReferent(): ?string
+    {
+        return $this->structureReferent;
+    }
+
+    public function setStructureReferent(?string $structureReferent): void
+    {
+        $this->structureReferent = $structureReferent;
     }
 
     public function __toString(): string
