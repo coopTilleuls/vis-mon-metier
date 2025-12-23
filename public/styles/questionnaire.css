@@ -1,0 +1,353 @@
+:root {
+    --green-color: #005d55;
+    --green-light-color: #00a076;
+    --gold-color: #ccad6b;
+    --orange-color: #e1a500;
+    --blue-color: #00adb7;
+    --background-color: #f8f9fa;
+    --text-secondary: #878e95;
+}
+
+* {
+    font-family: "Barlow", sans-serif;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color: #fff;
+}
+
+.questionnaire {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.logo {
+    width: 80%;
+    height: auto;
+    max-width: 240px;
+}
+
+.layout {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+.text-green {
+    color: var(--green-light-color);
+}
+
+.sidebar {
+    background-color: var(--green-color);
+    height: 100%;
+    width: 35%;
+    min-width: 340px;
+    padding: 24px 48px;
+    display: flex;
+    gap: 3rem;
+    flex-direction: column;
+}
+
+.form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form form[name='questionnaire'], .form .form-nav, .form .success {
+    max-width: 1024px;
+}
+
+.form-container {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.btn-prev {
+    border-radius: 36px;
+    border: none;
+    padding: 8px 0px;
+    font-size: 16px;
+    font-weight: 700;
+    background: none;
+    color: var(--green-color);
+}
+
+.btn-prev:hover {
+    color: var(--green-light-color);
+}
+
+.btn-next {
+    background: var(--green-color);
+    color: white;
+    border-radius: 36px;
+    border: none;
+    padding: 8px 24px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.btn-next:hover {
+    background: var(--green-light-color);
+}
+
+.stepper {
+    display: flex;
+    flex-direction: column;
+    padding-top: 1.5rem;
+}
+
+.step-item {
+    position: relative;
+    padding-bottom: 3rem;
+    margin-top: 5px;
+}
+.step-item:last-child {
+    padding-bottom: 0;
+}
+
+.step-item::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    left: 15px;
+    top: 38px;
+    bottom: 0;
+    width: 2px;
+    background-color: #e9ecef;
+    z-index: 0;
+}
+.step-item:last-child::before {
+    display: none;
+}
+
+.step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.step-item.active .step-icon {
+    border-color: #fff;
+    background-color: #fff;
+    color: var(--green-color);
+}
+
+.step-item.completed .step-icon {
+    border-color: #fff;
+    background-color: #fff;
+    color: var(--green-color);
+}
+
+.step-label {
+    color: #fff;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.2;
+}
+
+.step-sublabel {
+    color: #fff;
+    line-height: 1.2;
+    opacity: 0.6;
+    display: block;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 11px;
+    margin-bottom: 2px;
+    margin-top: -4px;
+}
+
+.form-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+textarea[data-json-editor="true"] {
+    display: none !important;
+}
+
+.je-object__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #495057;
+}
+.je-indented-panel {
+    border: 1px solid #dee2e6;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    margin-bottom: 1rem;
+}
+
+@media only screen and (max-width: 540px) {
+    .sidebar {
+        flex-direction: column !important;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .layout {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: fit-content;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 12px;
+    }
+    .logo {
+        width: 140px;
+        height: auto;
+    }
+
+    .form {
+        background: white;
+        overflow: hidden;
+    }
+
+    .stepper {
+        flex-direction: row;
+        padding-top: 0;
+        gap: 24px;
+    }
+
+    .step-item {
+        padding-bottom: 0;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px !important;
+    }
+    .step-item::before {
+        content: none;
+    }
+
+    .step-label {
+        font-size: 12px;
+    }
+    .step-sublabel {
+        display: none;
+    }
+}
+
+label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.form-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.form-nav > div {
+    position: relative;
+}
+
+.form-nav::before {
+    content: "";
+    position: absolute;
+    background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  width: 100%;
+  height: calc(100% + 24px);
+  bottom: 0;
+  left: 0;
+}
+
+.form-control:focus, .form-select:focus, .form-check-input:focus {
+    border-color: var(--green-light-color);
+    box-shadow: 0 0 0 .25rem rgba(0, 94, 85, 0.15);
+}
+.form-control:focus-visible, .form-select:focus-visible, .form-check-input:focus-visible {
+    border-color: var(--green-light-color);
+    outline:var(--green-color);
+}
+
+.json-editor-wrapper .card {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.json-editor-wrapper .card > div, .json-editor-wrapper .card > div > div {
+    background: white;
+}
+
+.json-editor-wrapper .card .row {
+    padding: 1.5rem;
+    padding-bottom: 0.5rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    margin-bottom: 24px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.json-editor-wrapper .card .row > * {
+    padding: 0;
+}
+
+.json-editor-wrapper .card .row label:first-child, .json-editor-wrapper .form-group > b {
+    color: var(--green-light-color);
+    font-size: 18px;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    font-weight: 700;
+    display: block;
+}
+
+.form-check-input:checked {
+    background-color: var(--green-light-color);
+    border-color: var(--green-light-color);
+}
+
+.je-object__title {
+    display: none!important;
+}
+
+.je-object__controls {
+    display: none!important;
+}
+
+.json-editor-wrapper .form-check-input {
+    width: 1.5em;
+    height: 1.5em;
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.json-editor-wrapper .form-check {
+    margin-bottom: 8px;
+}

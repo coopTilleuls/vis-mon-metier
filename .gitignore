@@ -24,3 +24,5 @@ phpstan.neon
 ###< phpunit ###
 
 config/reference.php
+
+bolt.db

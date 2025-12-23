@@ -50,7 +50,12 @@ class QuestionnaireController extends AbstractController
         if ($flow->isSubmitted() && $flow->isValid() && $flow->isFinished()) {
             $this->mapDtoToEntity($currentSession, $flow->getData(), $isPro);
 
-            return $this->redirectToRoute('app_questionnaire_success');
+            $params = [];
+            if ($isPro) {
+                $params['pro'] = 1;
+            }
+
+            return $this->redirectToRoute('app_questionnaire_success', $params);
         }
 
         return $this->render('form/questionnaire/form_flow.html.twig', [

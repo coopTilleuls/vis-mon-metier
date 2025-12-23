@@ -1,0 +1,60 @@
+{# templates/questionnaire/_layout.html.twig #}
+{% set is_pro = app.request.query.has('pro') %}
+
+{% set default_steps = [
+  { index: 0, name: 'contact', is_current_step: false },
+  { index: 1, name: 'reponsesScore', is_current_step: false },
+  { index: 2, name: 'reponsesDisposition', is_current_step: false }
+] %}
+
+{% set steps = (form is defined and form is not null and form.vars is defined and form.vars.visible_steps is defined)
+  ? form.vars.visible_steps
+  : default_steps
+%}
+
+{% set currentIndex = (form is defined and form is not null and form.vars is defined and form.vars.cursor is defined)
+  ? form.vars.cursor.stepIndex
+  : (current_step_index|default(steps|length))
+%}
+
+<div class="layout">
+	<div class="sidebar">
+		<img class="logo" src="{{ asset('images/logo-white.png') }}"/>
+		<div class="stepper">
+			{% for step in steps %}
+				{% set step_class = '' %}
+				{% if step.is_current_step %}
+					{% set step_class = 'active' %}
+				{% elseif step.index < currentIndex %}
+					{% set step_class = 'completed' %}
+				{% endif %}
+
+				<div class="d-flex gap-4 step-item {{ step_class }}">
+					<div class="step-icon">
+						{% if step_class == 'completed' %}
+							<i class="fas fa-check small"></i>
+						{% elseif step_class == 'active' %}
+							<span class="small fw-bold">{{ step.index + 1 }}</span>
+						{% else %}
+							<span class="small fw-bold">{{ step.index + 1 }}</span>
+						{% endif %}
+					</div>
+					<div>
+						<small class="step-sublabel">
+							Étape
+							{{ step.index + 1 }}
+						</small>
+						<div class="step-label mb-0">
+							{% if step.name == 'contact' %}{{ is_pro ? 'Fiche contact' : 'Vos informations' }}{% endif %}
+                            {% if step.name == 'reponsesScore' %}Questionnaire{% endif %}
+                            {% if step.name == 'reponsesDisposition' %}Disponibilité{% endif %}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+	<div class="form">
+        {% block content %}{% endblock %}
+    </div>
+</div>
