@@ -38,10 +38,19 @@ class QuestionnaireCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
+        $editAnswers = Action::new('editAnswers', 'Modifier Réponses')
+            ->linkToRoute('admin_questionnaire_edit_answers', function (Questionnaire $questionnaire): array {
+                return ['id' => $questionnaire->getId()];
+            })
+            ->setIcon('fa fa-edit');
+
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $editAnswers)
+            ->add(Crud::PAGE_DETAIL, $editAnswers)
             ->remove(Crud::PAGE_INDEX, Action::NEW)
-            ->disable(Action::NEW)
+            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->disable(Action::NEW, Action::EDIT)
         ;
     }
 

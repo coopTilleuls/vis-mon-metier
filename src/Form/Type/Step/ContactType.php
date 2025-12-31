@@ -25,28 +25,30 @@ final class ContactType extends AbstractType
         $builder
             ->add('nomEntreprise', TextType::class, [
                 'label' => 'Nom',
-                'required' => false,
+                'required' => true,
             ])
             ->add('secteurActivite', TextType::class, [
                 'label' => 'Secteur d\'activité',
-                'required' => false,
+                'required' => true,
+            ])
+            ->add('nombreEmployes', TextType::class, [
+                'label' => 'Nombre d\'employés',
+                'required' => true,
+            ])
+            ->add('metier', TextType::class, [
+                'label' => 'Métier proposé à l\'immersion',
+                'required' => true,
             ])
             ->add('type', TextType::class, [
                 'required' => false,
             ])
-            ->add('nombreEmployes', TextType::class, [
-                'label' => 'Nombre d\'employés',
-                'required' => false,
-            ])
-            ->add('metier', TextType::class, [
-                'label' => 'Métier proposé à l\'immersion',
-                'required' => false,
-            ])
             ->add('prenom', TextType::class, [
                 'label' => 'Prénom',
+                'required' => true,
             ])
             ->add('nomFamille', TextType::class, [
                 'label' => 'Nom',
+                'required' => true,
             ])
             ->add('numeroTelephone', TextType::class, [
                 'label' => 'Numéro de téléphone',
@@ -68,14 +70,16 @@ final class ContactType extends AbstractType
                     'Plus de 18 ans' => Contact::MAJEUR,
                     'Moins de 18 ans' => Contact::MINEUR,
                 ],
-                'required' => false,
+                'required' => true,
                 'placeholder' => 'Sélectionnez votre tranche d\'âge',
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Adresse e-mail',
+                'required' => true,
             ])
             ->add('commune', TextType::class, [
                 'label' => $isPro ? 'Adresse du lieu d\'immersion' : 'Commune',
+                'required' => true,
             ])
             ->add('nomReferent', TextType::class, [
                 'label' => 'Nom',
@@ -91,11 +95,11 @@ final class ContactType extends AbstractType
             ])
             ->add('prenomTuteur', TextType::class, [
                 'label' => 'Prénom',
-                'required' => false,
+                'required' => true,
             ])
             ->add('nomFamilleTuteur', TextType::class, [
                 'label' => 'Nom',
-                'required' => false,
+                'required' => true,
             ])
         ;
     }

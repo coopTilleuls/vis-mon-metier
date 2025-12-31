@@ -13,6 +13,13 @@
 		document.addEventListener('DOMContentLoaded', function () {
 JSONEditor.defaults.options.theme = 'bootstrap5';
 JSONEditor.defaults.options.iconlib = 'fontawesome5';
+JSONEditor.defaults.language = 'fr';
+JSONEditor.defaults.languages.fr = {
+    error_maxLength: "La valeur doit contenir au maximum {{ '{{0}}' }} caractère(s)",
+    error_minLength: "La valeur doit contenir au moins {{ '{{0}}' }} caractère(s)",
+    error_maxItems: "Veuillez sélectionner au maximum {{ '{{0}}' }} élément(s)",
+    error_minItems: "Veuillez sélectionner au moins {{ '{{0}}' }} élément(s)",
+}
 
 document.querySelectorAll('.js-json-editor-container').forEach(container => {
 const inputId = container.dataset.inputId;

@@ -15,6 +15,7 @@
         "export",
         "contact",
         "question",
+        "questionnaire",
         "referent",
         "modelQuestionnaire",
         "session",
