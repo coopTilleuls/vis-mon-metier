@@ -33,6 +33,7 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Questionnaires')
             ->setPageTitle('index', 'Liste des questionnaires remplis')
             ->setDefaultSort(['createdAt' => 'DESC'])
+            ->showEntityActionsInlined()
         ;
     }
 
@@ -42,7 +43,9 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->linkToRoute('admin_questionnaire_edit_answers', function (Questionnaire $questionnaire): array {
                 return ['id' => $questionnaire->getId()];
             })
-            ->setIcon('fa fa-edit');
+            ->setIcon('fa fa-pen')
+            ->setLabel(false)
+            ->setHtmlAttributes(['title' => 'Modifier Réponses']);
 
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
@@ -51,6 +54,19 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->remove(Crud::PAGE_INDEX, Action::EDIT)
             ->disable(Action::NEW, Action::EDIT)
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
+                return $action
+                    ->setIcon('fa-solid fa-eye')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Consulter']);
+            })
+
+            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-trash')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Supprimer']);
+            })
         ;
     }
 
@@ -68,7 +84,7 @@ class QuestionnaireCrudController extends AbstractCrudController
         yield ChoiceField::new('type', 'Type de profil')
             ->setChoices(Type::choiceOptions())
             ->renderAsBadges([
-                Type::EMPLOYEUR => 'success',
+                Type::EMPLOYEUR => 'secondary',
                 Type::PARTICIPANT => 'primary',
             ])
             ->hideOnForm();

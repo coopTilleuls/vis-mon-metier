@@ -35,6 +35,7 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Questionnaires')
             ->setDefaultSort(['id' => 'DESC'])
             ->addFormTheme('easyadmin/json_field.html.twig')
+            ->showEntityActionsInlined()
         ;
     }
 
@@ -67,6 +68,28 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-eye')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Consulter']);
+            })
+
+            ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-pen')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Modifier']);
+            })
+
+            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-trash')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Supprimer']);
+            })
+
             ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
                 return $action->setLabel('Ajouter un questionnaire');
             })

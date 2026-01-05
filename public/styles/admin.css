@@ -1,0 +1,431 @@
+:root {
+    --green-color: #005d55;
+    --green-light-color: #00a076;
+    --gold-color: #ccad6b;
+    --orange-color: #e1a500;
+    --blue-color: #00adb7;
+    --background-color: #f8f9fa;
+    --text-secondary: #878e95;
+    --sidebar-max-width: 280px;
+    --form-type-check-input-checked-bg: var(--green-light-color);
+    --badge-boolean-true-bg: var(--green-light-color);
+    --badge-boolean-true-color: white;
+    --badge-boolean-false-box-shadow: none;
+    --button-focus-outline-color: var(--green-color);
+    --table-thead-sorted-marker-color: var(--green-light-color);
+    --color-primary: var(--green-light-color);
+    --link-color: var(--green-light-color);
+    --link-hover-color: var(--green-color);
+    --badge-primary-bg: #d1e7dd;
+    --badge-primary-color: var(--green-color);
+    --badge-secondary-color:#826118;
+    --badge-secondary-bg: #e6dac0;
+}
+
+* {
+    font-family: "Barlow", sans-serif;
+}
+
+aside.sidebar {
+    background-color: var(--green-color);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: white;
+    padding: 24px 0;
+    box-shadow: none;
+}
+
+.sidebar a {
+    color: white;
+}
+
+.sidebar ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.sidebar li {
+    list-style: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 12px 24px;
+}
+
+.sidebar li.active {
+    background: var(--green-light-color);
+}
+
+.sidebar li a {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.sidebar li a i {
+    background: var(--green-light-color);
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar li.active a i {
+    background: rgba(255, 255, 255, 0.75);
+    color: var(--green-light-color);
+}
+
+.logo {
+    width: 80%;
+    max-width: 180px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.title.d-none,
+.global-actions.d-none {
+    display: inline-block !important;
+}
+
+.actions .btn {
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all ease 0.3s;
+}
+
+.btn-primary {
+    background: var(--green-color);
+}
+
+.btn-primary:hover {
+    background: var(--green-light-color) !important;
+}
+
+.btn-primary:focus {
+    outline-color: var(--green-light-color) !important;
+    background: var(--green-color) !important;
+}
+
+.btn {
+    border-radius: 24px;
+}
+
+.badge {
+    border-radius: 35px;
+    padding: 4px 12px;
+}
+
+.actions .btn-secondary {
+    background: none;
+    border: 1px solid var(--green-color);
+}
+
+.actions .btn-secondary .btn-icon {
+    color: var(--green-color);
+}
+
+.actions .btn-secondary:hover {
+    background: var(--green-light-color) !important;
+    border-color: var(--green-light-color) !important;
+}
+
+.actions .btn-secondary:hover .btn-icon {
+    color: white;
+}
+
+.actions .btn-danger {
+    background: none;
+    border: 1px solid var(--button-invisible-danger-active-color);
+}
+
+.actions .btn-danger .btn-icon {
+    color: var(--button-invisible-danger-active-color) !important;
+}
+
+.actions .btn-danger:hover {
+    background: var(--button-invisible-danger-active-color) !important;
+    border-color: var(--button-invisible-danger-active-color) !important;
+}
+
+.actions .btn-danger:focus {
+    outline-color: var(--button-invisible-danger-active-color) !important;
+}
+
+.actions .btn-danger:hover .btn-icon {
+    color: white !important;
+}
+
+a {
+    font-weight: 600;
+}
+
+div[data-schemapath="root.questions"] .card-title.level-2 {
+    width: 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 20px !important;
+    color: var(--bs-heading-color) !important;
+    margin-bottom: 24px;
+}
+
+div[data-schemapath="root.questions"] .card-title .json-editor-btn-add {
+    font-size: 14px;
+    height: 32px;
+}
+
+div[data-schemapath="root.questions"] .card-title .json-editor-btn-add span {
+    display: none;
+}
+
+div[data-schemapath="root.questions"] .card-title .json-editor-btn-add i:after {
+    font-family: "Barlow";
+    font-weight: 500;
+    content: "Ajouter une question";
+    margin-left: 4px;
+}
+
+div[data-schemapath="root"] .h3.card-title:first-of-type {
+    font-size: calc(1.275rem + 0.3vw);
+    color: var(--green-light-color);
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+div[data-schemapath="root.questions"] .card-title.level-2 .btn {
+    border-radius: 24px !important;
+    padding-left: 12px;
+    padding-right: 12px;
+    background: var(--green-light-color);
+    color: white;
+}
+
+
+div[data-schemapath="root.questions"] .card-title.level-2 .btn:hover {
+    opacity: 0.8;
+}
+
+div[data-schemapath="root.questions"] .col-md-2[id="Question"] {
+    width: 280px;
+}
+
+div[data-schemapath="root.questions"] .col-md-2[id="Question"] + .col-md-10 {
+    flex: 1;
+}
+
+.je-object__container[data-schemapath="root"] {
+    background: white;
+    border-top: 1px solid #ccc;
+    padding-top: 24px;
+}
+
+div[data-schemapath="root.questions"] {
+    background: #f9fafb; /* gris très clair */
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    width: calc(100% - var(--bs-gutter-x));
+    margin-left: calc(var(--bs-gutter-x) * 0.5);
+}
+
+.je-object__container .card-body {
+    background-color: transparent !important;
+    padding: 0;
+    border: none;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+}
+
+.content-header-title .title {
+    font-size: calc(1.325rem + 0.9vw);
+}
+
+.content-header {
+    background: white;
+}
+
+.content-wrapper {
+    padding: 0;
+}
+
+.content-body {
+    padding: 0 var(--content-padding-right) 15px var(--content-padding-left);
+}
+
+.content-header {
+    inset-block-start: 0 !important;
+    padding: 15px var(--content-padding-right) 15px var(--content-padding-left);
+}
+
+@media (min-width: 992px) {
+    .content-body {
+        padding: 0 var(--lg-content-padding-right) var(--lg-content-padding-bottom) var(--lg-content-padding-left);
+    }
+    .content-header {
+        padding: 24px var(--lg-content-padding-right) 24px var(--lg-content-padding-left);
+    }
+}
+
+div[data-schemapath="root.questions"] .je-object__title {
+    font-size: 18px !important;
+    color: var(--bs-heading-color) !important;
+}
+
+div[data-schemapath="root.questions"] .h3.card-title.level-4 {
+    font-size: var(--font-size-base) !important;
+    font-weight: 500;
+    color: var(--bs-heading-color) !important;
+    margin-bottom: 0;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    background: #d1e7dd;
+    color: var(--green-color);
+    font-weight: 700;
+}
+
+.nav-pills .nav-link {
+    color: var(--green-light-color);
+    font-weight: 700;
+}
+
+.table > :not(caption) > * > * {
+    background: transparent;
+}
+
+div[data-theme="bootstrap5"] td > .form-group {
+    padding-bottom: 8px;
+    padding-top: 8px;
+}
+
+div[data-theme="bootstrap5"] tr {
+    vertical-align: middle;
+}
+
+.je-object__container .btn-group {
+    gap: 8px;
+}
+
+.je-object__container .btn-group .btn {
+    padding: 4px 12px;
+    border-radius: 24px !important;
+}
+
+td .json-editor-btn-delete span {
+    display: none;
+}
+
+td .json-editor-btn-delete {
+    aspect-ratio: 1/1;
+    justify-content: center;
+    border: 1px solid var(--button-invisible-danger-active-color) !important;
+    color: var(--button-invisible-danger-active-color) !important;
+}
+
+td .json-editor-btn-delete:hover {
+    background: var(--button-invisible-danger-active-color) !important;
+    color: white !important;
+}
+
+div[id="Question"] > .je-object__container > .btn-group {
+    margin-top: 24px;
+    width: 100%;
+}
+
+div[id="Question"] > .je-object__container > .btn-group .btn {
+    flex: 0;
+    font-size: 14px;
+    height:32px;
+}
+
+div[id="Question"] > .je-object__container > .btn-group .btn span {
+    display: none;
+}
+
+div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete {
+    margin-right: auto;
+    background: var(--button-invisible-danger-active-color) !important;
+    color: white!important;
+}
+
+div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete span {
+    display: none;
+}
+
+div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete i:after {
+    font-family: "Barlow";
+    font-weight: 500;
+    content: "Supprimer la question";
+    margin-left: 4px;
+}
+
+.card-body > .table-responsive + .btn-group {
+    margin-top: -14px;
+    margin-bottom: 24px;
+}
+.card-body > .table-responsive + .btn-group .btn {
+    border: 1px solid var(--green-light-color);
+    color: var(--green-light-color);
+    flex: 0;
+}
+
+.card-body > .table-responsive + .btn-group .btn span {
+    display: none;
+}
+
+.card-body > .table-responsive + .btn-group .btn i:after {
+    content: "Ajouter une réponse";
+    font-family: "Barlow";
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.table-responsive tr:last-child {
+    border-color: white;
+}
+
+.page-actions .action-delete {
+    background: var(--button-invisible-danger-active-color) !important;
+    color: white!important;
+}
+
+.user-details {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color:#00a076;
+}
+
+.user-details .user-avatar {
+    background: none!important;
+}
+
+.user-details .icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.user-details .icon svg {
+    max-block-size: 24px;
+}
+
+.user-menu-wrapper .dropdown-menu .dropdown-user-details .user-avatar {
+    aspect-ratio: 1 / 1;
+}
+
+.user-menu-wrapper .dropdown-user-details .user-avatar .icon {
+    width: 100%;
+}

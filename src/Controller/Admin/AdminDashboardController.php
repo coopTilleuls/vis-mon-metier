@@ -26,14 +26,15 @@ class AdminDashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Vis mon métier - Pays de Blain');
+            ->setTitle('Vis mon métier - Pays de Blain')
+            ->disableDarkMode();
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToCrud('Sessions', 'fas fa-calendar-days', Session::class);
         yield MenuItem::linkToCrud('Questions', 'fas fa-question', ModelQuestionnaire::class);
-        yield MenuItem::linkToCrud('Contacts', 'fas fa-user', Contact::class);
+        yield MenuItem::linkToCrud('Contacts', 'fas fa-users', Contact::class);
         yield MenuItem::linkToCrud('Questionnaires remplis', 'fas fa-clipboard-list', Questionnaire::class);
         yield MenuItem::linkToCrud('Référent·es', 'fas fa-person', Referent::class);
     }

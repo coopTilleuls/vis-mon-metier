@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Session;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -32,6 +34,7 @@ class SessionCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Session')
             ->setEntityLabelInPlural('Sessions')
             ->setDefaultSort(['id' => 'DESC'])
+            ->showEntityActionsInlined()
         ;
     }
 
@@ -45,5 +48,31 @@ class SessionCrudController extends AbstractCrudController
         yield AssociationField::new('modelQuestionnaire', 'Questionnaire à associer')
             ->autocomplete()
             ->hideOnIndex();
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+
+            ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-pen')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Modifier']);
+            })
+
+            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-trash')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Supprimer']);
+            })
+
+            ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
+                return $action->setLabel('Créer une session');
+            })
+            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
+        ;
     }
 }

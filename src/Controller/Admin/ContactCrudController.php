@@ -34,6 +34,7 @@ class ContactCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des contacts')
             ->setPageTitle(Crud::PAGE_DETAIL, fn (Contact $contact) => (string) $contact)
             ->setDefaultSort(['id' => 'DESC'])
+            ->showEntityActionsInlined()
         ;
     }
 
@@ -47,7 +48,7 @@ class ContactCrudController extends AbstractCrudController
         yield ChoiceField::new('type', 'Type')
             ->setChoices(Type::choiceOptions())
             ->renderAsBadges([
-                Type::EMPLOYEUR => 'success',
+                Type::EMPLOYEUR => 'secondary',
                 Type::PARTICIPANT => 'primary',
             ])
             ->setDisabled();
@@ -106,6 +107,20 @@ class ContactCrudController extends AbstractCrudController
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->disable(Action::NEW)
+
+            ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-pen')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Modifier']);
+            })
+
+            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-trash')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Supprimer']);
+            })
         ;
     }
 }
