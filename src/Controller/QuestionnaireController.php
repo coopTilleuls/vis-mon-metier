@@ -8,6 +8,9 @@ use App\Entity\Contact;
 use App\Entity\Questionnaire;
 use App\Entity\Session;
 use App\Form\Dto\Questionnaire as QuestionnaireDto;
+use App\Form\Dto\Step\Contact as ContactDto;
+use App\Form\Dto\Step\ReponsesDisposition;
+use App\Form\Dto\Step\ReponsesScore;
 use App\Form\Type\QuestionnaireType;
 use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +26,7 @@ class QuestionnaireController extends AbstractController
 {
     public const string SESSION_ENTITY = 'session_entity';
     public const string IS_PRO = 'is_pro';
+    private const string SESSION_KEY_QUESTIONNAIRE_ID = 'latest_questionnaire_id';
 
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -40,6 +44,11 @@ class QuestionnaireController extends AbstractController
         if (!$currentSession) {
             throw new BadRequestException('Invalid or missing session.');
         }
+
+        if ($isPro) {
+            $this->handlePrefill($request, $questionnaireData);
+        }
+
         /** @var FormFlowInterface $flow */
         $flow = $this->createForm(QuestionnaireType::class, $questionnaireData, [
             self::SESSION_ENTITY => $currentSession,
@@ -48,10 +57,11 @@ class QuestionnaireController extends AbstractController
             ->handleRequest($request);
 
         if ($flow->isSubmitted() && $flow->isValid() && $flow->isFinished()) {
-            $this->mapDtoToEntity($currentSession, $flow->getData(), $isPro);
+            $questionnaire = $this->mapDtoToEntity($currentSession, $flow->getData(), $isPro);
 
             $params = [];
             if ($isPro) {
+                $request->getSession()->set(self::SESSION_KEY_QUESTIONNAIRE_ID, $questionnaire->getId());
                 $params['pro'] = 1;
             }
 
@@ -65,13 +75,88 @@ class QuestionnaireController extends AbstractController
         ]);
     }
 
-    #[Route('/succes', name: 'app_questionnaire_success')]
-    public function success(): Response
+    #[Route('/restart', name: 'app_questionnaire_restart', methods: ['POST'])]
+    public function restart(Request $request): Response
     {
-        return $this->render('questionnaire_success.html.twig');
+        if ($questionnaireId = $request->request->get('questionnaire_id')) {
+            $request->getSession()->set(self::SESSION_KEY_QUESTIONNAIRE_ID, $questionnaireId);
+        }
+
+        $params = [];
+        if ($request->request->get('pro')) {
+            $params['pro'] = 1;
+        }
+
+        return $this->redirectToRoute('app_questionnaire_new', $params);
     }
 
-    private function mapDtoToEntity(Session $session, QuestionnaireDto $questionnaireData, bool $isPro): void
+    #[Route('/succes', name: 'app_questionnaire_success')]
+    public function success(Request $request): Response
+    {
+        $session = $request->getSession();
+
+        $questionnaireId = $session->get(self::SESSION_KEY_QUESTIONNAIRE_ID);
+        $session->remove(self::SESSION_KEY_QUESTIONNAIRE_ID);
+
+        return $this->render('questionnaire_success.html.twig', [
+            'questionnaire_id' => $questionnaireId,
+        ]);
+    }
+
+    private function handlePrefill(Request $request, QuestionnaireDto $questionnaireData): void
+    {
+        if (!$request->query->has('pro')) {
+            return;
+        }
+
+        $session = $request->getSession();
+        $questionnaireId = $session->get(self::SESSION_KEY_QUESTIONNAIRE_ID);
+
+        $previousQuestionnaire = null;
+        $previousContact = null;
+
+        if ($questionnaireId) {
+            $previousQuestionnaire = $this->entityManager->getRepository(Questionnaire::class)->find($questionnaireId);
+            $previousContact = $previousQuestionnaire?->getContact();
+        }
+
+        if ($previousContact) {
+            $questionnaireData->contact = $this->mapEntityToContactDto($previousContact);
+
+            $questionnaireData->contact->metier = $previousQuestionnaire->getMetier();
+
+            $questionnaireData->reponsesScore = new ReponsesScore();
+            $questionnaireData->reponsesScore->reponses = $previousQuestionnaire->getReponsesScore();
+
+            $questionnaireData->reponsesDisposition = new ReponsesDisposition();
+            $questionnaireData->reponsesDisposition->reponses = $previousQuestionnaire->getReponsesDisposition();
+        }
+    }
+
+    private function mapEntityToContactDto(Contact $contact): ContactDto
+    {
+        $dto = new ContactDto();
+
+        $dto->nomEntreprise = $contact->getNomEntreprise();
+        $dto->secteurActivite = $contact->getSecteurActivite();
+        $dto->nombreEmployes = $contact->getNombreEmployes();
+        $dto->prenom = $contact->getPrenom();
+        $dto->nomFamille = $contact->getNomFamille();
+        $dto->email = $contact->getEmail();
+        $dto->numeroTelephone = $contact->getNumeroTelephone();
+        $dto->commune = $contact->getCommune();
+        $dto->prenomTuteur = $contact->getPrenomTuteur();
+        $dto->nomFamilleTuteur = $contact->getNomFamilleTuteur();
+        $dto->situation = $contact->getSituation();
+        $dto->trancheAge = $contact->getTrancheAge();
+        $dto->nomReferent = $contact->getNomReferent();
+        $dto->prenomReferent = $contact->getPrenomReferent();
+        $dto->structureReferent = $contact->getStructureReferent();
+
+        return $dto;
+    }
+
+    private function mapDtoToEntity(Session $session, QuestionnaireDto $questionnaireData, bool $isPro): Questionnaire
     {
         $questionnaire = new Questionnaire();
         $contact = $this->objectMapper->map($questionnaireData->contact, new Contact());
@@ -86,5 +171,7 @@ class QuestionnaireController extends AbstractController
         $this->entityManager->persist($contact);
         $this->entityManager->persist($questionnaire);
         $this->entityManager->flush();
+
+        return $questionnaire;
     }
 }

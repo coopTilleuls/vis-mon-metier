@@ -126,7 +126,7 @@ class Referent
     public function __toString(): string
     {
         if ($this->getPrenom() || $this->getNomFamille() || $this->getStructure()) {
-            return "{$this->getPrenom()} {$this->getNomFamille()} {$this->getStructure()}";
+            return "{$this->getPrenom()} {$this->getNomFamille()} {$this->getFonction()} {$this->getStructure()}";
         }
 
         return 'Non précisé';

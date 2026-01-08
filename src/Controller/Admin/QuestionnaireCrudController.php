@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Questionnaire;
-use App\Service\MatchingHelper;
 use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -28,7 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
 class QuestionnaireCrudController extends AbstractCrudController
 {
     public function __construct(
-        private readonly MatchingHelper $matchingHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly AdminUrlGenerator $adminUrlGenerator,
     ) {
@@ -48,6 +46,7 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->overrideTemplate('crud/detail', 'admin/questionnaire/detail.html.twig')
             ->showEntityActionsInlined()
+            ->setSearchFields(null)
         ;
     }
 
@@ -133,7 +132,7 @@ class QuestionnaireCrudController extends AbstractCrudController
     }
 
     /**
-     * @return array<int, array{label: string, name: string, entreprise: ?string, job: ?string, score: int, detailUrl: string, compatibleDates: array<string>|false, matchingDates: array<string>, email: string, phone: string, address: string, contactEntity: ?\App\Entity\Contact}>
+     * @return array<int, array{label: string, name: string, entreprise: ?string, job: ?string, score: int, detailUrl: string, compatibleDates: array<string>|false, matchingDates: array<string>, email: string, phone: string, address: string}>
      */
     private function getTopMatches(Questionnaire $questionnaire): array
     {
@@ -147,15 +146,18 @@ class QuestionnaireCrudController extends AbstractCrudController
 
         $results = [];
         $currentScores = $questionnaire->getReponsesScore() ?? [];
-        $currentDates = $this->extractAndNormalizeDates($questionnaire->getReponsesDisposition() ?? []);
+
+        // Fetch schema to identify the date questions
+        $questionsSchema = $session->getModelQuestionnaire()->getQuestionsDisposition();
+        $currentDates = $this->extractDatesFromAnswers($questionnaire->getReponsesDisposition() ?? [], $questionsSchema);
 
         foreach ($candidates as $candidate) {
             $candidateScores = $candidate->getReponsesScore() ?? [];
 
             if (Type::EMPLOYEUR === $questionnaire->getType()) {
-                $score = $this->matchingHelper->calculateMatchScore($currentScores, $candidateScores);
+                $score = $this->calculateMatchScore($currentScores, $candidateScores);
             } else {
-                $score = $this->matchingHelper->calculateMatchScore($candidateScores, $currentScores);
+                $score = $this->calculateMatchScore($candidateScores, $currentScores);
             }
 
             $contact = $candidate->getContact();
@@ -164,7 +166,7 @@ class QuestionnaireCrudController extends AbstractCrudController
 
             $entreprise = ($contact && Type::EMPLOYEUR === $candidate->getType()) ? $contact->getNomEntreprise() : null;
 
-            $candidateDates = $this->extractAndNormalizeDates($candidate->getReponsesDisposition() ?? []);
+            $candidateDates = $this->extractDatesFromAnswers($candidate->getReponsesDisposition() ?? [], $questionsSchema);
             $matchingDates = array_intersect($currentDates, $candidateDates);
 
             $url = $this->adminUrlGenerator
@@ -180,11 +182,12 @@ class QuestionnaireCrudController extends AbstractCrudController
                 'job' => $candidate->getMetier(),
                 'score' => $score,
                 'detailUrl' => $url,
+                'trancheAge' => $contact->getTrancheAge(),
                 'compatibleDates' => !empty($matchingDates) ? $matchingDates : false,
                 'matchingDates' => $matchingDates,
-                'email' => $contact ? $contact->getEmail() : '',
-                'phone' => $contact ? ($contact->getNumeroTelephone() ?? '') : '',
-                'address' => $contact ? $contact->getCommune() : '',
+                'email' => $contact->getEmail(),
+                'phone' => $contact->getNumeroTelephone(),
+                'address' => $contact->getCommune(),
                 'contactEntity' => $contact,
             ];
         }
@@ -195,31 +198,65 @@ class QuestionnaireCrudController extends AbstractCrudController
     }
 
     /**
-     * @param array<mixed> $reponses
+     * @param array<mixed> $answers
+     * @param array<mixed> $schema
      *
      * @return array<string>
      */
-    private function extractAndNormalizeDates(array $reponses): array
+    private function extractDatesFromAnswers(array $answers, array $schema): array
     {
         $normalized = [];
+        $questions = $schema['questions'] ?? [];
+        $targetKey = null;
 
-        foreach ($reponses as $responseValue) {
-            if (!is_array($responseValue)) {
-                continue;
+        foreach ($questions as $index => $question) {
+            if (isset($question['type_reponse']) && 'choix dates multiples' === $question['type_reponse']) {
+                $targetKey = 'question_'.$index;
+                break;
             }
+        }
 
-            $first = reset($responseValue);
-            if (is_string($first) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $first)) {
-                foreach ($responseValue as $dateStr) {
-                    try {
-                        $normalized[] = new \DateTime($dateStr)->format('d/m');
-                    } catch (\Exception) {
-                        // Ignore invalid dates
-                    }
+        if (null !== $targetKey && isset($answers[$targetKey]) && is_array($answers[$targetKey])) {
+            foreach ($answers[$targetKey] as $dateStr) {
+                try {
+                    $normalized[] = new \DateTime($dateStr)->format('d/m');
+                } catch (\Exception) {
+                    // Ignore invalid dates
                 }
             }
         }
 
         return array_unique($normalized);
+    }
+
+    /**
+     * @param array<mixed> $employerAnswers
+     * @param array<mixed> $participantAnswers
+     */
+    public function calculateMatchScore(array $employerAnswers, array $participantAnswers): int
+    {
+        $totalDistance = 0;
+        $maxDistancePossible = 0;
+        foreach ($employerAnswers as $criteriaId => $employerValue) {
+            if (!isset($participantAnswers[$criteriaId])) {
+                continue;
+            }
+
+            $participantValue = $participantAnswers[$criteriaId];
+
+            $distance = abs($employerValue - $participantValue);
+
+            $totalDistance += $distance;
+
+            $maxDistancePossible += 3;
+        }
+
+        if (0 === $maxDistancePossible) {
+            return 0;
+        }
+
+        $score = 100 - (($totalDistance / $maxDistancePossible) * 100);
+
+        return (int) $score;
     }
 }

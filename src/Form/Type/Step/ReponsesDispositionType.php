@@ -122,15 +122,11 @@ final class ReponsesDispositionType extends AbstractType
 
                     foreach ($dates as $date) {
                         $enums[] = $date;
-                        try {
-                            $dateTime = new \DateTime($date);
-                            $formattedDate = $formatter->format($dateTime);
-                            if ($formattedDate) {
-                                $titles[] = ucfirst($formattedDate);
-                            } else {
-                                $titles[] = $date;
-                            }
-                        } catch (\Exception) {
+                        $dateTime = new \DateTime($date);
+                        $formattedDate = $formatter->format($dateTime);
+                        if ($formattedDate) {
+                            $titles[] = ucfirst($formattedDate);
+                        } else {
                             $titles[] = $date;
                         }
                     }

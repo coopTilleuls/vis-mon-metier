@@ -22,7 +22,9 @@ final class QuestionnaireType extends AbstractFlowType
         $isPro = $options[QuestionnaireController::IS_PRO] ?? false;
 
         $builder
-            ->addStep('contact', ContactType::class)
+            ->addStep('contact', ContactType::class, [
+                QuestionnaireController::IS_PRO => $isPro,
+            ])
             ->addStep('reponsesScore', ReponsesScoreType::class, [
                 QuestionnaireController::SESSION_ENTITY => $session,
                 QuestionnaireController::IS_PRO => $isPro,

@@ -38,7 +38,7 @@
             ]
         },
         {
-            "label_participant": "Q20 - Vous pouvez travailler en horaires atypiques, en décalés",
+            "label_participant": "Vous pouvez travailler en horaires atypiques, en décalés",
             "label_employeur": "Horaires atypiques",
             "type_reponse": "choix unique",
             "reponses_possibles": [
@@ -61,7 +61,7 @@
             ]
         },
         {
-            "label_participant": "Q21 - Vous tolérez le froid, la chaleur, ou l'humidité",
+            "label_participant": "Vous tolérez le froid, la chaleur, ou l'humidité",
             "label_employeur": "Climat",
             "type_reponse": "choix unique",
             "reponses_possibles": [
@@ -88,7 +88,7 @@
             ]
         },
         {
-            "label_participant": "Q22 - L'usage du numérique est possible pour vous, vous êtes à l'aise avec les outils informatiques en général",
+            "label_participant": "L'usage du numérique est possible pour vous, vous êtes à l'aise avec les outils informatiques en général",
             "label_employeur": "Aisance Numérique",
             "type_reponse": "choix unique",
             "reponses_possibles": [
@@ -115,7 +115,7 @@
             ]
         },
         {
-            "label_participant": "Q23 - Vos moyens de locomotion :",
+            "label_participant": "Vos moyens de locomotion :",
             "label_employeur": "Mobilité",
             "type_reponse": "choix unique",
             "reponses_possibles": [
@@ -138,7 +138,7 @@
             ]
         },
         {
-            "label_participant": "Q24 - Avez-vous des contraintes horaires ? (Sélectionnez au plus 2 options)",
+            "label_participant": "Avez-vous des contraintes horaires ? (Sélectionnez au plus 2 options)",
             "label_employeur": "Contraintes horaires",
             "type_reponse": "choix multiples",
             "reponses_possibles": [
@@ -157,13 +157,13 @@
             ]
         },
         {
-            "label_participant": "Q25 - Vous pouvez nous communiquer d'autres contraintes éventuelles ci-dessous :",
+            "label_participant": "Vous pouvez nous communiquer d'autres contraintes éventuelles ci-dessous :",
             "label_employeur": "Autres contraintes",
             "type_reponse": "réponse libre",
             "config_texte_libre": ""
         },
         {
-            "label_participant": "Q26 - Vous êtes disponible pour :",
+            "label_participant": "Vous êtes disponible pour :",
             "label_employeur": "Durée souhaitée",
             "type_reponse": "choix unique",
             "reponses_possibles": [
@@ -186,7 +186,7 @@
             ]
         },
         {
-            "label_participant": "Q27 - Vous êtes disponible (Sélectionnez au plus 5 options) :",
+            "label_participant": "Vous êtes disponible (Sélectionnez au plus 5 options) :",
             "label_employeur": "Jours de disponibilité",
             "type_reponse": "choix dates multiples",
             "dates_possibles": [
@@ -198,7 +198,7 @@
             ]
         },
         {
-            "label_participant": "Q28 - Remarques éventuelles :",
+            "label_participant": "Remarques éventuelles :",
             "label_employeur": "Remarques",
             "type_reponse": "réponse libre",
             "config_texte_libre": ""

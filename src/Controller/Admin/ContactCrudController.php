@@ -65,7 +65,7 @@ class ContactCrudController extends AbstractCrudController
             yield FormField::addPanel('Informations Entreprise')
                 ->hideOnIndex()
             ;
-            yield TextField::new('nomEntreprise', 'Entreprise')->hideOnIndex();
+            yield TextField::new('nomEntreprise', 'Nom')->hideOnIndex();
             yield TextField::new('secteurActivite', 'Secteur d\'activité')->hideOnIndex();
             yield TextField::new('nombreEmployes', 'Effectif')->hideOnIndex();
             yield TextField::new('prenomTuteur', 'Prénom Tuteur·ice')->hideOnIndex();
