@@ -102,6 +102,48 @@ final class ReponsesDispositionType extends AbstractType
                     ];
                     break;
 
+                case 'choix dates multiples':
+                    $property['type'] = 'array';
+                    $property['format'] = 'checkbox';
+                    $property['uniqueItems'] = true;
+
+                    $dates = $question['dates_possibles'] ?? [];
+                    $enums = [];
+                    $titles = [];
+
+                    $formatter = new \IntlDateFormatter(
+                        'fr_FR',
+                        \IntlDateFormatter::FULL,
+                        \IntlDateFormatter::NONE,
+                        'Europe/Paris',
+                        \IntlDateFormatter::GREGORIAN,
+                        'EEEE d MMMM'
+                    );
+
+                    foreach ($dates as $date) {
+                        $enums[] = $date;
+                        try {
+                            $dateTime = new \DateTime($date);
+                            $formattedDate = $formatter->format($dateTime);
+                            if ($formattedDate) {
+                                $titles[] = ucfirst($formattedDate);
+                            } else {
+                                $titles[] = $date;
+                            }
+                        } catch (\Exception) {
+                            $titles[] = $date;
+                        }
+                    }
+
+                    $property['items'] = [
+                        'type' => 'string',
+                        'enum' => $enums,
+                        'options' => [
+                            'enum_titles' => $titles,
+                        ],
+                    ];
+                    break;
+
                 case 'réponse libre':
                 default:
                     $property['type'] = 'string';

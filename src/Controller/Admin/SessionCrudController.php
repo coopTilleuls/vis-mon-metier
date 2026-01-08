@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 /**
@@ -41,8 +42,11 @@ class SessionCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('nom', 'Nom de la session');
+        yield FormField::addPanel('Période d\'inscription');
         yield DateField::new('dateDebut', 'Date début session');
         yield DateField::new('dateFin', 'Date fin session');
+        yield FormField::addPanel('Période d\'immersion');
+
         yield ChoiceField::new('statut', 'Statut de la session')
             ->setChoices(Session::getStatutChoices());
         yield AssociationField::new('modelQuestionnaire', 'Questionnaire à associer')

@@ -46,12 +46,6 @@ class Questionnaire
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $reponsesScore = null;
 
-    /**
-     * @var array<int, \DateTimeImmutable>
-     */
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $dates = null;
-
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -135,22 +129,6 @@ class Questionnaire
     public function setReponsesScore(?array $reponsesScore): void
     {
         $this->reponsesScore = $reponsesScore;
-    }
-
-    /**
-     * @return array<int, \DateTimeImmutable>|null
-     */
-    public function getDates(): ?array
-    {
-        return $this->dates;
-    }
-
-    /**
-     * @param array<int, \DateTimeImmutable>|null $dates
-     */
-    public function setDates(?array $dates): void
-    {
-        $this->dates = $dates;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

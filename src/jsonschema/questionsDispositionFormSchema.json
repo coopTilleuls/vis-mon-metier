@@ -53,11 +53,12 @@
                         "enum": [
                             "choix unique",
                             "choix multiples",
-                            "réponse libre"
+                            "réponse libre",
+                            "choix dates multiples"
                         ]
                     },
                     "reponses_possibles": {
-                        "title": "Réponses",
+                        "title": "Réponses (Choix)",
                         "type": "array",
                         "format": "table",
                         "options": {
@@ -85,6 +86,23 @@
                                     "title": "Libellé"
                                 }
                             }
+                        }
+                    },
+                    "dates_possibles": {
+                        "title": "Dates proposées",
+                        "type": "array",
+                        "format": "table",
+                        "options": {
+                            "disable_array_delete_all_rows": true,
+                            "disable_array_delete_last_row": true,
+                            "dependencies": {
+                                "type_reponse": "choix dates multiples"
+                            }
+                        },
+                        "items": {
+                            "type": "string",
+                            "title": "Date",
+                            "format": "date"
                         }
                     },
                     "config_texte_libre": {

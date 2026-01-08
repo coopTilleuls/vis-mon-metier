@@ -24,11 +24,6 @@ class QuestionnaireFixtures extends Fixture implements DependentFixtureInterface
         $questionnaire->setType(Questionnaire::TYPE_PARTICIPANT);
         $dateTime = new \DateTimeImmutable();
         $questionnaire->setCreatedAt($dateTime);
-        $questionnaire->setDates([
-            0 => $dateTime->modify('+1 jour'),
-            1 => $dateTime->modify('+2 jours'),
-            2 => $dateTime->modify('+3 jours'),
-        ]);
 
         $contentScore = file_get_contents('reponsesScore.json', true);
         $contentDisposition = file_get_contents('reponsesDisposition.json', true);

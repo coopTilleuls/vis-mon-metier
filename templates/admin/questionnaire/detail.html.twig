@@ -1,0 +1,267 @@
+{% extends '@EasyAdmin/crud/detail.html.twig' %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <style>
+        @media print {
+            body {
+                background: white !important;
+                font-size: 12pt;
+            }
+
+            /* Structural Resets */
+            .ea-wrapper {
+                display: block !important;
+                grid-template-columns: 1fr !important;
+            }
+            .ea-content-wrapper {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .content {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Hiding specific EasyAdmin Components on print */
+            .ea-sidebar,
+            .main-header,
+            .content-header,
+            .responsive-header,
+            .content-top,
+            .content-footer,
+            .ea-detail-actions,
+            .flash-messages,
+            .ea-search-bar,
+            .d-print-none,
+            #flash-messages,
+            .navbar,
+            header {
+                display: none !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                visibility: hidden !important;
+            }
+
+            .d-print-block { display: block !important; }
+
+            .header-box { border: 1px solid #000; padding: 15px; margin-bottom: 20px; }
+            .section-title { font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #ccc; margin-bottom: 10px; padding-bottom: 5px; margin-top: 20px; }
+            .title { font-weight: bold; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 5px; margin-top: 20px; }
+
+            .constraints-list { margin-top: 10px; }
+            .constraints-list div { margin-bottom: 5px; }
+
+            table.print-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            table.print-table th, table.print-table td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 12px; }
+            table.print-table th { background-color: #f0f0f0; }
+        }
+    </style>
+{% endblock %}
+
+{% block detail_fields %}
+    {% set matches = app.request.attributes.get('matches') %}
+    {% set questionnaire = app.request.attributes.get('questionnaire') %}
+    {% if questionnaire is null and entity is defined %}
+        {% set questionnaire = entity.instance %}
+    {% endif %}
+    {% set is_participant = (questionnaire.type == 'participant') %}
+    {% set is_pro = (questionnaire.type == 'employeur') %}
+    <div>
+        <div class="d-print-none">
+            {{ parent() }}
+        </div>
+
+        <div class="d-none d-print-block">
+            {% if not is_pro %}
+                <h1 class="text-center mb-4">Fiche VOLONTAIRE</h1>
+
+                <div class="header-box">
+                    <div class="row">
+                        <div class="col-6">
+                            <p><strong>Nom :</strong> {{ questionnaire.contact.nomFamille }}</p>
+                            <p><strong>Prénom :</strong> {{ questionnaire.contact.prenom }}</p>
+                            <p><strong>Commune de résidence :</strong> {{ questionnaire.contact.commune }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p><strong>Adresse mail :</strong> {{ questionnaire.contact.email }}</p>
+                            <p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <p><strong>Situation :</strong> {{ questionnaire.contact.situation }}</p>
+                        <p><strong>Age :</strong> {{ questionnaire.contact.trancheAge }}</p>
+                        {% if questionnaire.contact.referent %}
+                            <p><strong>Référent·e :</strong> {{ questionnaire.contact.referent }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <h3 class="text-center mb-4">Fiche EMPLOYEUR</h3>
+
+                <div class="header-box">
+                    <div class="row">
+                        <div class="col-6">
+                            <p><strong>Structure :</strong> {{ questionnaire.contact.nomEntreprise }}</p>
+                            <p><strong>Contact :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
+                            <p><strong>Adresse :</strong> {{ questionnaire.contact.commune }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p><strong>Adresse mail :</strong> {{ questionnaire.contact.email }}</p>
+                            <p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="title">Métier proposé à l'immersion : {{ questionnaire.metier }}</div>
+            {% endif %}
+
+            <h3 class="section-title">{{ is_pro ? "Contraintes liées au poste (déclarées)" : "Contraintes éventuelles" }}</h3>
+
+            {% set questions_schema = questionnaire.session.modelQuestionnaire.questionsDisposition.questions|default([]) %}
+            {% set user_responses = questionnaire.reponsesDisposition|default({}) %}
+
+            <div class="constraints-list">
+                {% for index, question in questions_schema %}
+                    {% set key = 'question_' ~ index %}
+                    {% set answer_value = user_responses[key]|default(null) %}
+
+                    {% set answer_label = '' %}
+                    {% if question.reponses_possibles is defined %}
+                        {% set found_labels = [] %}
+                        {% for option in question.reponses_possibles %}
+                            {% if answer_value is iterable %}
+                                {% for val in answer_value %}
+                                    {% if option.valeur ~ '' == val ~ '' %}
+                                        {% set found_labels = found_labels|merge([option.libelle]) %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                {% if option.valeur ~ '' == answer_value ~ '' %}
+                                    {% set found_labels = found_labels|merge([option.libelle]) %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% set answer_label = found_labels|join(', ') %}
+                    {% elseif question.type_reponse == 'réponse libre' %}
+                        {% set answer_label = answer_value %}
+                    {% endif %}
+
+                    {% if answer_value is not null and answer_label is not empty %}
+                        <div>
+                            <strong>{{ is_pro ? question.label_participant : question.label_employeur }} </strong> {{ answer_label }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <p class="mt-2"><strong>{{ is_pro ? 'Date·s proposée·s :' : 'Disponibilité·s :'  }}</strong>
+                {% for dates in questionnaire.dates|default([]) %}
+                    {% if dates is iterable and dates.date is defined %}
+                        {{ dates.date|date('d/m') }}
+                    {% else %}
+                        {{ dates|date('d/m') }}
+                    {% endif %}
+                    {% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+
+
+        <div class="field-group">
+            <div class="field-value">
+                {% if matches is empty %}
+                    <span class="text-muted">Aucune correspondance trouvée pour le moment.</span>
+                {% else %}
+                    <div class="mb-3 mt-4 d-flex justify-content-between align-items-center">
+                        <h3 class="section-title">Liste des profils les plus compatibles</h3>
+                        <button onclick="window.print()" class="btn btn-secondary d-print-none">
+                            <i class="fas fa-print me-1"></i> Imprimer la fiche
+                        </button>
+                    </div>
+                    <div class="datagrid">
+                        <div class="datagrid-body">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                <tr>
+                                    {% if is_participant %}
+                                        <th class="text-center">Entreprise</th>
+                                        <th class="text-center">Métier proposé</th>
+                                        <th class="text-center">Contact</th>
+                                    {% else %}
+                                        <th class="text-center">Profil</th>
+                                    {% endif %}
+                                    <th class="text-center">Mail</th>
+                                    <th class="text-center">Téléphone</th>
+                                    <th class="text-center">Compatibilité</th>
+                                    <th class="text-center">Dates</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for match in matches %}
+                                    <tr>
+                                        {% if is_participant %}
+                                            <td>
+                                                {% if match.entreprise %}
+                                                    {{ match.entreprise }}
+                                                {% else %}
+                                                    <span class="badge badge-secondary">non précisée</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if match.job %}
+                                                    {{ match.job }}
+                                                {% else %}
+                                                    <span class="badge badge-secondary">non précisée</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{{ match.detailUrl }}" class="text-decoration-none">
+                                                    {{ match.name }}
+                                                </a>
+                                            </td>
+                                        {% else %}
+                                            <td>
+                                                <a href="{{ match.detailUrl }}" class="text-decoration-none">
+                                                    {{ match.label }}
+                                                </a>
+                                            </td>
+                                        {% endif %}
+                                        <td class="text-center">
+                                            {{ match.email }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ match.phone }}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if match.score >= 75 %}
+                                                <span class="badge badge-success">{{ match.score }}%</span>
+                                            {% elseif match.score >= 50 %}
+                                                <span class="badge badge-warning">{{ match.score }}%</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">{{ match.score }}%</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if match.compatibleDates %}
+                                                {% for date in match.compatibleDates %}
+                                                    <span class="badge badge-success">{{ date }}</span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="badge badge-warning">Incompatible</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

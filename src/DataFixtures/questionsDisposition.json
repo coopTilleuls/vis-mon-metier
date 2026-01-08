@@ -1,1 +1,207 @@
-{"titre":"Questions disposition (logistiques et contraintes)","introduction":"Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion.","questions":[{"label_participant":"Q20 - Vous pouvez travailler en horaires atypiques, en d\u00e9cal\u00e9s","label_employeur":"Horaires atypiques","type_reponse":"choix unique","reponses_possibles":[{"valeur":1,"libelle":"Oui"},{"valeur":2,"libelle":"\u00c7a vous para\u00eet difficile"},{"valeur":3,"libelle":"Non"},{"valeur":0,"libelle":"Vous ne souhaitez pas r\u00e9pondre"}]},{"label_participant":"Q21 - Vous tol\u00e9rez le froid, la chaleur, ou l'humidit\u00e9","label_employeur":"Climat","type_reponse":"choix unique","reponses_possibles":[{"valeur":4,"libelle":"Oui, \u00e7a n'est pas un probl\u00e8me pour vous"},{"valeur":3,"libelle":"Plut\u00f4t oui, \u00e7a peut faire partie de votre environnement de travail par moment"},{"valeur":2,"libelle":"Plut\u00f4t non, vous pouvez \u00eatre en difficult\u00e9 dans un environnement climatique sp\u00e9cifique"},{"valeur":1,"libelle":"Non, c'est incompatible avec votre sant\u00e9"},{"valeur":0,"libelle":"Vous ne souhaitez pas r\u00e9pondre"}]},{"label_participant":"Q22 - L'usage du num\u00e9rique est possible pour vous, vous \u00eates \u00e0 l'aise avec les outils informatiques en g\u00e9n\u00e9ral","label_employeur":"Aisance Num\u00e9rique","type_reponse":"choix unique","reponses_possibles":[{"valeur":4,"libelle":"Oui, tout \u00e0 fait"},{"valeur":3,"libelle":"Plut\u00f4t oui, pas de difficult\u00e9 particuli\u00e8re pour un usage courant"},{"valeur":2,"libelle":"Plut\u00f4t non, vous n'\u00eates pas habitu\u00e9 \u00e0 utiliser les outils num\u00e9riques"},{"valeur":1,"libelle":"Non, vous n'utilisez pratiquement pas les outils num\u00e9riques et c'est compliqu\u00e9 pour vous"},{"valeur":0,"libelle":"Vous ne souhaitez pas r\u00e9pondre"}]},{"label_participant":"Q23 - Vos moyens de locomotion :","label_employeur":"Mobilit\u00e9","type_reponse":"choix unique","reponses_possibles":[{"valeur":1,"libelle":"Vous n'avez pas de solution de mobilit\u00e9"},{"valeur":2,"libelle":"Vous avez une solution de mobilit\u00e9"},{"valeur":3,"libelle":"Vous n'\u00eates pas s\u00fbr d'avoir une solution de mobilit\u00e9"},{"valeur":0,"libelle":"Vous ne souhaitez pas r\u00e9pondre"}]},{"label_participant":"Q24 - Avez-vous des contraintes horaires ? (S\u00e9lectionnez au plus 2 options)","label_employeur":"Contraintes horaires","type_reponse":"choix multiples","reponses_possibles":[{"valeur":1,"libelle":"Oui, le matin"},{"valeur":2,"libelle":"Oui, le soir"},{"valeur":3,"libelle":"Non, pas de contrainte horaire"}]},{"label_participant":"Q25 - Vous pouvez nous communiquer d'autres contraintes \u00e9ventuelles ci-dessous :","label_employeur":"Autres contraintes","type_reponse":"r\u00e9ponse libre","config_texte_libre":""},{"label_participant":"Q26 - Vous \u00eates disponible pour :","label_employeur":"Dur\u00e9e souhait\u00e9e","type_reponse":"choix unique","reponses_possibles":[{"valeur":1,"libelle":"1 jour (= 1 m\u00e9tier)"},{"valeur":2,"libelle":"2 jours (= 2 m\u00e9tiers)"},{"valeur":3,"libelle":"3 jours (= 3 m\u00e9tiers)"},{"valeur":4,"libelle":"4 jours (= 4 m\u00e9tiers)"}]},{"label_participant":"Q27 - Vous \u00eates disponible (S\u00e9lectionnez au plus 5 options) :","label_employeur":"Jours de disponibilit\u00e9","type_reponse":"choix multiples","reponses_possibles":[{"valeur":1,"libelle":"Lundi 3 juin"},{"valeur":2,"libelle":"Mardi 4 juin"},{"valeur":3,"libelle":"Mercredi 5 juin"},{"valeur":4,"libelle":"Jeudi 6 juin"},{"valeur":5,"libelle":"Vendredi 7 juin matin (matin\u00e9e collective)"}]},{"label_participant":"Q28 - Remarques \u00e9ventuelles :","label_employeur":"Remarques","type_reponse":"r\u00e9ponse libre","config_texte_libre":""}]}
+{
+    "titre": "Questions disposition (logistiques et contraintes)",
+    "introduction": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion.",
+    "questions": [
+        {
+            "label_participant": "Port de charges, manipulation de charges lourdes",
+            "label_employeur": "Port de charges",
+            "type_reponse": "choix unique",
+            "reponses_possibles": [
+                {
+                    "valeur": 6,
+                    "libelle": "Oui, aucun problème"
+                },
+                {
+                    "valeur": 5,
+                    "libelle": "Oui, dans une certaine mesure ou avec une aide mécanique"
+                },
+                {
+                    "valeur": 4,
+                    "libelle": "Oui, si nécessaire"
+                },
+                {
+                    "valeur": 3,
+                    "libelle": "Oui, un peu"
+                },
+                {
+                    "valeur": 2,
+                    "libelle": "Ça vous paraît difficile"
+                },
+                {
+                    "valeur": 1,
+                    "libelle": "Non"
+                },
+                {
+                    "valeur": 0,
+                    "libelle": "Vous ne souhaitez pas répondre"
+                }
+            ]
+        },
+        {
+            "label_participant": "Q20 - Vous pouvez travailler en horaires atypiques, en décalés",
+            "label_employeur": "Horaires atypiques",
+            "type_reponse": "choix unique",
+            "reponses_possibles": [
+                {
+                    "valeur": 1,
+                    "libelle": "Oui"
+                },
+                {
+                    "valeur": 2,
+                    "libelle": "Ça vous paraît difficile"
+                },
+                {
+                    "valeur": 3,
+                    "libelle": "Non"
+                },
+                {
+                    "valeur": 0,
+                    "libelle": "Vous ne souhaitez pas répondre"
+                }
+            ]
+        },
+        {
+            "label_participant": "Q21 - Vous tolérez le froid, la chaleur, ou l'humidité",
+            "label_employeur": "Climat",
+            "type_reponse": "choix unique",
+            "reponses_possibles": [
+                {
+                    "valeur": 4,
+                    "libelle": "Oui, ça n'est pas un problème pour vous"
+                },
+                {
+                    "valeur": 3,
+                    "libelle": "Plutôt oui, ça peut faire partie de votre environnement de travail par moment"
+                },
+                {
+                    "valeur": 2,
+                    "libelle": "Plutôt non, vous pouvez être en difficulté dans un environnement climatique spécifique"
+                },
+                {
+                    "valeur": 1,
+                    "libelle": "Non, c'est incompatible avec votre santé"
+                },
+                {
+                    "valeur": 0,
+                    "libelle": "Vous ne souhaitez pas répondre"
+                }
+            ]
+        },
+        {
+            "label_participant": "Q22 - L'usage du numérique est possible pour vous, vous êtes à l'aise avec les outils informatiques en général",
+            "label_employeur": "Aisance Numérique",
+            "type_reponse": "choix unique",
+            "reponses_possibles": [
+                {
+                    "valeur": 4,
+                    "libelle": "Oui, tout à fait"
+                },
+                {
+                    "valeur": 3,
+                    "libelle": "Plutôt oui, pas de difficulté particulière pour un usage courant"
+                },
+                {
+                    "valeur": 2,
+                    "libelle": "Plutôt non, vous n'êtes pas habitué à utiliser les outils numériques"
+                },
+                {
+                    "valeur": 1,
+                    "libelle": "Non, vous n'utilisez pratiquement pas les outils numériques et c'est compliqué pour vous"
+                },
+                {
+                    "valeur": 0,
+                    "libelle": "Vous ne souhaitez pas répondre"
+                }
+            ]
+        },
+        {
+            "label_participant": "Q23 - Vos moyens de locomotion :",
+            "label_employeur": "Mobilité",
+            "type_reponse": "choix unique",
+            "reponses_possibles": [
+                {
+                    "valeur": 1,
+                    "libelle": "Vous n'avez pas de solution de mobilité"
+                },
+                {
+                    "valeur": 2,
+                    "libelle": "Vous avez une solution de mobilité"
+                },
+                {
+                    "valeur": 3,
+                    "libelle": "Vous n'êtes pas sûr d'avoir une solution de mobilité"
+                },
+                {
+                    "valeur": 0,
+                    "libelle": "Vous ne souhaitez pas répondre"
+                }
+            ]
+        },
+        {
+            "label_participant": "Q24 - Avez-vous des contraintes horaires ? (Sélectionnez au plus 2 options)",
+            "label_employeur": "Contraintes horaires",
+            "type_reponse": "choix multiples",
+            "reponses_possibles": [
+                {
+                    "valeur": 1,
+                    "libelle": "Oui, le matin"
+                },
+                {
+                    "valeur": 2,
+                    "libelle": "Oui, le soir"
+                },
+                {
+                    "valeur": 3,
+                    "libelle": "Non, pas de contrainte horaire"
+                }
+            ]
+        },
+        {
+            "label_participant": "Q25 - Vous pouvez nous communiquer d'autres contraintes éventuelles ci-dessous :",
+            "label_employeur": "Autres contraintes",
+            "type_reponse": "réponse libre",
+            "config_texte_libre": ""
+        },
+        {
+            "label_participant": "Q26 - Vous êtes disponible pour :",
+            "label_employeur": "Durée souhaitée",
+            "type_reponse": "choix unique",
+            "reponses_possibles": [
+                {
+                    "valeur": 1,
+                    "libelle": "1 jour (= 1 métier)"
+                },
+                {
+                    "valeur": 2,
+                    "libelle": "2 jours (= 2 métiers)"
+                },
+                {
+                    "valeur": 3,
+                    "libelle": "3 jours (= 3 métiers)"
+                },
+                {
+                    "valeur": 4,
+                    "libelle": "4 jours (= 4 métiers)"
+                }
+            ]
+        },
+        {
+            "label_participant": "Q27 - Vous êtes disponible (Sélectionnez au plus 5 options) :",
+            "label_employeur": "Jours de disponibilité",
+            "type_reponse": "choix dates multiples",
+            "dates_possibles": [
+                "2024-06-03",
+                "2024-06-04",
+                "2024-06-05",
+                "2024-06-06",
+                "2024-06-07"
+            ]
+        },
+        {
+            "label_participant": "Q28 - Remarques éventuelles :",
+            "label_employeur": "Remarques",
+            "type_reponse": "réponse libre",
+            "config_texte_libre": ""
+        }
+    ]
+}
