@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -26,8 +28,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\ManyToOne(targetEntity: Contact::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Contact $contact;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Contact $contact = null;
+
+    /**
+     * @var Collection<int, Referent>
+     */
+    #[ORM\OneToMany(targetEntity: Referent::class, mappedBy: 'utilisateur')]
+    private Collection $referents;
 
     /**
      * @var list<string> The user roles
@@ -40,6 +48,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private string $password;
+
+    public function __construct()
+    {
+        $this->referents = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -82,8 +95,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
@@ -130,13 +141,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // @deprecated, to be removed when upgrading to Symfony 8
     }
 
-    public function getContact(): Contact
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
 
-    public function setContact(Contact $contact): void
+    public function setContact(?Contact $contact): void
     {
         $this->contact = $contact;
+    }
+
+    /**
+     * @return Collection<int, Referent>
+     */
+    public function getReferents(): Collection
+    {
+        return $this->referents;
+    }
+
+    public function addReferent(Referent $referent): static
+    {
+        if (!$this->referents->contains($referent)) {
+            $this->referents->add($referent);
+            $referent->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReferent(Referent $referent): static
+    {
+        if ($this->referents->removeElement($referent)) {
+            if ($referent->getUtilisateur() === $this) {
+                $referent->setUtilisateur(null);
+            }
+        }
+
+        return $this;
     }
 }

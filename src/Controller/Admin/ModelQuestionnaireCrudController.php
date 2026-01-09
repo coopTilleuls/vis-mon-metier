@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\EasyAdmin\Field\JsonField;
 use App\Entity\ModelQuestionnaire;
+use App\Entity\Roles;
 use App\Form\JsonEditorType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -36,6 +37,7 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
             ->setDefaultSort(['id' => 'DESC'])
             ->addFormTheme('easyadmin/json_field.html.twig')
             ->showEntityActionsInlined()
+            ->setEntityPermission(Roles::ADMIN)
         ;
     }
 

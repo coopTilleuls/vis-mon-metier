@@ -5,11 +5,18 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Contact;
+use App\Entity\Roles;
+use App\Entity\User;
 use App\ValueObject\Type;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
@@ -36,6 +43,26 @@ class ContactCrudController extends AbstractCrudController
             ->setDefaultSort(['id' => 'DESC'])
             ->showEntityActionsInlined()
         ;
+    }
+
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        if (!$this->isGranted(Roles::ADMIN) && $this->isGranted(Roles::REFERENT)) {
+            /** @var User $user */
+            $user = $this->getUser();
+            $referentIds = $user->getReferents()->map(fn ($r) => $r->getId())->toArray();
+
+            if (empty($referentIds)) {
+                $qb->andWhere('1 = 0');
+            } else {
+                $qb->andWhere('entity.referent IN (:referentIds)')
+                    ->setParameter('referentIds', $referentIds);
+            }
+        }
+
+        return $qb;
     }
 
     public function configureFields(string $pageName): iterable
@@ -87,40 +114,52 @@ class ContactCrudController extends AbstractCrudController
                 ])
                 ->hideOnIndex();
 
-            yield FormField::addPanel('Référent·e (Optionnel)')
-                ->hideOnIndex();
+            if (Crud::PAGE_DETAIL === $pageName || $this->isGranted(Roles::ADMIN)) {
+                yield FormField::addPanel('Référent·e (Optionnel)')
+                    ->hideOnIndex();
 
-            yield AssociationField::new('referent', 'Référent·e')
-                ->autocomplete()
-                ->setHelp('Sélectionner ici le·la référent·e à associer, à partir des informations saisies ci-dessous par le·la participant·e.')
-                ->hideOnIndex();
+                yield AssociationField::new('referent', 'Référent·e')
+                    ->autocomplete()
+                    ->setHelp('Sélectionner ici le·la référent·e à associer, à partir des informations saisies ci-dessous par le·la participant·e.')
+                    ->hideOnIndex();
 
-            yield TextField::new('nomReferent', 'Nom Référent·e (Saisi)')->hideOnIndex();
-            yield TextField::new('prenomReferent', 'Prénom Référent·e (Saisi)')->hideOnIndex();
-            yield TextField::new('structureReferent', 'Structure Référent·e (Saisie)')->hideOnIndex();
+                yield TextField::new('nomReferent', 'Nom Référent·e (Saisi)')
+                    ->hideOnIndex();
+                yield TextField::new('prenomReferent', 'Prénom Référent·e (Saisi)')
+                    ->hideOnIndex();
+                yield TextField::new('structureReferent', 'Structure Référent·e (Saisie)')
+                    ->hideOnIndex();
+            }
         }
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->disable(Action::NEW)
-
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
+                return $action
+                    ->setIcon('fa-solid fa-eye')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Consulter']);
+            })
             ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
                 return $action
                     ->setIcon('fa fa-pen')
                     ->setLabel(false)
                     ->setHtmlAttributes(['title' => 'Modifier']);
             })
-
             ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
                 return $action
                     ->setIcon('fa fa-trash')
                     ->setLabel(false)
                     ->setHtmlAttributes(['title' => 'Supprimer']);
             })
+            ->setPermission(Action::DELETE, Roles::ADMIN)
+            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE])
         ;
     }
 }

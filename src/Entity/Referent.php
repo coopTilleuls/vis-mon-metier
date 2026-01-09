@@ -33,7 +33,7 @@ class Referent
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'referents')]
     private ?User $utilisateur = null;
 
     public function getId(): int

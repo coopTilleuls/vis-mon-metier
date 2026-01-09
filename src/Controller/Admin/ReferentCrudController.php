@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Referent;
+use App\Entity\Roles;
+use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -28,17 +30,34 @@ class ReferentCrudController extends AbstractCrudController
         return $crud
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des référent·es')
             ->setPageTitle(Crud::PAGE_NEW, 'Créer un référent·e')
-            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le référent·e')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le·la référent·e')
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détails du référent·e')
             ->setEntityLabelInSingular('Référent·e')
             ->setEntityLabelInPlural('Référent·es')
             ->setDefaultSort(['nomFamille' => 'ASC'])
             ->showEntityActionsInlined()
+            ->setEntityPermission(Roles::ADMIN)
         ;
     }
 
     public function configureFields(string $pageName): iterable
     {
+        yield AssociationField::new('utilisateur', 'Compte utilisateur associé')
+            ->setFormTypeOption('choice_label', 'email')
+            ->setQueryBuilder(function (QueryBuilder $queryBuilder) {
+                $ids = $queryBuilder->getEntityManager()->getConnection()
+                    ->executeQuery(
+                        'SELECT id FROM "user" WHERE CAST(roles AS text) LIKE :role',
+                        ['role' => '%"'.Roles::REFERENT.'"%']
+                    )
+                    ->fetchFirstColumn();
+
+                return $queryBuilder
+                    ->andWhere('entity.id IN (:ids)')
+                    ->setParameter('ids', !empty($ids) ? $ids : [0]);
+            })
+            ->hideOnIndex();
+
         yield TextField::new('prenom', 'Prénom');
         yield TextField::new('nomFamille', 'Nom');
         yield EmailField::new('email', 'Email');
@@ -50,9 +69,6 @@ class ReferentCrudController extends AbstractCrudController
 
         yield TextField::new('structure', 'Structure')
             ->formatValue(fn ($v) => $v ?: '—');
-        yield AssociationField::new('utilisateur', 'Compte utilisateur associé')
-            ->setFormTypeOption('choice_label', 'email')
-            ->hideOnIndex();
     }
 
     public function configureActions(Actions $actions): Actions

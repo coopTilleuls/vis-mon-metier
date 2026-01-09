@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\Roles;
 use App\Entity\Session;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -36,6 +37,7 @@ class SessionCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Sessions')
             ->setDefaultSort(['id' => 'DESC'])
             ->showEntityActionsInlined()
+            ->setEntityPermission(Roles::ADMIN)
         ;
     }
 

@@ -8,7 +8,9 @@ use App\Entity\Contact;
 use App\Entity\ModelQuestionnaire;
 use App\Entity\Questionnaire;
 use App\Entity\Referent;
+use App\Entity\Roles;
 use App\Entity\Session;
+use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -32,10 +34,15 @@ class AdminDashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToCrud('Sessions', 'fas fa-calendar-days', Session::class);
-        yield MenuItem::linkToCrud('Questions', 'fas fa-question', ModelQuestionnaire::class);
+        yield MenuItem::linkToCrud('Sessions', 'fas fa-calendar-days', Session::class)
+            ->setPermission(Roles::ADMIN);
+        yield MenuItem::linkToCrud('Questions', 'fas fa-question', ModelQuestionnaire::class)
+            ->setPermission(Roles::ADMIN);
         yield MenuItem::linkToCrud('Contacts', 'fas fa-users', Contact::class);
         yield MenuItem::linkToCrud('Questionnaires remplis', 'fas fa-clipboard-list', Questionnaire::class);
-        yield MenuItem::linkToCrud('Référent·es', 'fas fa-person', Referent::class);
+        yield MenuItem::linkToCrud('Référent·es', 'fas fa-person', Referent::class)
+            ->setPermission(Roles::ADMIN);
+        yield MenuItem::linkToCrud('Utilisateur·ices', 'fas fa-user', User::class)
+            ->setPermission(Roles::ADMIN);
     }
 }

@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Questionnaire;
+use App\Entity\Roles;
+use App\Entity\User;
 use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -14,6 +19,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -50,6 +57,27 @@ class QuestionnaireCrudController extends AbstractCrudController
         ;
     }
 
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        if (!$this->isGranted(Roles::ADMIN) && $this->isGranted(Roles::REFERENT)) {
+            /** @var User $user */
+            $user = $this->getUser();
+            $referentIds = $user->getReferents()->map(fn ($r) => $r->getId())->toArray();
+
+            if (empty($referentIds)) {
+                $qb->andWhere('1 = 0');
+            } else {
+                $qb->leftJoin('entity.contact', 'c')
+                    ->andWhere('c.referent IN (:referentIds)')
+                    ->setParameter('referentIds', $referentIds);
+            }
+        }
+
+        return $qb;
+    }
+
     public function configureActions(Actions $actions): Actions
     {
         $editAnswers = Action::new('editAnswers', 'Modifier Réponses')
@@ -73,13 +101,13 @@ class QuestionnaireCrudController extends AbstractCrudController
                     ->setLabel(false)
                     ->setHtmlAttributes(['title' => 'Consulter']);
             })
-
             ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
                 return $action
                     ->setIcon('fa fa-trash')
                     ->setLabel(false)
                     ->setHtmlAttributes(['title' => 'Supprimer']);
             })
+            ->setPermission(Action::DELETE, Roles::ADMIN)
         ;
     }
 

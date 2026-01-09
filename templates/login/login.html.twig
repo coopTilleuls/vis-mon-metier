@@ -1,38 +1,136 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <style>
+        body {
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .login-header {
+            background-color: var(--green-color);
+            padding: 40px 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+        }
+        .login-header img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+        .login-body {
+            padding: 40px;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 24px;
+            border: none;
+            background-color: var(--green-color);
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: var(--green-light-color);
+        }
+        .form-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+        .form-control:focus {
+            background-color: #fff;
+            border-color: var(--green-light-color);
+            box-shadow: 0 0 0 0.25rem rgba(0, 94, 85, 0.15);
+        }
+        .alert-danger {
+            background-color: #fce4e4;
+            color: #cc0000;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            padding: 1rem;
+        }
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #0c5460;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <form method="post">
-        {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+    <div class="login-card">
+        <div class="login-header">
+            <img src="{{ asset('images/logo-white.png') }}" alt="Logo Vis mon métier">
+        </div>
 
-        {% if app.user %}
-            <div class="mb-3">
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-            </div>
-        {% endif %}
+        <div class="login-body">
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger mb-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="username">Email</label>
-        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-        <label for="password">Password</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+                {% if app.user %}
+                    <div class="alert alert-info mb-4 text-center">
+                        Vous êtes déjà connecté en tant que <strong>{{ app.user.userIdentifier }}</strong><br>
+                        <a href="{{ path('app_logout') }}" class="fw-bold text-decoration-none" style="color: var(--green-color);">Se déconnecter</a>
+                    </div>
+                {% endif %}
 
-        {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
+                <h1 class="h4 mb-4 fw-bold text-center" style="color: var(--green-color);">Espace administrateur - Vis mon métier</h1>
+                <div class="mb-4">
+                    <label for="username" class="form-label">Email</label>
+                    <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus placeholder="nom@exemple.com">
+                </div>
 
-            <div class="checkbox mb-3">
-                <input type="checkbox" name="_remember_me" id="_remember_me">
-                <label for="_remember_me">Remember me</label>
-            </div>
-        #}
+                <div class="mb-4">
+                    <label for="password" class="form-label">Mot de passe</label>
+                    <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required placeholder="••••••••">
+                </div>
 
-        <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
-        </button>
-    </form>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="btn btn-primary" type="submit">
+                    Se connecter
+                </button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
