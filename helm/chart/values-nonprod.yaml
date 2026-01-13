@@ -4,5 +4,6 @@ php:
   dropSchema: true
   volumes: []
   appDebug: "1"
+  replicaCount: 1
 chartEnv:
   env: nonprod
