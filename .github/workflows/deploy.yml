@@ -24,7 +24,6 @@ jobs:
       mailer_dns: ${{ steps.meta.outputs.mailer_dns }}
       image_tag: ${{ steps.meta.outputs.image_tag }}
       context: ${{ steps.meta.outputs.context }}
-      is_pr: ${{ steps.meta.outputs.is_pr }}
       app_env: ${{ steps.meta.outputs.app_env }}
 
     steps:
@@ -34,27 +33,19 @@ jobs:
           set -xo pipefail
           IS_PR=false
           APP_ENV=prod
-          if [[ "${{ github.ref_type }}" == "tag"  ]]; then
+          if [[ "${{ github.ref }}" == "main" ]]; then
             # Tags are deployed in prod
             ENVIRONMENT=prod
             IMAGE_TAG=${{ github.ref_name }}
-            SERVER_NAME=${{ vars.PROD_DOMAIN }}
             NAMESPACE=prod-${{ vars.PROJECT }}
             RELEASE_NAME=prod
+            SERVER_NAME=${{ vars.PROD_DOMAIN }}
           else
-            ENVIRONMENT=nonprod
             APP_DEBUG=true
+            ENVIRONMENT=nonprod
             IMAGE_TAG=sha-${GITHUB_SHA::7}
-            if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
-                RELEASE_NAME=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-                NAMESPACE=nonprod-${{ vars.PROJECT }}
-                IS_PR=true
-                APP_ENV=pr
-                UPDATE_DB=true
-            else
-                RELEASE_NAME=staging
-                NAMESPACE=nonprod-${{ vars.PROJECT }}
-            fi
+            NAMESPACE=nonprod-${{ vars.PROJECT }}
+            RELEASE_NAME=staging
             SERVER_NAME=${RELEASE_NAME}.${{ vars.NONPROD_DOMAIN }}
           fi
 
@@ -65,7 +56,6 @@ jobs:
           echo "mailer_dns=${MAILER_DSN}" >> $GITHUB_OUTPUT
           echo "server_name=${SERVER_NAME}" >> $GITHUB_OUTPUT
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-          echo "is_pr=${IS_PR}" >> $GITHUB_OUTPUT
           echo "app_env=${APP_ENV}" >> $GITHUB_OUTPUT
   deploy:
     name: Deploy
@@ -121,7 +111,6 @@ jobs:
             --timeout 600s \
             --namespace ${{ needs.meta.outputs.namespace }} \
             --set=php.image.tag=${{ needs.meta.outputs.image_tag }} \
-            --set=ispr=${{ needs.meta.outputs.is_pr }} \
             --set=php.appEnv=${{ needs.meta.outputs.app_env}} \
             --set=mailer.dsn_name=${{ vars.MAILER_DSN_NAME }} \
             --set=mailer.dsn_port=${{ vars.MAILER_DSN_PORT }} \
