@@ -6,21 +6,28 @@ namespace App\Controller\Admin;
 
 use App\Entity\Roles;
 use App\Entity\Session;
+use App\Repository\QuestionnaireRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends AbstractCrudController<Session>
  */
 class SessionCrudController extends AbstractCrudController
 {
+    public function __construct(private readonly QuestionnaireRepository $questionnaireRepository)
+    {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Session::class;
@@ -32,23 +39,22 @@ class SessionCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des sessions')
             ->setPageTitle(Crud::PAGE_NEW, 'Créer une session')
             ->setPageTitle(Crud::PAGE_EDIT, 'Modifier la session')
-            ->setPageTitle(Crud::PAGE_DETAIL, 'Détails de la session')
+            ->setPageTitle(Crud::PAGE_DETAIL, fn (Session $session) => $session->getNom())
             ->setEntityLabelInSingular('Session')
             ->setEntityLabelInPlural('Sessions')
             ->setDefaultSort(['id' => 'DESC'])
             ->showEntityActionsInlined()
             ->setEntityPermission(Roles::ADMIN)
+            ->overrideTemplate('crud/detail', 'admin/session/detail.html.twig')
         ;
     }
 
     public function configureFields(string $pageName): iterable
     {
-        yield TextField::new('nom', 'Nom de la session');
-        yield FormField::addPanel('Période d\'inscription');
+        yield TextField::new('nom', 'Nom de la session')
+        ->hideOnDetail();
         yield DateField::new('dateDebut', 'Date début session');
         yield DateField::new('dateFin', 'Date fin session');
-        yield FormField::addPanel('Période d\'immersion');
-
         yield ChoiceField::new('statut', 'Statut de la session')
             ->setChoices(Session::getStatutChoices());
         yield AssociationField::new('modelQuestionnaire', 'Questionnaire à associer')
@@ -59,7 +65,13 @@ class SessionCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
+                return $action
+                    ->setIcon('fa-solid fa-eye')
+                    ->setLabel(false)
+                    ->setHtmlAttributes(['title' => 'Consulter']);
+            })
             ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
                 return $action
                     ->setIcon('fa fa-pen')
@@ -79,6 +91,27 @@ class SessionCrudController extends AbstractCrudController
             })
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
+            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE])
         ;
+    }
+
+    public function detail(AdminContext $context): KeyValueStore|Response
+    {
+        /** @var Session $session */
+        $session = $context->getEntity()->getInstance();
+
+        $questionnaireRepository = $this->questionnaireRepository;
+
+        $stats = [
+            'sessionName' => $session->getNom(),
+            'participants' => $questionnaireRepository->countParticipants($session),
+            'jobs' => $questionnaireRepository->countJobs($session),
+            'byAge' => $questionnaireRepository->getParticipantsByAge($session),
+            'bySituation' => $questionnaireRepository->getParticipantsBySituation($session),
+        ];
+
+        $context->getRequest()->attributes->set('stats', $stats);
+
+        return parent::detail($context);
     }
 }

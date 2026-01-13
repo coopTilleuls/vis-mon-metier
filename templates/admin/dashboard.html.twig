@@ -1,1 +1,27 @@
 {% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_title %}Tableau de bord{% endblock %}
+
+{% block main %}
+    {% if hasActiveSession and stats %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="d-flex flex-row gap-2 h-100">
+                <a href="{{ path('app_questionnaire_new') }}" target="_blank" class="btn btn-action-dashboard h-50 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-user me-2"></i> Accès formulaire Participant
+                </a>
+                <a href="{{ path('app_questionnaire_new', {'pro': 1}) }}" target="_blank" class="btn btn-action-dashboard h-50 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-briefcase me-2"></i> Accès Formulaire Professionnel
+                </a>
+            </div>
+        </div>
+        {% include 'admin/_stats.html.twig' %}
+    {% elseif not hasActiveSession %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i> Aucune session n'est actuellement ouverte. Veuillez en créer une ou ouvrir une session existante dans l'onglet "Sessions".
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> Aucune donnée disponible pour le moment.
+        </div>
+    {% endif %}
+{% endblock %}

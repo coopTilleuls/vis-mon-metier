@@ -1,0 +1,14 @@
+{% extends '@EasyAdmin/crud/detail.html.twig' %}
+
+{% block detail_fields %}
+    {{ parent() }}
+
+    {% set stats = stats|default(app.request.attributes.get('stats')) %}
+
+    {% if stats %}
+        <div class="pt-3 border-top">
+            <h4 class="mb-4">Statistiques de la session</h4>
+            {% include 'admin/_stats.html.twig' with {'stats': stats, 'show_actions': false} %}
+        </div>
+    {% endif %}
+{% endblock %}

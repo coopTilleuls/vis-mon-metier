@@ -12,8 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Questionnaire
 {
-    public const TYPE_PARTICIPANT = 'participant';
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

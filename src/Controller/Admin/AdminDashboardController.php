@@ -11,6 +11,8 @@ use App\Entity\Referent;
 use App\Entity\Roles;
 use App\Entity\Session;
 use App\Entity\User;
+use App\Repository\QuestionnaireRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -20,9 +22,32 @@ use Symfony\Component\HttpFoundation\Response;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class AdminDashboardController extends AbstractDashboardController
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly QuestionnaireRepository $questionnaireRepository,
+    ) {
+    }
+
     public function index(): Response
     {
-        return $this->render('/admin/dashboard.html.twig');
+        $stats = null;
+        $activeSession = $this->entityManager->getRepository(Session::class)->findOneBy(['statut' => Session::STATUT_OUVERT], ['id' => 'DESC']);
+
+        if ($activeSession) {
+            $questionnaireRepository = $this->questionnaireRepository;
+            $stats = [
+                'sessionName' => $activeSession->getNom(),
+                'participants' => $questionnaireRepository->countParticipants($activeSession),
+                'jobs' => $questionnaireRepository->countJobs($activeSession),
+                'byAge' => $questionnaireRepository->getParticipantsByAge($activeSession),
+                'bySituation' => $questionnaireRepository->getParticipantsBySituation($activeSession),
+            ];
+        }
+
+        return $this->render('admin/dashboard.html.twig', [
+            'stats' => $stats,
+            'hasActiveSession' => (bool) $activeSession,
+        ]);
     }
 
     public function configureDashboard(): Dashboard
@@ -34,6 +59,7 @@ class AdminDashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
+        yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
         yield MenuItem::linkToCrud('Sessions', 'fas fa-calendar-days', Session::class)
             ->setPermission(Roles::ADMIN);
         yield MenuItem::linkToCrud('Questions', 'fas fa-question', ModelQuestionnaire::class)

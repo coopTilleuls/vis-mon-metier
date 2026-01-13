@@ -1,0 +1,71 @@
+<div class="mb-4">
+    <h3 class="h5 text-muted mb-3">
+        <i class="fas fa-chart-line me-2"></i> {{ stats.sessionName }}
+    </h3>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-value">{{ stats.participants }}</div>
+                    <div class="stat-label">Volontaires</div>
+                </div>
+                <div class="text-success opacity-25">
+                    <i class="fas fa-users fa-3x"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-value">{{ stats.jobs }}</div>
+                    <div class="stat-label">Métiers proposés à l'immersion</div>
+                </div>
+                <div class="text-warning opacity-25">
+                    <i class="fas fa-briefcase fa-3x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <h5 class="fw-bold mb-3 text-secondary">Âge des volontaires</h5>
+                {% if stats.byAge|length > 0 %}
+                    <table class="table table-sm">
+                        <tbody>
+                        {% for item in stats.byAge %}
+                            <tr>
+                                <td>{{ item.label|default('Non renseigné') }}</td>
+                                <td class="text-end fw-bold">{{ item.count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted fst-italic">Aucune donnée.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <h5 class="fw-bold mb-3 text-secondary">Situation des volontaires</h5>
+                {% if stats.bySituation|length > 0 %}
+                    <table class="table table-sm">
+                        <tbody>
+                        {% for item in stats.bySituation %}
+                            <tr>
+                                <td>{{ item.label|default('Non renseigné') }}</td>
+                                <td class="text-end fw-bold">{{ item.count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted fst-italic">Aucune donnée.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

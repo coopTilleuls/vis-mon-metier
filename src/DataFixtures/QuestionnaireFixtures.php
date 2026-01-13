@@ -7,6 +7,7 @@ namespace App\DataFixtures;
 use App\Entity\Contact;
 use App\Entity\Questionnaire;
 use App\Entity\Session;
+use App\ValueObject\Type;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -21,7 +22,7 @@ class QuestionnaireFixtures extends Fixture implements DependentFixtureInterface
         $questionnaire = new Questionnaire();
         $questionnaire->setSession($session);
         $questionnaire->setContact($contact);
-        $questionnaire->setType(Questionnaire::TYPE_PARTICIPANT);
+        $questionnaire->setType(Type::PARTICIPANT);
         $dateTime = new \DateTimeImmutable();
         $questionnaire->setCreatedAt($dateTime);
 

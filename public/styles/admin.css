@@ -419,33 +419,118 @@ div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete 
     color: white!important;
 }
 
-.user-details {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color:#00a076;
+.user-menu-wrapper .user-details {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    padding-right: 0 !important;
 }
 
-.user-details .user-avatar {
-    background: none!important;
-}
-
-.user-details .icon {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-}
-
-.user-details .icon svg {
-    max-block-size: 24px;
-}
-
-.user-menu-wrapper .dropdown-menu .dropdown-user-details .user-avatar {
+.user-menu-wrapper .user-avatar,
+.user-menu-wrapper .dropdown-user-details .user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    background-color: var(--green-light-color) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
     aspect-ratio: 1 / 1;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
+.user-menu-wrapper .user-avatar .icon,
 .user-menu-wrapper .dropdown-user-details .user-avatar .icon {
-    width: 100%;
+    color: white !important;
+    fill: white !important;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-menu-wrapper .user-avatar .icon svg,
+.user-menu-wrapper .dropdown-user-details .user-avatar .icon svg {
+    width: 18px !important;
+    height: 18px !important;
+    max-block-size: 2rem;
+    max-inline-size: 2rem;
+}
+
+/* Stats by sessions */
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    height: 100%;
+    border: 1px solid #eaecf0;
+}
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--green-color);
+}
+.stat-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.btn-action-dashboard {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem; /* Adjusted padding */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border: 1px solid #eaecf0;
+    color: var(--green-color); /* Default text color */
+    font-weight: 600;
+    text-transform: uppercase; /* Match label style if desired, or keep normal */
+    font-size: 0.85rem; /* Match label size */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    height: 100%; /* Fill the flex container */
+}
+
+.btn-action-dashboard:hover {
+    background-color: var(--green-color); /* Primary color background */
+    color: white; /* White text */
+    border-color: var(--green-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-decoration: none;
+}
+
+.btn-action-dashboard:focus,
+.btn-action-dashboard:active,
+.btn-action-dashboard:focus-visible {
+    outline: none !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+    border-color: #eaecf0 !important;
+    background-color: white !important;
+    color: var(--green-color) !important;
+}
+
+.btn-action-dashboard:hover:focus {
+    background-color: var(--green-color) !important;
+    color: white !important;
+    border-color: var(--green-color) !important;
+}
+
+.btn-action-dashboard i {
+    color: inherit;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23005d55" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>') no-repeat;
+    cursor: pointer;
+    opacity: 1;
 }

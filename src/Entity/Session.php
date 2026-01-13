@@ -12,8 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Session
 {
     public const STATUT_BROUILLON = 'brouillon';
-    public const STATUT_OUVERT = 'ouvert';
-    public const STATUT_FERME = 'ferme';
+    public const STATUT_OUVERT = 'ouverte';
+    public const STATUT_FERME = 'fermée';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
