@@ -120,14 +120,7 @@ class ContactCrudController extends AbstractCrudController
 
                 yield AssociationField::new('referent', 'Référent·e')
                     ->autocomplete()
-                    ->setHelp('Sélectionner ici le·la référent·e à associer, à partir des informations saisies ci-dessous par le·la participant·e.')
-                    ->hideOnIndex();
-
-                yield TextField::new('nomReferent', 'Nom Référent·e (Saisi)')
-                    ->hideOnIndex();
-                yield TextField::new('prenomReferent', 'Prénom Référent·e (Saisi)')
-                    ->hideOnIndex();
-                yield TextField::new('structureReferent', 'Structure Référent·e (Saisie)')
+                    ->setHelp('Sélectionner ici le·la référent·e à associer')
                     ->hideOnIndex();
             }
         }

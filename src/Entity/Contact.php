@@ -73,15 +73,6 @@ class Contact
     #[Map(if: false)]
     private ?Referent $referent = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nomReferent = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $prenomReferent = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $structureReferent = null;
-
     public function getId(): int
     {
         return $this->id;
@@ -243,36 +234,6 @@ class Contact
     public function setNomFamilleTuteur(?string $nomFamilleTuteur): void
     {
         $this->nomFamilleTuteur = $nomFamilleTuteur;
-    }
-
-    public function getNomReferent(): ?string
-    {
-        return $this->nomReferent;
-    }
-
-    public function setNomReferent(?string $nomReferent): void
-    {
-        $this->nomReferent = $nomReferent;
-    }
-
-    public function getPrenomReferent(): ?string
-    {
-        return $this->prenomReferent;
-    }
-
-    public function setPrenomReferent(?string $prenomReferent): void
-    {
-        $this->prenomReferent = $prenomReferent;
-    }
-
-    public function getStructureReferent(): ?string
-    {
-        return $this->structureReferent;
-    }
-
-    public function setStructureReferent(?string $structureReferent): void
-    {
-        $this->structureReferent = $structureReferent;
     }
 
     public function __toString(): string

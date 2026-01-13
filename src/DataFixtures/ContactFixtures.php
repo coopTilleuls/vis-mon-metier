@@ -27,7 +27,7 @@ class ContactFixtures extends Fixture implements DependentFixtureInterface
         $contact->setCommune('Blain');
         $contact->setSituation(Contact::DEMANDEUR_EMPLOI);
         $contact->setTrancheAge(Contact::MAJEUR);
-        $contact->setReferent(new Referent());
+        $contact->setReferent($this->getReference(ReferentFixtures::REFERENT_REF, Referent::class));
 
         $manager->persist($contact);
         $this->addReference(self::CONTACT_PARTICIPANT_REF, $contact);

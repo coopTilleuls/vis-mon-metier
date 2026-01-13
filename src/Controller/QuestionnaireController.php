@@ -149,9 +149,7 @@ class QuestionnaireController extends AbstractController
         $dto->nomFamilleTuteur = $contact->getNomFamilleTuteur();
         $dto->situation = $contact->getSituation();
         $dto->trancheAge = $contact->getTrancheAge();
-        $dto->nomReferent = $contact->getNomReferent();
-        $dto->prenomReferent = $contact->getPrenomReferent();
-        $dto->structureReferent = $contact->getStructureReferent();
+        $dto->referent = $contact->getReferent();
 
         return $dto;
     }

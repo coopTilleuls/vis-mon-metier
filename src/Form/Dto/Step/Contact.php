@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form\Dto\Step;
 
 use App\Entity\Contact as ContactEntity;
+use App\Entity\Referent;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class Contact
@@ -70,12 +71,6 @@ final class Contact
     #[Assert\Length(max: 255, groups: ['contact'])]
     public ?string $nomFamilleTuteur = null;
 
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $nomReferent = null;
-
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $prenomReferent = null;
-
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $structureReferent = null;
+    #[Assert\Type(Referent::class, groups: ['contact'])]
+    public ?Referent $referent = null;
 }

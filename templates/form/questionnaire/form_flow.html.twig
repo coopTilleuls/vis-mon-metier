@@ -25,7 +25,7 @@ document.querySelectorAll('.js-json-editor-container').forEach(container => {
 const inputId = container.dataset.inputId;
 const input = document.getElementById(inputId);
 
-if (! input) 
+if (! input)
 return;
 
 
@@ -198,14 +198,8 @@ input.value = JSON.stringify(editor.getValue());
 								</small>
 							</div>
 							<div class="row g-3">
-								<div class="col-md-6">
-									{{ form_row(form.contact.prenomReferent, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-md-6">
-									{{ form_row(form.contact.nomReferent, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-md-6">
-									{{ form_row(form.contact.structureReferent, {'attr': {'class': 'form-control'}}) }}
+								<div class="col-md-12">
+									{{ form_row(form.contact.referent, {'attr': {'class': 'form-select'}}) }}
 								</div>
 							</div>
 						</div>

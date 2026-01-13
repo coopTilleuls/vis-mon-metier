@@ -134,8 +134,6 @@ class ImportQuestionnaireCommand extends Command
                 $contact->setCommune('Blain');
                 if ('employeur' === $type) {
                     $contact->setNomEntreprise($row[33]);
-                    $contact->setPrenomReferent('Jane');
-                    $contact->setNomReferent('Doe');
                 } else {
                     $contact->setTrancheAge($row[34]);
                     $contact->setSituation($row[35]);

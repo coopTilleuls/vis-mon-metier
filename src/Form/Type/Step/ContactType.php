@@ -6,7 +6,9 @@ namespace App\Form\Type\Step;
 
 use App\Controller\QuestionnaireController;
 use App\Entity\Contact;
+use App\Entity\Referent;
 use App\Form\Dto\Step\Contact as ContactDto;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -81,17 +83,11 @@ final class ContactType extends AbstractType
                 'label' => $isPro ? 'Adresse du lieu d\'immersion' : 'Commune',
                 'required' => true,
             ])
-            ->add('nomReferent', TextType::class, [
-                'label' => 'Nom',
+            ->add('referent', EntityType::class, [
+                'class' => Referent::class,
+                'label' => 'Référent·e',
                 'required' => false,
-            ])
-            ->add('prenomReferent', TextType::class, [
-                'label' => 'Prénom',
-                'required' => false,
-            ])
-            ->add('structureReferent', TextType::class, [
-                'label' => 'Structure',
-                'required' => false,
+                'placeholder' => 'Sélectionner votre référent·e de structure',
             ])
             ->add('prenomTuteur', TextType::class, [
                 'label' => 'Prénom',
