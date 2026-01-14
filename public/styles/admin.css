@@ -419,6 +419,12 @@ div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete 
     color: white!important;
 }
 
+.list-group-item .action-delete {
+    --link-hover-color: var(--button-invisible-danger-active-color);
+    background-color: var(--button-invisible-danger-active-color) !important;
+}
+
+
 .user-menu-wrapper .user-details {
     display: flex;
     align-items: center;

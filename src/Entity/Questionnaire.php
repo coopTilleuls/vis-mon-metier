@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\ValueObject\Type;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -47,9 +49,26 @@ class Questionnaire
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $appaire = false;
+
+    /**
+     * @var Collection<int, Appariement>
+     */
+    #[ORM\OneToMany(targetEntity: Appariement::class, mappedBy: 'participant', cascade: ['persist', 'remove'])]
+    private Collection $appariementsParticipant;
+
+    /**
+     * @var Collection<int, Appariement>
+     */
+    #[ORM\OneToMany(targetEntity: Appariement::class, mappedBy: 'entreprise', cascade: ['persist', 'remove'])]
+    private Collection $appariementsEntreprise;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->appariementsParticipant = new ArrayCollection();
+        $this->appariementsEntreprise = new ArrayCollection();
     }
 
     public function getId(): int
@@ -137,5 +156,39 @@ class Questionnaire
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+
+    public function isAppaire(): bool
+    {
+        return $this->appaire;
+    }
+
+    public function setAppaire(bool $appaire): void
+    {
+        $this->appaire = $appaire;
+    }
+
+    /**
+     * @return Collection<int, Appariement>
+     */
+    public function getAppariementsParticipant(): Collection
+    {
+        return $this->appariementsParticipant;
+    }
+
+    /**
+     * @return Collection<int, Appariement>
+     */
+    public function getAppariementsEntreprise(): Collection
+    {
+        return $this->appariementsEntreprise;
+    }
+
+    /**
+     * @return Collection<int, Appariement>
+     */
+    public function getAppariements(): Collection
+    {
+        return Type::PARTICIPANT === $this->type ? $this->appariementsParticipant : $this->appariementsEntreprise;
     }
 }

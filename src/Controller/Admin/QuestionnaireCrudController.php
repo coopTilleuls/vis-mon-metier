@@ -160,7 +160,7 @@ class QuestionnaireCrudController extends AbstractCrudController
     }
 
     /**
-     * @return array<int, array{label: string, name: string, entreprise: ?string, job: ?string, score: int, detailUrl: string, compatibleDates: array<string>|false, matchingDates: array<string>, email: string, phone: string, address: string}>
+     * @return array<mixed>
      */
     private function getTopMatches(Questionnaire $questionnaire): array
     {
@@ -172,10 +172,15 @@ class QuestionnaireCrudController extends AbstractCrudController
             'type' => $targetType,
         ]);
 
+        $currentBusyDates = [];
+        foreach ($questionnaire->getAppariements() as $match) {
+            if ($match->getDateMatch()) {
+                $currentBusyDates[] = $match->getDateMatch()->format('d/m');
+            }
+        }
+
         $results = [];
         $currentScores = $questionnaire->getReponsesScore() ?? [];
-
-        // Fetch schema to identify the date questions
         $questionsSchema = $session->getModelQuestionnaire()->getQuestionsDisposition();
         $currentDates = $this->extractDatesFromAnswers($questionnaire->getReponsesDisposition() ?? [], $questionsSchema);
 
@@ -191,17 +196,57 @@ class QuestionnaireCrudController extends AbstractCrudController
             $contact = $candidate->getContact();
             $name = $contact ? sprintf('%s %s', $contact->getPrenom(), $contact->getNomFamille()) : 'Inconnu';
             $label = $name;
-
             $entreprise = ($contact && Type::EMPLOYEUR === $candidate->getType()) ? $contact->getNomEntreprise() : null;
 
             $candidateDates = $this->extractDatesFromAnswers($candidate->getReponsesDisposition() ?? [], $questionsSchema);
             $matchingDates = array_intersect($currentDates, $candidateDates);
 
-            $url = $this->adminUrlGenerator
+            $isMatchedWithCurrent = false;
+            $candidateBusyDates = [];
+            foreach ($candidate->getAppariements() as $match) {
+                if ($match->getDateMatch()) {
+                    $candidateBusyDates[] = $match->getDateMatch()->format('d/m');
+                }
+
+                $partner = (Type::PARTICIPANT === $candidate->getType()) ? $match->getEntreprise() : $match->getParticipant();
+                if ($partner && $partner->getId() === $questionnaire->getId()) {
+                    $isMatchedWithCurrent = true;
+                }
+            }
+
+            $detailUrl = $this->adminUrlGenerator
                 ->setController(self::class)
                 ->setAction(Action::DETAIL)
                 ->setEntityId($candidate->getId())
                 ->generateUrl();
+
+            $formattedDates = [];
+            foreach ($matchingDates as $dateStr) {
+                $safeDateStr = str_replace('/', '-', $dateStr);
+                $matchUrl = $this->generateUrl('admin_questionnaire_match', [
+                    'sourceId' => $questionnaire->getId(),
+                    'targetId' => $candidate->getId(),
+                    'date' => $safeDateStr,
+                ]);
+
+                $isAvailable = true;
+                $unavailableReason = '';
+
+                if (in_array($dateStr, $currentBusyDates, true)) {
+                    $isAvailable = false;
+                    $unavailableReason = 'Vous êtes indisponible';
+                } elseif (in_array($dateStr, $candidateBusyDates, true)) {
+                    $isAvailable = false;
+                    $unavailableReason = 'Candidat indisponible';
+                }
+
+                $formattedDates[] = [
+                    'label' => $dateStr,
+                    'url' => $matchUrl,
+                    'isAvailable' => $isAvailable,
+                    'reason' => $unavailableReason,
+                ];
+            }
 
             $results[] = [
                 'label' => $label,
@@ -209,14 +254,14 @@ class QuestionnaireCrudController extends AbstractCrudController
                 'entreprise' => $entreprise,
                 'job' => $candidate->getMetier(),
                 'score' => $score,
-                'detailUrl' => $url,
+                'detailUrl' => $detailUrl,
                 'trancheAge' => $contact->getTrancheAge(),
-                'compatibleDates' => !empty($matchingDates) ? $matchingDates : false,
-                'matchingDates' => $matchingDates,
+                'compatibleDates' => !empty($formattedDates) ? $formattedDates : false,
                 'email' => $contact->getEmail(),
                 'phone' => $contact->getNumeroTelephone(),
                 'address' => $contact->getCommune(),
                 'contactEntity' => $contact,
+                'isMatchedWithCurrent' => $isMatchedWithCurrent,
             ];
         }
 
@@ -229,7 +274,7 @@ class QuestionnaireCrudController extends AbstractCrudController
      * @param array<mixed> $answers
      * @param array<mixed> $schema
      *
-     * @return array<string>
+     * @return array<mixed>
      */
     private function extractDatesFromAnswers(array $answers, array $schema): array
     {
@@ -249,7 +294,6 @@ class QuestionnaireCrudController extends AbstractCrudController
                 try {
                     $normalized[] = new \DateTime($dateStr)->format('d/m');
                 } catch (\Exception) {
-                    // Ignore invalid dates
                 }
             }
         }
@@ -269,13 +313,9 @@ class QuestionnaireCrudController extends AbstractCrudController
             if (!isset($participantAnswers[$criteriaId])) {
                 continue;
             }
-
             $participantValue = $participantAnswers[$criteriaId];
-
             $distance = abs($employerValue - $participantValue);
-
             $totalDistance += $distance;
-
             $maxDistancePossible += 3;
         }
 
@@ -283,8 +323,6 @@ class QuestionnaireCrudController extends AbstractCrudController
             return 0;
         }
 
-        $score = 100 - (($totalDistance / $maxDistancePossible) * 100);
-
-        return (int) $score;
+        return (int) (100 - (($totalDistance / $maxDistancePossible) * 100));
     }
 }
