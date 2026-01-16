@@ -10,6 +10,7 @@
             .content { margin: 0 !important; padding: 0 !important; }
             .ea-sidebar, .main-header, .content-header, .responsive-header, .content-top, .content-footer, .ea-detail-actions, .flash-messages, .ea-search-bar, .d-print-none, #flash-messages, .navbar, header { display: none !important; height: 0 !important; overflow: hidden !important; visibility: hidden !important; }
             .d-print-block { display: block !important; }
+            .d-print-inline-block { display: inline-block !important; }
             .header-box { border: 1px solid #000; padding: 15px; margin-bottom: 20px; }
             .section-title { font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #ccc; margin-bottom: 10px; padding-bottom: 5px; margin-top: 20px; }
             .title { font-weight: bold; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 5px; margin-top: 20px; }
@@ -34,6 +35,8 @@
     {% if questionnaire is not null %}
         {% set is_participant = (questionnaire.type == 'participant') %}
         {% set is_pro = (questionnaire.type == 'employeur') %}
+        {# Permissions logic: ROLE_REFERENT or higher allows editing matches #}
+        {% set can_manage_matches = is_granted('ROLE_REFERENT') %}
 
         {% set existingMatches = questionnaire.appariements %}
 
@@ -49,9 +52,11 @@
                         {% for match in existingMatches %}
                             <li class="list-group-item d-flex justify-content-between align-items-center" style="background: transparent; padding-left: 0; padding-right: 0;">
                                 <span>{{ match }}</span>
-                                <a href="{{ path('admin_questionnaire_unmatch', {id: match.id}) }}" class="btn btn-danger action-delete" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette immersion ?')">
-                                    <i class="fas fa-unlink me-1"></i> Annuler
-                                </a>
+                                {% if can_manage_matches %}
+                                    <a href="{{ path('admin_questionnaire_unmatch', {id: match.id}) }}" class="btn btn-danger action-delete" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette immersion ?')">
+                                        <i class="fas fa-unlink me-1"></i> Annuler
+                                    </a>
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </ul>
@@ -159,6 +164,7 @@
                 </div>
             </div>
 
+            {# This entire block containing matches will be hidden in print thanks to d-print-none #}
             <div class="field-group">
                 <div class="field-value">
                     {% if matches is empty %}
@@ -191,7 +197,7 @@
                                     </thead>
                                     <tbody>
                                     {% for match in matches %}
-                                        <tr class="{{ match.isMatchedWithCurrent ? 'table-secondary' : '' }}">
+                                        <tr class="{{ match.isMatchedWithCurrent ? 'table-secondary d-print-none' : '' }}">
                                             {% if is_participant %}
                                                 <td>{{ match.entreprise|default('non précisée') }}</td>
                                                 <td>{{ match.job|default('non précisé') }}</td>
@@ -210,21 +216,33 @@
                                             </td>
                                             <td class="text-center">
                                                 {% if match.compatibleDates %}
+                                                    {% set has_available_dates = false %}
                                                     {% for dateData in match.compatibleDates %}
                                                         {% if dateData.isAvailable and not match.isMatchedWithCurrent %}
-                                                            <a href="{{ dateData.url }}" class="text-decoration-none" title="Ajouter l'immersion pour cette date">
-                                                                <span class="badge badge-success mb-1 cursor-pointer">
-                                                                    <i class="fas fa-link me-1 d-print-none"></i> {{ dateData.label }}
+                                                            {% set has_available_dates = true %}
+                                                            {% if can_manage_matches %}
+                                                                <a href="{{ dateData.url }}" class="text-decoration-none" title="Ajouter l'immersion pour cette date">
+                                                                    <span class="badge badge-success mb-1 cursor-pointer">
+                                                                        <i class="fas fa-link me-1 d-print-none"></i> {{ dateData.label }}
+                                                                    </span>
+                                                                </a>
+                                                            {% else %}
+                                                                <span class="badge badge-success mb-1" style="opacity: 0.8; cursor: default;">
+                                                                    {{ dateData.label }}
                                                                 </span>
-                                                            </a>
+                                                            {% endif %}
                                                         {% else %}
-                                                            <span class="badge badge-warning mb-1" title="{{ match.isMatchedWithCurrent ? 'Une immersion est déjà prévue' : dateData.reason }}" style="cursor: not-allowed; opacity: 0.6;">
+                                                            <span class="badge badge-warning mb-1 d-print-none" title="{{ match.isMatchedWithCurrent ? 'Une immersion est déjà prévue' : dateData.reason }}" style="cursor: not-allowed; opacity: 0.6;">
                                                                 {{ dateData.label }}
                                                             </span>
                                                         {% endif %}
                                                     {% endfor %}
+
+                                                    {% if not has_available_dates %}
+                                                        <span class="badge badge-warning mb-1 d-none d-print-inline-block">Incompatible</span>
+                                                    {% endif %}
                                                 {% else %}
-                                                    <span class="badge badge-warning mb-1">Incompatible</span>
+                                                    <span class="badge badge-warning mb-1">Indisponible</span>
                                                 {% endif %}
                                             </td>
                                         </tr>

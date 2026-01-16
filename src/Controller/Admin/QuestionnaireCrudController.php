@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\Questionnaire;
 use App\Entity\Roles;
 use App\Entity\User;
+use App\Security\Voter\QuestionnaireVoter;
 use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -24,6 +25,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
@@ -61,18 +63,31 @@ class QuestionnaireCrudController extends AbstractCrudController
     {
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
 
-        if (!$this->isGranted(Roles::ADMIN) && $this->isGranted(Roles::REFERENT)) {
+        if ($this->isGranted(Roles::ADMIN)) {
+            return $qb;
+        }
+
+        // If Referent, restrict to Linked candidates OR all Employeurs
+        if ($this->isGranted(Roles::REFERENT)) {
             /** @var User $user */
             $user = $this->getUser();
             $referentIds = $user->getReferents()->map(fn ($r) => $r->getId())->toArray();
 
+            $qb->leftJoin('entity.contact', 'c');
+
             if (empty($referentIds)) {
-                $qb->andWhere('1 = 0');
+                $qb->andWhere('entity.type = :typeEmployeur')
+                    ->setParameter('typeEmployeur', Type::EMPLOYEUR);
             } else {
-                $qb->leftJoin('entity.contact', 'c')
-                    ->andWhere('c.referent IN (:referentIds)')
-                    ->setParameter('referentIds', $referentIds);
+                $qb->andWhere($qb->expr()->orX(
+                    'c.referent IN (:referentIds)',
+                    'entity.type = :typeEmployeur'
+                ))
+                    ->setParameter('referentIds', $referentIds)
+                    ->setParameter('typeEmployeur', Type::EMPLOYEUR);
             }
+
+            return $qb;
         }
 
         return $qb;
@@ -88,13 +103,14 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->setLabel(false)
             ->setHtmlAttributes(['title' => 'Modifier Réponses']);
 
-        return $actions
+        $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->add(Crud::PAGE_INDEX, $editAnswers)
             ->add(Crud::PAGE_DETAIL, $editAnswers)
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->remove(Crud::PAGE_INDEX, Action::EDIT)
             ->disable(Action::NEW, Action::EDIT)
+
             ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
                 return $action
                     ->setIcon('fa-solid fa-eye')
@@ -107,20 +123,31 @@ class QuestionnaireCrudController extends AbstractCrudController
                     ->setLabel(false)
                     ->setHtmlAttributes(['title' => 'Supprimer']);
             })
-            ->setPermission(Action::DELETE, Roles::ADMIN)
-        ;
+
+            ->setPermission(Action::DETAIL, QuestionnaireVoter::VIEW)
+            ->setPermission(Action::DELETE, QuestionnaireVoter::DELETE)
+            ->setPermission('editAnswers', QuestionnaireVoter::EDIT_ANSWERS);
+
+        return $actions;
     }
 
     public function configureFields(string $pageName): iterable
     {
-        yield AssociationField::new('session', 'Session')
-            ->autocomplete()
-            ->setRequired(true)
-            ->hideOnForm();
+        if ($this->isGranted(Roles::ADMIN)) {
+            yield AssociationField::new('session', 'Session')
+                ->autocomplete()
+                ->setRequired(true)
+                ->hideOnForm();
+        } else {
+            yield TextField::new('session', 'Session')
+                ->hideOnForm();
+        }
 
         yield AssociationField::new('contact', 'Contact')
             ->setRequired(true)
             ->hideOnForm();
+
+        yield TextField::new('metier', 'Métier');
 
         yield ChoiceField::new('type', 'Type de profil')
             ->setChoices(Type::choiceOptions())
@@ -144,13 +171,17 @@ class QuestionnaireCrudController extends AbstractCrudController
                         Type::EMPLOYEUR => Type::EMPLOYEUR,
                         Type::PARTICIPANT => Type::PARTICIPANT,
                     ])
-            );
+            )
+            ->add('metier');
     }
 
     public function detail(AdminContext $context): KeyValueStore|Response
     {
         /** @var Questionnaire $questionnaire */
         $questionnaire = $context->getEntity()->getInstance();
+
+        $this->denyAccessUnlessGranted(QuestionnaireVoter::VIEW, $questionnaire);
+
         $matches = $this->getTopMatches($questionnaire);
 
         $context->getRequest()->attributes->set('matches', $matches);
@@ -173,7 +204,9 @@ class QuestionnaireCrudController extends AbstractCrudController
         ]);
 
         $currentBusyDates = [];
+        $existingMatchesCount = 0;
         foreach ($questionnaire->getAppariements() as $match) {
+            ++$existingMatchesCount;
             if ($match->getDateMatch()) {
                 $currentBusyDates[] = $match->getDateMatch()->format('d/m');
             }
@@ -267,7 +300,7 @@ class QuestionnaireCrudController extends AbstractCrudController
 
         usort($results, fn ($a, $b) => $b['score'] <=> $a['score']);
 
-        return array_slice($results, 0, 10);
+        return array_slice($results, 0, 10 + $existingMatchesCount);
     }
 
     /**

@@ -255,9 +255,7 @@ input.value = JSON.stringify(editor.getValue());
 
 					{% do form.contact.situation.setRendered() %}
 					{% do form.contact.trancheAge.setRendered() %}
-					{% do form.contact.nomReferent.setRendered() %}
-					{% do form.contact.prenomReferent.setRendered() %}
-					{% do form.contact.structureReferent.setRendered() %}
+					{% do form.contact.referent.setRendered() %}
 				{% endif %}
 				{% do form.contact.setRendered() %}
 			</div>

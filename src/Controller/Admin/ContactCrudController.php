@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\Contact;
 use App\Entity\Roles;
 use App\Entity\User;
+use App\Security\Voter\ContactVoter;
 use App\ValueObject\Type;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -49,16 +50,25 @@ class ContactCrudController extends AbstractCrudController
     {
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
 
-        if (!$this->isGranted(Roles::ADMIN) && $this->isGranted(Roles::REFERENT)) {
+        if ($this->isGranted(Roles::ADMIN)) {
+            return $qb;
+        }
+
+        if ($this->isGranted(Roles::REFERENT)) {
             /** @var User $user */
             $user = $this->getUser();
             $referentIds = $user->getReferents()->map(fn ($r) => $r->getId())->toArray();
 
             if (empty($referentIds)) {
-                $qb->andWhere('1 = 0');
+                $qb->andWhere('entity.type = :typeEmployeur')
+                    ->setParameter('typeEmployeur', Type::EMPLOYEUR);
             } else {
-                $qb->andWhere('entity.referent IN (:referentIds)')
-                    ->setParameter('referentIds', $referentIds);
+                $qb->andWhere($qb->expr()->orX(
+                    'entity.referent IN (:referentIds)',
+                    'entity.type = :typeEmployeur'
+                ))
+                    ->setParameter('referentIds', $referentIds)
+                    ->setParameter('typeEmployeur', Type::EMPLOYEUR);
             }
         }
 
@@ -133,6 +143,7 @@ class ContactCrudController extends AbstractCrudController
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->disable(Action::NEW)
+
             ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
                 return $action
                     ->setIcon('fa-solid fa-eye')
@@ -151,7 +162,11 @@ class ContactCrudController extends AbstractCrudController
                     ->setLabel(false)
                     ->setHtmlAttributes(['title' => 'Supprimer']);
             })
-            ->setPermission(Action::DELETE, Roles::ADMIN)
+
+            ->setPermission(Action::DETAIL, ContactVoter::VIEW)
+            ->setPermission(Action::EDIT, ContactVoter::EDIT)
+            ->setPermission(Action::DELETE, ContactVoter::DELETE)
+
             ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE])
         ;
     }

@@ -10,6 +10,7 @@ use App\Form\Dto\Step\ReponsesDisposition;
 use App\Form\Dto\Step\ReponsesScore;
 use App\Form\Type\Step\ReponsesDispositionType;
 use App\Form\Type\Step\ReponsesScoreType;
+use App\Security\Voter\QuestionnaireVoter;
 use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -19,6 +20,7 @@ use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class QuestionnaireAnswersController extends AbstractController
 {
@@ -28,6 +30,7 @@ class QuestionnaireAnswersController extends AbstractController
     }
 
     #[Route('/{id}/edit-answers', name: 'admin_questionnaire_edit_answers')]
+    #[IsGranted(QuestionnaireVoter::EDIT_ANSWERS, subject: 'questionnaire')]
     public function editAnswers(Questionnaire $questionnaire, Request $request, EntityManagerInterface $em): Response
     {
         $backUrl = $this->adminUrlGenerator
