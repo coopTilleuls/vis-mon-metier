@@ -36,12 +36,17 @@ class ContactCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
+        if ($this->isGranted(Roles::REFERENT) && !$this->isGranted(Roles::ADMIN)) {
+            $crud->setDefaultSort(['type' => 'DESC', 'id' => 'DESC']);
+        } else {
+            $crud->setDefaultSort(['id' => 'DESC']);
+        }
+
         return $crud
             ->setEntityLabelInSingular('Contact')
             ->setEntityLabelInPlural('Contacts')
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des contacts')
             ->setPageTitle(Crud::PAGE_DETAIL, fn (Contact $contact) => (string) $contact)
-            ->setDefaultSort(['id' => 'DESC'])
             ->showEntityActionsInlined()
         ;
     }
@@ -166,6 +171,7 @@ class ContactCrudController extends AbstractCrudController
             ->setPermission(Action::DETAIL, ContactVoter::VIEW)
             ->setPermission(Action::EDIT, ContactVoter::EDIT)
             ->setPermission(Action::DELETE, ContactVoter::DELETE)
+            ->setPermission(Action::BATCH_DELETE, Roles::ADMIN)
 
             ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE])
         ;

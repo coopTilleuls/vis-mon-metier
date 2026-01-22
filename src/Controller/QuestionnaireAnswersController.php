@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Controller\Admin\QuestionnaireCrudController;
 use App\Entity\Questionnaire;
+use App\Entity\Roles;
 use App\Form\Dto\Step\ReponsesDisposition;
 use App\Form\Dto\Step\ReponsesScore;
 use App\Form\Type\Step\ReponsesDispositionType;
@@ -87,6 +88,14 @@ class QuestionnaireAnswersController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Les réponses du questionnaire ont été mises à jour avec succès.');
+
+            if ($this->isGranted(Roles::REFERENT) && !$this->isGranted(Roles::ADMIN)) {
+                return $this->redirect($this->adminUrlGenerator
+                    ->setController(QuestionnaireCrudController::class)
+                    ->setAction(Action::DETAIL)
+                    ->setEntityId($questionnaire->getId())
+                    ->generateUrl());
+            }
 
             return $this->redirect($backUrl);
         }

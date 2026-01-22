@@ -8,12 +8,15 @@ use App\Controller\QuestionnaireController;
 use App\Entity\Contact;
 use App\Entity\Referent;
 use App\Form\Dto\Step\Contact as ContactDto;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -21,8 +24,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class ContactType extends AbstractType
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $data = $event->getData();
+            if (!$data instanceof ContactDto || !$data->referent) {
+                return;
+            }
+
+            if ($data->referent->getId()) {
+                $managedReferent = $this->entityManager->getRepository(Referent::class)->find($data->referent->getId());
+                if ($managedReferent) {
+                    $data->referent = $managedReferent;
+                }
+            }
+        });
+
         $isPro = $options[QuestionnaireController::IS_PRO];
         $builder
             ->add('nomEntreprise', TextType::class, [
@@ -85,9 +107,10 @@ final class ContactType extends AbstractType
             ])
             ->add('referent', EntityType::class, [
                 'class' => Referent::class,
-                'label' => 'Référent·e',
+                'label' => 'Structure de votre référent·e',
                 'required' => false,
                 'placeholder' => 'Sélectionner votre référent·e de structure',
+                'choice_label' => 'structure',
             ])
             ->add('prenomTuteur', TextType::class, [
                 'label' => 'Prénom',

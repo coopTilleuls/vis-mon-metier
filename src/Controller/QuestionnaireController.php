@@ -16,7 +16,6 @@ use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Flow\FormFlowInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
@@ -42,7 +41,7 @@ class QuestionnaireController extends AbstractController
         $isPro = $request->query->has('pro');
 
         if (!$currentSession) {
-            throw new BadRequestException('Invalid or missing session.');
+            return $this->render('form/questionnaire/no_session.html.twig');
         }
 
         if ($isPro) {
@@ -69,7 +68,7 @@ class QuestionnaireController extends AbstractController
         }
 
         return $this->render('form/questionnaire/form_flow.html.twig', [
-            'form' => $flow->getStepForm(),
+            'form' => $flow->getStepForm()->createView(),
             'currentStep' => $questionnaireData->currentStep,
             'data' => $questionnaireData,
         ]);

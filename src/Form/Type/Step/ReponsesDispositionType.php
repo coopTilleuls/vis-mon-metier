@@ -11,6 +11,8 @@ use App\Form\JsonEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @extends AbstractType<mixed>
@@ -26,15 +28,48 @@ final class ReponsesDispositionType extends AbstractType
             $questionsData = $session->getModelQuestionnaire()->getQuestionsDisposition();
         }
         $jsonSchema = $this->generateJsonSchema($questionsData, $isPro);
-
         $builder->add('reponses', JsonEditorType::class, [
             'json_schema' => json_encode($jsonSchema),
+            'error_bubbling' => true,
             'editor_options' => [
                 'theme' => 'bootstrap5',
                 'disable_edit_json' => true,
                 'disable_properties' => true,
                 'disable_collapse' => true,
                 'no_additional_properties' => true,
+                'show_opt_in' => false,
+            ],
+            'constraints' => [
+                new Callback(function ($data, ExecutionContextInterface $context) use ($questionsData) {
+                    if (!is_array($data)) {
+                        return;
+                    }
+
+                    foreach ($questionsData['questions'] ?? [] as $index => $question) {
+                        $key = 'question_'.$index;
+                        $value = $data[$key] ?? null;
+                        $typeReponse = $question['type_reponse'] ?? 'text';
+
+                        if ('réponse libre' === $typeReponse) {
+                            continue;
+                        }
+
+                        if (in_array($typeReponse, ['choix multiples', 'choix dates multiples'])) {
+                            if (empty($value) || !is_array($value)) {
+                                $context->buildViolation('Cette question est obligatoire.')
+                                    ->atPath("[$key]")
+                                    ->addViolation();
+                            }
+                            continue;
+                        }
+
+                        if (null === $value || '' === $value) {
+                            $context->buildViolation('Cette question est obligatoire.')
+                                ->atPath("[$key]")
+                                ->addViolation();
+                        }
+                    }
+                }),
             ],
         ]);
     }
@@ -78,21 +113,25 @@ final class ReponsesDispositionType extends AbstractType
                 'title' => $label,
             ];
 
-            $schema['required'][] = $key;
-
             switch ($typeReponse) {
                 case 'choix unique':
                     $property['type'] = 'string';
                     $property['format'] = 'radio';
+                    $property['minLength'] = 1;
+
                     [$enums, $titles] = $this->extractOptions($question['reponses_possibles'] ?? []);
                     $property['enum'] = $enums;
                     $property['options'] = ['enum_titles' => $titles];
+
+                    $schema['required'][] = $key;
                     break;
 
                 case 'choix multiples':
                     $property['type'] = 'array';
                     $property['format'] = 'checkbox';
                     $property['uniqueItems'] = true;
+                    $property['minItems'] = 1;
+
                     [$enums, $titles] = $this->extractOptions($question['reponses_possibles'] ?? []);
 
                     $property['items'] = [
@@ -100,12 +139,14 @@ final class ReponsesDispositionType extends AbstractType
                         'enum' => $enums,
                         'options' => ['enum_titles' => $titles],
                     ];
+                    $schema['required'][] = $key;
                     break;
 
                 case 'choix dates multiples':
                     $property['type'] = 'array';
                     $property['format'] = 'checkbox';
                     $property['uniqueItems'] = true;
+                    $property['minItems'] = 1;
 
                     $dates = $question['dates_possibles'] ?? [];
                     $enums = [];
@@ -138,6 +179,7 @@ final class ReponsesDispositionType extends AbstractType
                             'enum_titles' => $titles,
                         ],
                     ];
+                    $schema['required'][] = $key;
                     break;
 
                 case 'réponse libre':
@@ -151,6 +193,7 @@ final class ReponsesDispositionType extends AbstractType
                     if (!empty($question['config_texte_libre'])) {
                         $property['options']['input_attributes']['placeholder'] = $question['config_texte_libre'];
                     }
+                    $schema['required'][] = $key;
                     break;
             }
 

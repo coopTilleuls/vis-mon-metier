@@ -48,11 +48,16 @@ class QuestionnaireCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
+        if ($this->isGranted(Roles::REFERENT) && !$this->isGranted(Roles::ADMIN)) {
+            $crud->setDefaultSort(['type' => 'DESC', 'createdAt' => 'DESC']);
+        } else {
+            $crud->setDefaultSort(['createdAt' => 'DESC']);
+        }
+
         return $crud
             ->setEntityLabelInSingular('Questionnaire')
             ->setEntityLabelInPlural('Questionnaires')
             ->setPageTitle('index', 'Liste des questionnaires remplis')
-            ->setDefaultSort(['createdAt' => 'DESC'])
             ->overrideTemplate('crud/detail', 'admin/questionnaire/detail.html.twig')
             ->showEntityActionsInlined()
             ->setSearchFields(null)
@@ -126,7 +131,9 @@ class QuestionnaireCrudController extends AbstractCrudController
 
             ->setPermission(Action::DETAIL, QuestionnaireVoter::VIEW)
             ->setPermission(Action::DELETE, QuestionnaireVoter::DELETE)
-            ->setPermission('editAnswers', QuestionnaireVoter::EDIT_ANSWERS);
+            ->setPermission('editAnswers', QuestionnaireVoter::EDIT_ANSWERS)
+            ->setPermission(Action::BATCH_DELETE, Roles::ADMIN)
+        ;
 
         return $actions;
     }
@@ -198,10 +205,28 @@ class QuestionnaireCrudController extends AbstractCrudController
         $session = $questionnaire->getSession();
         $targetType = Type::EMPLOYEUR === $questionnaire->getType() ? Type::PARTICIPANT : Type::EMPLOYEUR;
 
-        $candidates = $this->entityManager->getRepository(Questionnaire::class)->findBy([
-            'session' => $session,
-            'type' => $targetType,
-        ]);
+        $qb = $this->entityManager->getRepository(Questionnaire::class)->createQueryBuilder('q')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :targetType')
+            ->setParameter('session', $session)
+            ->setParameter('targetType', $targetType);
+
+        if ($this->isGranted(Roles::REFERENT) && !$this->isGranted(Roles::ADMIN) && Type::PARTICIPANT === $targetType) {
+            /** @var User $user */
+            $user = $this->getUser();
+            $referentIds = $user->getReferents()->map(fn ($r) => $r->getId())->toArray();
+
+            $qb->leftJoin('q.contact', 'c');
+
+            if (empty($referentIds)) {
+                $qb->andWhere('1 = 0');
+            } else {
+                $qb->andWhere('c.referent IN (:referentIds)')
+                    ->setParameter('referentIds', $referentIds);
+            }
+        }
+
+        $candidates = $qb->getQuery()->getResult();
 
         $currentBusyDates = [];
         $existingMatchesCount = 0;
