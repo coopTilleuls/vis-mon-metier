@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
@@ -23,6 +24,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 
 /**
  * @extends AbstractCrudController<Contact>
@@ -48,6 +51,15 @@ class ContactCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des contacts')
             ->setPageTitle(Crud::PAGE_DETAIL, fn (Contact $contact) => (string) $contact)
             ->showEntityActionsInlined()
+        ;
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add(ChoiceFilter::new('type', 'Type')
+                ->setChoices(Type::choiceOptions()))
+            ->add(TextFilter::new('email', 'Mail'))
         ;
     }
 

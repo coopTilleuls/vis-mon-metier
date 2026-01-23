@@ -109,7 +109,7 @@ final class ContactType extends AbstractType
                 'class' => Referent::class,
                 'label' => 'Structure de votre référent·e',
                 'required' => false,
-                'placeholder' => 'Sélectionner votre référent·e de structure',
+                'placeholder' => 'Pas de référent',
                 'choice_label' => 'structure',
             ])
             ->add('prenomTuteur', TextType::class, [

@@ -1,11 +1,94 @@
-<div class="mb-4">
-    <h3 class="h5 text-muted mb-3">
-        <i class="fas fa-chart-line me-2"></i> {{ stats.sessionName }}
-    </h3>
+<style>
+    @media print {
+        body { background: white !important; font-size: 10pt; }
+        .ea-wrapper { display: block !important; grid-template-columns: 1fr !important; }
+        .ea-content-wrapper { margin-left: 0 !important; padding: 0 !important; }
+        .content { margin: 0 !important; padding: 0 !important; }
+        .ea-sidebar, .main-header, .content-header, .responsive-header, .content-top, .content-footer, .ea-detail-actions, .flash-messages, .ea-search-bar, .d-print-none, #flash-messages, .navbar, header, .btn-action-dashboard, .ea-detail, .field-group, .datagrid-row { display: none !important; height: 0 !important; overflow: hidden !important; visibility: hidden !important; }
+        .d-print-block { display: block !important; }
+        .d-print-inline-block { display: inline-block !important; }
 
-    <div class="row g-4 mb-4">
+        .row-top-cards { margin-bottom: 6px !important; }
+        .row-top-cards .col-md-6.col-lg-4 {
+            width: 32.5% !important;
+            max-width: 32.5% !important;
+            flex: 0 0 32.5% !important;
+            float: left !important;
+            padding: 0 3px !important;
+        }
+        .row-top-cards .col-md-6.col-lg-4:first-child { padding-left: 0 !important; }
+        .row-top-cards .col-md-6.col-lg-4:last-child { padding-right: 0 !important; }
+
+        .stat-card { padding: 6px !important; margin-bottom: 6px !important; }
+        .stat-value { font-size: 18pt !important; margin-bottom: 2px !important; }
+        .stat-label { font-size: 8pt !important; line-height: 1.1 !important; }
+        .row { margin-bottom: 6px !important; }
+        .mb-3, .mb-4 { margin-bottom: 6px !important; }
+        .mt-4 { margin-top: 6px !important; }
+        .mt-1 { margin-top: 6px !important; }
+        .g-4 { gap: 6px !important; }
+        h3, h5 { font-size: 11pt !important; margin-bottom: 4px !important; }
+        .table { font-size: 8pt !important; }
+        .table td, .table th { padding: 3px !important; }
+
+        .stat-card-top { padding: 3px 6px !important; }
+        .stat-card-top .stat-value { font-size: 16pt !important; line-height: 1 !important; }
+        .stat-card-top .stat-label { font-size: 7pt !important; line-height: 1.1 !important; }
+        .stat-card-top i { display: none !important; }
+        
+        .table-view { display: none !important; }
+        .chart-container { display: block !important; height: auto !important; min-height: 150px !important; max-height: 200px !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; }
+        .chart-container canvas { max-height: 200px !important; width: 100% !important; max-width: 100% !important; }
+        .stat-card { overflow: visible !important; height: auto !important; min-height: fit-content !important; box-sizing: border-box !important; }
+        .stat-card { page-break-inside: avoid !important; }
+        .col-md-6 { width: 48% !important; max-width: 48% !important; flex: 0 0 48% !important; float: left !important; padding: 0 3px !important; box-sizing: border-box !important; page-break-inside: avoid !important; }
+        .col-md-6:nth-child(odd) { padding-left: 0 !important; }
+        .col-md-6:nth-child(even) { padding-right: 0 !important; }
+        .row { page-break-inside: avoid !important; clear: both !important; }
+        
+        #questions-stats-header { page-break-before: always !important; page-break-after: avoid !important; margin-top: 0 !important; padding-top: 0 !important; }
+        #questions-stats-container { page-break-before: avoid !important; }
+        #questions-stats-header:has(+ #questions-stats-container[style*="display: none"]),
+        #questions-stats-container[style*="display: none"] { display: none !important; }
+    }
+    
+    .chart-container {
+        margin-top: 1rem;
+        position: relative;
+        height: 250px;
+    }
+    .table-view {
+        display: none;
+    }
+    .table-view.active {
+        display: table;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="h5 text-muted mb-0">
+            <i class="fas fa-chart-line me-2"></i> {{ stats.sessionName }}
+        </h3>
+        {% if stats.participants > 0 or stats.jobs > 0 %}
+        <div class="d-print-none">
+            {% if stats.jobs > 0 %}
+            <a href="{{ path('admin_session_export_metiers', {'id': stats.sessionId}) }}" class="btn btn-secondary me-2">
+                <i class="fas fa-download me-1"></i> Exporter les métiers
+            </a>
+            {% endif %}
+            <button onclick="window.print()" class="btn btn-secondary">
+                <i class="fas fa-print me-1"></i> Exporter les statistiques
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row g-4 mb-4 row-top-cards">
         <div class="col-md-6 col-lg-4">
-            <div class="stat-card d-flex align-items-center justify-content-between">
+            <div class="stat-card stat-card-top d-flex align-items-center justify-content-between">
                 <div>
                     <div class="stat-value">{{ stats.participants }}</div>
                     <div class="stat-label">Volontaires</div>
@@ -16,7 +99,7 @@
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="stat-card d-flex align-items-center justify-content-between">
+            <div class="stat-card stat-card-top d-flex align-items-center justify-content-between">
                 <div>
                     <div class="stat-value">{{ stats.jobs }}</div>
                     <div class="stat-label">Métiers proposés à l'immersion</div>
@@ -26,14 +109,32 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card stat-card-top d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-value">{{ stats.appariement }}</div>
+                    <div class="stat-label">Immersions prévues</div>
+                </div>
+                <div class="text-success opacity-25">
+                    <i class="fas fa-handshake fa-3x"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row g-4">
         <div class="col-md-6">
             <div class="stat-card">
-                <h5 class="fw-bold mb-3 text-secondary">Âge des volontaires</h5>
-                {% if stats.byAge|length > 0 %}
-                    <table class="table table-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Âge des volontaires</h5>
+                    {% if stats.byAge is defined and stats.byAge|length > 0 %}
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byAge')">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                {% if stats.byAge is defined and stats.byAge|length > 0 %}
+                    <table class="table table-sm table-view" id="table-byAge">
                         <tbody>
                         {% for item in stats.byAge %}
                             <tr>
@@ -43,16 +144,59 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                    <div class="chart-container" id="chart-byAge">
+                        <canvas id="canvas-byAge"></canvas>
+                    </div>
                 {% else %}
                     <p class="text-muted fst-italic">Aucune donnée.</p>
                 {% endif %}
             </div>
         </div>
+
         <div class="col-md-6">
             <div class="stat-card">
-                <h5 class="fw-bold mb-3 text-secondary">Situation des volontaires</h5>
-                {% if stats.bySituation|length > 0 %}
-                    <table class="table table-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Accompagnement des volontaires</h5>
+                    {% if stats.byAccompaniment is defined and stats.byAccompaniment|length > 0 %}
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byAccompaniment')">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                {% if stats.byAccompaniment is defined and stats.byAccompaniment|length > 0 %}
+                    <table class="table table-sm table-view" id="table-byAccompaniment">
+                        <tbody>
+                        {% for item in stats.byAccompaniment %}
+                            <tr>
+                                <td>{{ item.label }}</td>
+                                <td class="text-end fw-bold">{{ item.count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="chart-container" id="chart-byAccompaniment">
+                        <canvas id="canvas-byAccompaniment"></canvas>
+                    </div>
+                {% else %}
+                    <p class="text-muted fst-italic">Aucune donnée.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Situation des volontaires</h5>
+                    {% if stats.bySituation is defined and stats.bySituation|length > 0 %}
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('bySituation')">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                {% if stats.bySituation is defined and stats.bySituation|length > 0 %}
+                    <table class="table table-sm table-view" id="table-bySituation">
                         <tbody>
                         {% for item in stats.bySituation %}
                             <tr>
@@ -62,10 +206,295 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                    <div class="chart-container" id="chart-bySituation">
+                        <canvas id="canvas-bySituation"></canvas>
+                    </div>
+                {% else %}
+                    <p class="text-muted fst-italic">Aucune donnée.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Nombre de dates sélectionnées par volontaire</h5>
+                    {% if stats.byDateCount is defined and stats.byDateCount|length > 0 %}
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byDateCount')">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                {% if stats.byDateCount is defined and stats.byDateCount|length > 0 %}
+                    <table class="table table-sm table-view" id="table-byDateCount">
+                        <tbody>
+                        {% for item in stats.byDateCount %}
+                            <tr>
+                                <td>{{ item.label }}</td>
+                                <td class="text-end fw-bold">{{ item.count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="chart-container" id="chart-byDateCount">
+                        <canvas id="canvas-byDateCount"></canvas>
+                    </div>
                 {% else %}
                     <p class="text-muted fst-italic">Aucune donnée.</p>
                 {% endif %}
             </div>
         </div>
     </div>
+    <div class="row g-4 mt-1">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Commune des entreprises d'accueil</h5>
+                    {% if stats.byCommune is defined and stats.byCommune|length > 0 %}
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byCommune')">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                {% if stats.byCommune is defined and stats.byCommune|length > 0 %}
+                    <table class="table table-sm table-view" id="table-byCommune">
+                        <tbody>
+                        {% for item in stats.byCommune %}
+                            <tr>
+                                <td>{{ item.label|default('Non renseigné') }}</td>
+                                <td class="text-end fw-bold">{{ item.count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="chart-container" id="chart-byCommune">
+                        <canvas id="canvas-byCommune"></canvas>
+                    </div>
+                {% else %}
+                    <p class="text-muted fst-italic">Aucune donnée.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    {% if stats.byQuestions is defined and stats.byQuestions|length > 0 %}
+    <div class="row g-4 mt-1" id="questions-stats-header">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold mb-0 text-secondary">Statistiques par question</h4>
+                <button type="button" class="btn btn-sm btn-primary d-print-none px-3 py-2" onclick="toggleQuestionsStats()">
+                    <i class="fas fa-chevron-down me-1" id="questions-stats-icon"></i>
+                    <span id="questions-stats-text">Afficher</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4" id="questions-stats-container" style="display: none;">
+        {% for question in stats.byQuestions %}
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">{{ question.title }}</h5>
+                    <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('{{ question.key }}')">
+                        <i class="fas fa-table"></i>
+                    </button>
+                </div>
+                <table class="table table-sm table-view" id="table-{{ question.key }}">
+                    <thead>
+                        <tr>
+                            <th>Réponse</th>
+                            <th class="text-end">Volontaires</th>
+                            <th class="text-end">Employeurs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in question.data %}
+                        <tr>
+                            <td>{{ item.label|default('Non renseigné') }}</td>
+                            <td class="text-end fw-bold">{{ item.countParticipant }}</td>
+                            <td class="text-end fw-bold">{{ item.countEmployeur }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="chart-container" id="chart-{{ question.key }}">
+                    <canvas id="canvas-{{ question.key }}"></canvas>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
+
+<script>
+const charts = {};
+const chartData = {
+    byAge: {{ stats.byAge is defined ? (stats.byAge|json_encode|raw) : '[]' }},
+    byAccompaniment: {{ stats.byAccompaniment is defined ? (stats.byAccompaniment|json_encode|raw) : '[]' }},
+    bySituation: {{ stats.bySituation is defined ? (stats.bySituation|json_encode|raw) : '[]' }},
+    byCommune: {{ stats.byCommune is defined ? (stats.byCommune|json_encode|raw) : '[]' }},
+    byDateCount: {{ stats.byDateCount is defined ? (stats.byDateCount|json_encode|raw) : '[]' }}
+    {% if stats.byQuestions is defined and stats.byQuestions|length > 0 %}
+        {% for question in stats.byQuestions %}
+        , '{{ question.key }}': {{ question.data|json_encode|raw }}
+        {% endfor %}
+    {% endif %}
+};
+
+function createChart(key) {
+    const canvas = document.getElementById('canvas-' + key);
+    if (!canvas) {
+        console.error('Canvas not found for key:', key);
+        return;
+    }
+
+    const data = chartData[key];
+    if (!data || data.length === 0) {
+        console.error('No data for key:', key);
+        return;
+    }
+
+    const labels = data.map(item => item.label);
+    
+    // Check if data has separate counts for participants and employers
+    const hasTypesSeparated = data[0] && ('countParticipant' in data[0] || 'countEmployeur' in data[0]);
+    
+    const ctx = canvas.getContext('2d');
+    
+    if (hasTypesSeparated) {
+        const valuesParticipant = data.map(item => item.countParticipant || 0);
+        const valuesEmployeur = data.map(item => item.countEmployeur || 0);
+        
+        charts[key] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Volontaires',
+                        data: valuesParticipant,
+                        backgroundColor: '#00a076',
+                        borderColor: '#005d55',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Employeurs',
+                        data: valuesEmployeur,
+                        backgroundColor: '#ffeaa7',
+                        borderColor: '#fdcb6e',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    } else {
+        const values = data.map(item => item.count);
+        
+        charts[key] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nombre',
+                    data: values,
+                    backgroundColor: '#00a076',
+                    borderColor: '#005d55',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+}
+
+function toggleChart(key) {
+    const table = document.getElementById('table-' + key);
+    const chartContainer = document.getElementById('chart-' + key);
+    const button = event.currentTarget;
+    const icon = button.querySelector('i');
+
+    if (!table || !chartContainer) {
+        console.error('Elements not found for key:', key);
+        return;
+    }
+
+    if (table.classList.contains('active')) {
+        // Currently showing table, switch to chart view
+        table.classList.remove('active');
+        chartContainer.style.display = 'block';
+        icon.className = 'fas fa-table';
+    } else {
+        // Currently showing chart, switch to table view
+        table.classList.add('active');
+        chartContainer.style.display = 'none';
+        icon.className = 'fas fa-chart-bar';
+    }
+}
+
+function toggleQuestionsStats() {
+    const container = document.getElementById('questions-stats-container');
+    const icon = document.getElementById('questions-stats-icon');
+    const text = document.getElementById('questions-stats-text');
+    
+    if (container.style.display === 'none') {
+        container.style.display = 'flex';
+        icon.className = 'fas fa-chevron-up me-1';
+        text.textContent = 'Masquer';
+        
+        // Initialize charts for questions if not already done
+        {% if stats.byQuestions is defined and stats.byQuestions|length > 0 %}
+            {% for question in stats.byQuestions %}
+            if (!charts['{{ question.key }}'] && chartData['{{ question.key }}'] && chartData['{{ question.key }}'].length > 0) {
+                createChart('{{ question.key }}');
+            }
+            {% endfor %}
+        {% endif %}
+    } else {
+        container.style.display = 'none';
+        icon.className = 'fas fa-chevron-down me-1';
+        text.textContent = 'Afficher';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    Object.keys(chartData).forEach(key => {
+        if (chartData[key] && chartData[key].length > 0) {
+            createChart(key);
+        }
+    });
+});
+</script>

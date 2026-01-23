@@ -6,7 +6,9 @@ namespace App\Controller\Admin;
 
 use App\Entity\Roles;
 use App\Entity\Session;
+use App\Repository\AppariementRepository;
 use App\Repository\QuestionnaireRepository;
+use App\ValueObject\Type;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -18,14 +20,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * @extends AbstractCrudController<Session>
  */
 class SessionCrudController extends AbstractCrudController
 {
-    public function __construct(private readonly QuestionnaireRepository $questionnaireRepository)
-    {
+    public function __construct(
+        private readonly QuestionnaireRepository $questionnaireRepository,
+        private readonly AppariementRepository $appariementRepository,
+    ) {
     }
 
     public static function getEntityFqcn(): string
@@ -103,15 +109,58 @@ class SessionCrudController extends AbstractCrudController
         $questionnaireRepository = $this->questionnaireRepository;
 
         $stats = [
+            'sessionId' => $session->getId(),
             'sessionName' => $session->getNom(),
             'participants' => $questionnaireRepository->countParticipants($session),
             'jobs' => $questionnaireRepository->countJobs($session),
+            'appariement' => $this->appariementRepository->countBySession($session),
             'byAge' => $questionnaireRepository->getParticipantsByAge($session),
             'bySituation' => $questionnaireRepository->getParticipantsBySituation($session),
+            'byAccompaniment' => $questionnaireRepository->getParticipantsByAccompaniment($session),
+            'byCommune' => $questionnaireRepository->getEnterprisesByCommune($session),
+            'byDateCount' => $questionnaireRepository->getParticipantsByDateCount($session),
+            'byQuestions' => $questionnaireRepository->getStatisticsByQuestion($session),
         ];
 
         $context->getRequest()->attributes->set('stats', $stats);
 
         return parent::detail($context);
+    }
+
+    #[Route('/admin/session/{id}/export-metiers', name: 'admin_session_export_metiers')]
+    public function exportMetiers(Session $session): Response
+    {
+        $questionnaires = $this->questionnaireRepository->createQueryBuilder('q')
+            ->join('q.contact', 'c')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :type')
+            ->setParameter('session', $session)
+            ->setParameter('type', Type::EMPLOYEUR)
+            ->getQuery()
+            ->getResult();
+
+        $response = new StreamedResponse(function () use ($questionnaires) {
+            $handle = fopen('php://output', 'wb');
+            if (false === $handle) {
+                return;
+            }
+
+            fputcsv($handle, ['Secteur d\'activité', 'Métier'], ';');
+
+            foreach ($questionnaires as $questionnaire) {
+                $contact = $questionnaire->getContact();
+                fputcsv($handle, [
+                    $contact?->getSecteurActivite() ?? '',
+                    $questionnaire->getMetier() ?? '',
+                ], ';');
+            }
+
+            fclose($handle);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export-metiers-'.trim($session->getNom()).'.csv"');
+
+        return $response;
     }
 }

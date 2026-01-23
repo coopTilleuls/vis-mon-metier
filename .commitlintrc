@@ -20,6 +20,7 @@
         "modelQuestionnaire",
         "session",
         "user",
+        "stats",
       ]
     ],
     "scope-empty": [

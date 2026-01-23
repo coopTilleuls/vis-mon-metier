@@ -11,6 +11,7 @@ use App\Entity\Referent;
 use App\Entity\Roles;
 use App\Entity\Session;
 use App\Entity\User;
+use App\Repository\AppariementRepository;
 use App\Repository\QuestionnaireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
@@ -25,6 +26,7 @@ class AdminDashboardController extends AbstractDashboardController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly QuestionnaireRepository $questionnaireRepository,
+        private readonly AppariementRepository $appariementRepository,
     ) {
     }
 
@@ -36,11 +38,17 @@ class AdminDashboardController extends AbstractDashboardController
         if ($activeSession) {
             $questionnaireRepository = $this->questionnaireRepository;
             $stats = [
+                'sessionId' => $activeSession->getId(),
                 'sessionName' => $activeSession->getNom(),
                 'participants' => $questionnaireRepository->countParticipants($activeSession),
                 'jobs' => $questionnaireRepository->countJobs($activeSession),
+                'appariement' => $this->appariementRepository->countBySession($activeSession),
                 'byAge' => $questionnaireRepository->getParticipantsByAge($activeSession),
                 'bySituation' => $questionnaireRepository->getParticipantsBySituation($activeSession),
+                'byAccompaniment' => $questionnaireRepository->getParticipantsByAccompaniment($activeSession),
+                'byCommune' => $questionnaireRepository->getEnterprisesByCommune($activeSession),
+                'byDateCount' => $questionnaireRepository->getParticipantsByDateCount($activeSession),
+                'byQuestions' => $questionnaireRepository->getStatisticsByQuestion($activeSession),
             ];
         }
 
