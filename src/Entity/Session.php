@@ -37,8 +37,8 @@ class Session
     private string $statut = self::STATUT_BROUILLON;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ModelQuestionnaire $modelQuestionnaire;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?ModelQuestionnaire $modelQuestionnaire = null;
 
     public function getId(): int
     {
@@ -105,12 +105,12 @@ class Session
         ];
     }
 
-    public function getModelQuestionnaire(): ModelQuestionnaire
+    public function getModelQuestionnaire(): ?ModelQuestionnaire
     {
         return $this->modelQuestionnaire;
     }
 
-    public function setModelQuestionnaire(ModelQuestionnaire $modelQuestionnaire): static
+    public function setModelQuestionnaire(?ModelQuestionnaire $modelQuestionnaire): static
     {
         $this->modelQuestionnaire = $modelQuestionnaire;
 

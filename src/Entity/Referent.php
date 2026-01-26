@@ -34,6 +34,7 @@ class Referent
     private ?string $telephone = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'referents')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $utilisateur = null;
 
     public function getId(): int

@@ -40,7 +40,7 @@ class QuestionnaireController extends AbstractController
         $currentSession = $this->entityManager->getRepository(Session::class)->findOneBy(['statut' => Session::STATUT_OUVERT], ['id' => 'DESC']);
         $isPro = $request->query->has('pro');
 
-        if (!$currentSession) {
+        if (!$currentSession || !$currentSession->getModelQuestionnaire()) {
             return $this->render('form/questionnaire/no_session.html.twig');
         }
 

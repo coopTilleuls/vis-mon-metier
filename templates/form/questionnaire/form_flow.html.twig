@@ -79,7 +79,7 @@ input.value = JSON.stringify(editor.getValue());
 							{% endif %}
 							{% if current_step == 'reponsesScore' %}Questionnaire
 							{% endif %}
-							{% if current_step == 'reponsesDisposition' %}Vos dispositions
+							{% if current_step == 'reponsesDisposition' %}Vos disponibilités
 							{% endif %}
 						</h2>
 						{% if current_step == 'contact' and is_pro is defined and is_pro is true %}
@@ -87,7 +87,7 @@ input.value = JSON.stringify(editor.getValue());
 						{% elseif current_step == 'reponsesScore' %}
 							<p class="text-muted">Répondez aux questions ci-dessous pour nous aider à évaluer votre profil.</p>
 						{% elseif current_step == 'reponsesDisposition' %}
-							<p class="text-muted">Dernière ligne droite ! Indiquez vos dispositions.</p>
+							<p class="text-muted">Dernière ligne droite ! Indiquez vos disponibilités et les conditions de travail qui vous conviennent.</p>
 						{% endif %}
 					</div>
 

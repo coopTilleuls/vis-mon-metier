@@ -17,6 +17,7 @@
         "question",
         "questionnaire",
         "referent",
+        "appariement",
         "modelQuestionnaire",
         "session",
         "user",

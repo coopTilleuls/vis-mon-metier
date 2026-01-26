@@ -7,6 +7,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 class Appariement
 {
     #[ORM\Id]
@@ -15,11 +16,11 @@ class Appariement
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Questionnaire::class, inversedBy: 'appariementsParticipant')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Questionnaire $participant = null;
 
     #[ORM\ManyToOne(targetEntity: Questionnaire::class, inversedBy: 'appariementsEntreprise')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Questionnaire $entreprise = null;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
@@ -66,6 +67,30 @@ class Appariement
         $this->dateMatch = $dateMatch;
 
         return $this;
+    }
+
+    #[ORM\PreRemove]
+    public function checkPartnersStatus(): void
+    {
+        $this->updatePartnerStatus($this->getParticipant());
+        $this->updatePartnerStatus($this->getEntreprise());
+    }
+
+    private function updatePartnerStatus(?Questionnaire $questionnaire): void
+    {
+        if (!$questionnaire) {
+            return;
+        }
+
+        $allAppariements = $questionnaire->getAppariements();
+
+        $otherAppariements = $allAppariements->filter(
+            fn (Appariement $appariement) => $appariement !== $this
+        );
+
+        if ($otherAppariements->isEmpty()) {
+            $questionnaire->setAppaire(false);
+        }
     }
 
     public function __toString(): string

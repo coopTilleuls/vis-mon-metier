@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\ValueObject\Type;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -24,7 +25,7 @@ class Questionnaire
     private Session $session;
 
     #[ORM\ManyToOne(targetEntity: Contact::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Contact $contact;
 
     #[ORM\Column(length: 20)]
@@ -69,6 +70,16 @@ class Questionnaire
         $this->createdAt = new \DateTimeImmutable();
         $this->appariementsParticipant = new ArrayCollection();
         $this->appariementsEntreprise = new ArrayCollection();
+    }
+
+    #[ORM\PreRemove]
+    public function onPreRemove(PreRemoveEventArgs $event): void
+    {
+        $contact = $this->getContact();
+        if ($contact) {
+            $entityManager = $event->getObjectManager();
+            $entityManager->remove($contact);
+        }
     }
 
     public function getId(): int

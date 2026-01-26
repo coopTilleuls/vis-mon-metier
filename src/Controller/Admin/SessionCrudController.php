@@ -58,13 +58,14 @@ class SessionCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('nom', 'Nom de la session')
-        ->hideOnDetail();
+            ->hideOnDetail();
         yield DateField::new('dateDebut', 'Date début session');
         yield DateField::new('dateFin', 'Date fin session');
         yield ChoiceField::new('statut', 'Statut de la session')
             ->setChoices(Session::getStatutChoices());
         yield AssociationField::new('modelQuestionnaire', 'Questionnaire à associer')
             ->autocomplete()
+            ->setRequired(false)
             ->hideOnIndex();
     }
 
