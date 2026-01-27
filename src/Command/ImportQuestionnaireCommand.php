@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Contact;
+use App\Entity\ModelQuestionnaire;
 use App\Entity\Questionnaire;
+use App\Entity\Referent;
+use App\Entity\Roles;
 use App\Entity\Session;
+use App\Entity\User;
+use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -14,10 +19,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
     name: 'app:import-data-2024',
-    description: 'Imports questionnaires from answers_2024.csv',
+    description: 'Imports questionnaires from answers_2024.csv and sets up environment (Users, Model, Session).',
 )]
 class ImportQuestionnaireCommand extends Command
 {
@@ -33,6 +39,7 @@ class ImportQuestionnaireCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly KernelInterface $kernel,
+        private readonly UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct();
         $schemaPath = $this->kernel->getProjectDir().'/src/DataFixtures/questionsDisposition.json';
@@ -48,17 +55,180 @@ class ImportQuestionnaireCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $io->title('Starting 2024 Data Import...');
+
+        $this->ensureUsers($io);
+
+        $referent = $this->ensureReferent($io);
+
+        $model = $this->ensureModelQuestionnaire($io);
+        if (!$model) {
+            return Command::FAILURE;
+        }
+
+        $session = $this->ensureSession($io, $model);
+
+        return $this->importCsv($io, $session, $referent);
+    }
+
+    private function ensureUsers(SymfonyStyle $io): void
+    {
+        $usersConfig = [
+            [
+                'email' => 'referent.example@vis-mon-metier.fr',
+                'role' => Roles::REFERENT,
+            ],
+        ];
+
+        $createdCount = 0;
+
+        foreach ($usersConfig as $userData) {
+            $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $userData['email']]);
+
+            if (!$existingUser) {
+                $user = new User();
+                $user->setEmail($userData['email']);
+                $user->setRoles([$userData['role']]);
+
+                $hashedPassword = $this->passwordHasher->hashPassword($user, '123456');
+                $user->setPassword($hashedPassword);
+
+                $this->entityManager->persist($user);
+                ++$createdCount;
+            }
+        }
+
+        $this->entityManager->flush();
+
+        if ($createdCount > 0) {
+            $io->success(sprintf('%d users created.', $createdCount));
+        }
+    }
+
+    private function ensureReferent(SymfonyStyle $io): Referent
+    {
+        $repo = $this->entityManager->getRepository(Referent::class);
+        $referentEmail = 'alice.dubois@mission-locale.fr';
+        $referent = $repo->findOneBy(['email' => $referentEmail]);
+
+        if ($referent) {
+            $io->note('Using existing referent: Alice Dubois');
+
+            return $referent;
+        }
+
+        $io->section('Creating Referent');
+        $referentUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'referent.example@vis-mon-metier.fr']);
+
+        if (!$referentUser) {
+            // Should be created by ensureUsers, but just in case
+            $io->warning('Referent user not found, creating a new one specifically for linking.');
+            $referentUser = new User();
+            $referentUser->setEmail('referent.example@vis-mon-metier.fr');
+            $referentUser->setRoles([Roles::REFERENT]);
+            $referentUser->setPassword($this->passwordHasher->hashPassword($referentUser, '123456'));
+            $this->entityManager->persist($referentUser);
+        }
+
+        $referent = new Referent();
+        $referent->setPrenom('Alice');
+        $referent->setNomFamille('Dubois');
+        $referent->setEmail($referentEmail);
+        $referent->setTelephone('0240123456');
+        $referent->setFonction('Conseillère');
+        $referent->setStructure('Mission Locale');
+        $referent->setUtilisateur($referentUser);
+
+        $this->entityManager->persist($referent);
+        $this->entityManager->flush();
+        $io->success('Referent created and linked to user.');
+
+        return $referent;
+    }
+
+    private function ensureModelQuestionnaire(SymfonyStyle $io): ?ModelQuestionnaire
+    {
+        $repo = $this->entityManager->getRepository(ModelQuestionnaire::class);
+
+        $model = $repo->findOneBy(['nom' => 'Questionnaire VmM 2024']);
+
+        if ($model) {
+            return $model;
+        }
+
+        $io->section('Creating ModelQuestionnaire');
+        $projectDir = $this->kernel->getProjectDir();
+        $scorePath = $projectDir.'/src/DataFixtures/questionsScore.json';
+        $dispPath = $projectDir.'/src/DataFixtures/questionsDisposition.json';
+
+        if (!file_exists($scorePath) || !file_exists($dispPath)) {
+            $io->error('Missing JSON configuration files in src/DataFixtures/');
+
+            return null;
+        }
+
+        try {
+            $scoreContent = file_get_contents($scorePath);
+            $dispContent = file_get_contents($dispPath);
+
+            if (false === $scoreContent || false === $dispContent) {
+                throw new \RuntimeException('Failed to read JSON files');
+            }
+
+            $scoreData = json_decode($scoreContent, true, 512, JSON_THROW_ON_ERROR);
+            $dispData = json_decode($dispContent, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $e) {
+            $io->error('Error decoding JSON files: '.$e->getMessage());
+
+            return null;
+        }
+
+        $model = new ModelQuestionnaire();
+        $model->setNom('Questionnaire VmM 2024');
+        $model->setActive(true);
+        $model->setQuestionsScore($scoreData);
+        $model->setQuestionsDisposition($dispData);
+
+        $this->entityManager->persist($model);
+        $this->entityManager->flush();
+        $io->success('ModelQuestionnaire created.');
+
+        return $model;
+    }
+
+    private function ensureSession(SymfonyStyle $io, ModelQuestionnaire $model): Session
+    {
+        $repo = $this->entityManager->getRepository(Session::class);
+        // Try to find the specific session for 2024
+        $session = $repo->findOneBy(['nom' => 'Session Import 2024']);
+
+        if ($session) {
+            $io->note('Using existing session: '.$session->getNom());
+
+            return $session;
+        }
+
+        $io->section('Creating Session');
+        $session = new Session();
+        $session->setNom('Session Import 2024');
+        $session->setDateDebut(new \DateTime('2024-01-01'));
+        $session->setDateFin(new \DateTime('2024-12-31'));
+        $session->setStatut(Session::STATUT_OUVERT);
+        $session->setModelQuestionnaire($model);
+
+        $this->entityManager->persist($session);
+        $this->entityManager->flush();
+        $io->success('Session created.');
+
+        return $session;
+    }
+
+    private function importCsv(SymfonyStyle $io, Session $session, Referent $referent): int
+    {
         $filePath = $this->kernel->getProjectDir().'/src/DataFixtures/answers_2024.csv';
 
         if (!file_exists($filePath)) {
             $io->error('File not found: '.$filePath);
-
-            return Command::FAILURE;
-        }
-
-        $session = $this->entityManager->getRepository(Session::class)->findOneBy(['statut' => Session::STATUT_OUVERT], ['id' => 'DESC']);
-        if (!$session) {
-            $io->error('No session found.');
 
             return Command::FAILURE;
         }
@@ -70,8 +240,9 @@ class ImportQuestionnaireCommand extends Command
             return Command::FAILURE;
         }
 
-        $io->title('Importing Questionnaires...');
+        $io->title('Importing Questionnaires from CSV...');
         $count = 0;
+        $linkedParticipantsCount = 0;
 
         try {
             // Skip the header row
@@ -137,6 +308,12 @@ class ImportQuestionnaireCommand extends Command
                 } else {
                     $contact->setTrancheAge($row[34]);
                     $contact->setSituation($row[35]);
+
+                    // Link the first 15 participants to the referent
+                    if (Type::PARTICIPANT === $type && $linkedParticipantsCount < 15) {
+                        $contact->setReferent($referent);
+                        ++$linkedParticipantsCount;
+                    }
                 }
 
                 $this->entityManager->persist($contact);
@@ -156,6 +333,7 @@ class ImportQuestionnaireCommand extends Command
         }
 
         $io->success(sprintf('Imported %d questionnaires successfully.', $count));
+        $io->success(sprintf('Linked %d participants to referent %s.', $linkedParticipantsCount, $referent->getPrenom().' '.$referent->getNomFamille()));
 
         return Command::SUCCESS;
     }
