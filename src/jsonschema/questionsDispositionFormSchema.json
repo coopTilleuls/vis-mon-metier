@@ -32,15 +32,12 @@
                 "title": "Question",
                 "headerTemplate": "{{ self.label_employeur }}",
                 "required": [
-                    "label_participant",
-                    "label_employeur",
                     "type_reponse"
                 ],
                 "properties": {
                     "label_participant": {
                         "type": "string",
-                        "title": "Intitulé Participant·e",
-                        "format": "textarea"
+                        "title": "Intitulé Participant·e"
                     },
                     "label_employeur": {
                         "type": "string",

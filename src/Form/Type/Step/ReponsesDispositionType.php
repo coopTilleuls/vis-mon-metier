@@ -40,13 +40,22 @@ final class ReponsesDispositionType extends AbstractType
                 'show_opt_in' => false,
             ],
             'constraints' => [
-                new Callback(function ($data, ExecutionContextInterface $context) use ($questionsData) {
+                new Callback(function ($data, ExecutionContextInterface $context) use ($questionsData, $isPro) {
                     if (!is_array($data)) {
                         return;
                     }
 
                     foreach ($questionsData['questions'] ?? [] as $index => $question) {
                         $key = 'question_'.$index;
+
+                        $label = $isPro
+                            ? ($question['label_employeur'] ?? null)
+                            : ($question['label_participant'] ?? null);
+
+                        if (empty($label)) {
+                            continue;
+                        }
+
                         $value = $data[$key] ?? null;
                         $typeReponse = $question['type_reponse'] ?? 'text';
 
@@ -108,6 +117,10 @@ final class ReponsesDispositionType extends AbstractType
             $label = $isPro
                 ? ($question['label_employeur'] ?? "Question $index")
                 : ($question['label_participant'] ?? "Question $index");
+
+            if (empty($label)) {
+                continue;
+            }
 
             $property = [
                 'title' => $label,

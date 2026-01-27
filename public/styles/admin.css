@@ -249,7 +249,7 @@ div[data-schemapath="root.questions"] .col-md-2[id="Question"] + .col-md-10 {
 }
 
 div[data-schemapath="root.questions"] {
-    background: #f9fafb; /* gris très clair */
+    background: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 24px;
@@ -467,7 +467,6 @@ div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete 
     max-inline-size: 2rem;
 }
 
-/* Stats by sessions */
 .stat-card {
     background: white;
     border-radius: 8px;
@@ -491,24 +490,24 @@ div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete 
 .btn-action-dashboard {
     background: white;
     border-radius: 8px;
-    padding: 1rem; /* Adjusted padding */
+    padding: 1rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     border: 1px solid #eaecf0;
-    color: var(--green-color); /* Default text color */
+    color: var(--green-color);
     font-weight: 600;
-    text-transform: uppercase; /* Match label style if desired, or keep normal */
-    font-size: 0.85rem; /* Match label size */
+    text-transform: uppercase;
+    font-size: 0.85rem;
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    height: 100%; /* Fill the flex container */
+    height: 100%;
 }
 
 .btn-action-dashboard:hover {
-    background-color: var(--green-color); /* Primary color background */
-    color: white; /* White text */
+    background-color: var(--green-color);
+    color: white;
     border-color: var(--green-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);

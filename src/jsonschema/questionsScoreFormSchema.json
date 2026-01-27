@@ -40,11 +40,12 @@
                     "label_participant": {
                         "type": "string",
                         "title": "Intitulé Participant·e",
-                        "format": "textarea"
+                        "minLength": 1
                     },
                     "label_employeur": {
                         "type": "string",
-                        "title": "Intitulé Employeur·euse"
+                        "title": "Intitulé Employeur·euse",
+                        "minLength": 1
                     },
                     "reponses_possibles": {
                         "title": "Réponses",

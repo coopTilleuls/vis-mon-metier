@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --green-color: #005d55;
+            --green-light-color: #00a076;
+            --background-color: #f8f9fa;
+        }
+        body {
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .error-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+        .btn-next {
+            background: var(--green-color);
+            color: white;
+            border-radius: 36px;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-next:hover {
+            background: var(--green-light-color);
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}Une erreur est survenue
+{% endblock %}
+
+{% block body %}
+    <div class="error-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-exclamation-triangle-fill text-danger mb-4" viewbox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>
+        <h1 class="h1 text-danger fw-bold mb-3">Une erreur est survenue</h1>
+        <p class="text-muted mb-4">
+            Nous sommes désolés, une erreur inattendue s'est produite.
+            <br>
+            Veuillez réessayer ultérieurement.
+        </p>
+        {% set redirectUrl = app.request.pathInfo starts with '/admin' ? path('admin') : path('app_questionnaire_new') %}
+        <a href="{{ redirectUrl }}" class="btn btn-next">
+            <i class="fas fa-home me-2"></i>
+            Retour à l'accueil
+        </a>
+    </div>
+{% endblock %}
