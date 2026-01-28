@@ -33,7 +33,7 @@ jobs:
           set -xo pipefail
           IS_PR=false
           APP_ENV=prod
-          if [[ "${{ github.ref }}" == "main" ]]; then
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
             # Tags are deployed in prod
             ENVIRONMENT=prod
             IMAGE_TAG=${{ github.ref_name }}
