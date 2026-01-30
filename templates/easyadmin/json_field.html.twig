@@ -1,10 +1,15 @@
 {% block json_schema_editor_widget %}
-    <script defer src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
 
     <div class="json-editor-wrapper">
         {# hidden default symfony field #}
         {{ block('textarea_widget') }}
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span id="status-{{ editor_container_id }}" class="badge bg-light text-secondary border d-none">
+                <i class="fas fa-check me-1"></i> Enregistré
+            </span>
+        </div>
 
         <div id="{{ editor_container_id }}">
             <div class="text-center p-4 text-muted">
@@ -15,14 +20,22 @@
         {{ form_errors(form) }}
     </div>
 
-    <script defer>
+    <script>
         (function() {
             const containerId = '{{ editor_container_id }}';
             const inputId = '{{ id }}';
             const rawSchema = '{{ json_schema|raw|e("js") }}';
             const rawOptions = '{{ editor_options|raw|e("js") }}';
+            const autosaveUrl = '{{ autosave_url|default('')|e("js") }}';
+            const fieldName = '{{ field_name|default('')|e("js") }}';
 
             const initEditor = function() {
+                // Ensure JSONEditor is loaded before using it
+                if (typeof JSONEditor === 'undefined') {
+                    setTimeout(initEditor, 100);
+                    return;
+                }
+
                 JSONEditor.defaults.language = 'fr'
                 JSONEditor.defaults.languages.fr = {
                     error_notset: 'La propriété doit être définie',
@@ -81,7 +94,7 @@
                     button_delete_all: 'Tout',
                     button_delete_all_title: 'Tout supprimer',
                     button_delete_last: "{{ 'Dernière {{0}}' }}",
-                    button_delete_last_title: "{{ 'Supprimer le dernier {{0}}' }}",
+                    button_delete_last_title: "{{ 'Supprimer dernier·ère {{0}}' }}",
                     button_add_row_title: "{{ 'Ajouter {{0}}' }}",
                     button_move_down_title: 'Déplacer vers le bas',
                     button_move_up_title: 'Déplacer vers le haut',
@@ -106,6 +119,7 @@
 
                 const container = document.getElementById(containerId);
                 const input = document.getElementById(inputId);
+                const statusBadge = document.getElementById('status-' + containerId);
 
                 if (!container || !input) return;
 
@@ -136,11 +150,54 @@
 
                 try {
                     const editor = new JSONEditor(container, config);
+                    let timeoutId;
 
                     editor.on('change', function() {
                         const errors = editor.validate();
                         if (errors.length === 0) {
-                            input.value = JSON.stringify(editor.getValue());
+                            const value = editor.getValue();
+                            input.value = JSON.stringify(value);
+
+                            if (autosaveUrl && fieldName) {
+                                if (statusBadge) {
+                                    statusBadge.classList.remove('d-none', 'bg-success', 'text-white', 'bg-danger');
+                                    statusBadge.classList.add('bg-warning', 'text-dark');
+                                    statusBadge.innerHTML = '<i class="fas fa-sync fa-spin me-1"></i> Enregistrement...';
+                                }
+
+                                clearTimeout(timeoutId);
+                                timeoutId = setTimeout(() => {
+                                    fetch(autosaveUrl, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            field: fieldName,
+                                            data: value
+                                        })
+                                    })
+                                        .then(response => {
+                                            if (!response.ok) throw new Error('Network response was not ok');
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            if (statusBadge) {
+                                                statusBadge.classList.remove('bg-warning', 'text-dark');
+                                                statusBadge.classList.add('bg-success', 'text-white');
+                                                statusBadge.innerHTML = '<i class="fas fa-check me-1"></i> Enregistré à ' + data.timestamp;
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Autosave error:', error);
+                                            if (statusBadge) {
+                                                statusBadge.classList.remove('bg-warning', 'text-dark');
+                                                statusBadge.classList.add('bg-danger', 'text-white');
+                                                statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Erreur sauvegarde';
+                                            }
+                                        });
+                                }, 1000);
+                            }
                         }
                     });
 

@@ -1,5 +1,5 @@
 {
-    "title": "Questions Disposition",
+    "title": "Questions disponibilités et contraintes",
     "type": "object",
     "required": [
         "titre",
@@ -104,7 +104,8 @@
                     },
                     "config_texte_libre": {
                         "type": "string",
-                        "title": "Placeholder",
+                        "title": "Texte par défaut (optionnel)",
+                        "description": "Exemple: Si vous avez d'autres choses à signaler, veuillez compléter ce champ.",
                         "default": "",
                         "options": {
                             "dependencies": {

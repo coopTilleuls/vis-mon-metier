@@ -48,11 +48,23 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
         yield BooleanField::new('active', 'Actif')
             ->renderAsSwitch(false);
 
+        $autosaveUrl = null;
+        if (Crud::PAGE_EDIT === $pageName) {
+            $model = $this->getContext()?->getEntity()->getInstance();
+            if ($model instanceof ModelQuestionnaire && $model->getId()) {
+                $autosaveUrl = $this->generateUrl('admin_model_questionnaire_autosave', ['id' => $model->getId()]);
+            }
+        }
+
         if ($questionScoreFormSchema = file_get_contents(__DIR__.'/../../jsonschema/questionsScoreFormSchema.json')) {
             yield JsonField::new('questionsScore')
                 ->setLabel(false)
                 ->setJsonSchema($questionScoreFormSchema)
                 ->setFormType(JsonEditorType::class)
+                ->setFormTypeOptions([
+                    'autosave_url' => $autosaveUrl,
+                    'field_name' => 'questionsScore',
+                ])
                 ->setRequired(true)
             ;
         }
@@ -62,6 +74,10 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
                 ->setLabel(false)
                 ->setJsonSchema($questionDispositionSchema)
                 ->setFormType(JsonEditorType::class)
+                ->setFormTypeOptions([
+                    'autosave_url' => $autosaveUrl,
+                    'field_name' => 'questionsDisposition',
+                ])
                 ->setRequired(true)
             ;
         }
@@ -95,7 +111,13 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
             ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
                 return $action->setLabel('Ajouter un questionnaire');
             })
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, function (Action $action) {
+                return $action->setLabel('Sauvegarder et quitter');
+            })
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE, function (Action $action) {
+                return $action->setLabel('Sauvegarder et continuer')
+                    ->setIcon(null);
+            })
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->disable(Action::DETAIL)
         ;

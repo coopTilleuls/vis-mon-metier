@@ -80,10 +80,10 @@ final class ContactType extends AbstractType
             ])
             ->add('situation', ChoiceType::class, [
                 'choices' => [
-                    'Salarié' => Contact::SALARIE,
-                    'Demandeur d\'emploi' => Contact::DEMANDEUR_EMPLOI,
-                    'Scolaire / Etudiant' => Contact::SCOLAIRE_ETUDIANT,
-                    'Autre' => Contact::AUTRE,
+                    Contact::SALARIE => Contact::SALARIE,
+                    Contact::DEMANDEUR_EMPLOI => Contact::DEMANDEUR_EMPLOI,
+                    Contact::SCOLAIRE_ETUDIANT => Contact::SCOLAIRE_ETUDIANT,
+                    Contact::AUTRE => Contact::AUTRE,
                 ],
                 'required' => true,
                 'placeholder' => 'Sélectionnez votre situation',

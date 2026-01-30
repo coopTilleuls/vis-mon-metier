@@ -13,9 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'contact')]
 class Contact
 {
-    public const DEMANDEUR_EMPLOI = 'Demandeur d\'emploi';
-    public const SCOLAIRE_ETUDIANT = 'Scolaire, Etudiant';
-    public const SALARIE = 'Salarié';
+    public const DEMANDEUR_EMPLOI = 'Demandeur·euse d\'emploi';
+    public const SCOLAIRE_ETUDIANT = 'Scolaire, Etudiant·e';
+    public const SALARIE = 'Salarié·e';
     public const AUTRE = 'Autre';
     public const MAJEUR = 'Plus de 18 ans';
     public const MINEUR = 'Moins de 18 ans';

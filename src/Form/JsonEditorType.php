@@ -43,12 +43,16 @@ final class JsonEditorType extends AbstractType
         $view->vars['json_schema'] = $options['json_schema'];
         $view->vars['editor_options'] = json_encode($options['editor_options']);
         $view->vars['editor_container_id'] = 'json_editor_container_'.$view->vars['id'];
+        $view->vars['autosave_url'] = $options['autosave_url'];
+        $view->vars['field_name'] = $options['field_name'];
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'json_schema' => '{}',
+            'autosave_url' => null,
+            'field_name' => null,
             'editor_options' => [
                 'theme' => 'bootstrap5',
                 'iconlib' => 'fontawesome5',
@@ -62,6 +66,8 @@ final class JsonEditorType extends AbstractType
 
         $resolver->setAllowedTypes('json_schema', 'string');
         $resolver->setAllowedTypes('editor_options', 'array');
+        $resolver->setAllowedTypes('autosave_url', ['null', 'string']);
+        $resolver->setAllowedTypes('field_name', ['null', 'string']);
     }
 
     public function getParent(): string

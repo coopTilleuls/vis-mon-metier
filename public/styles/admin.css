@@ -404,7 +404,7 @@ div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete 
 }
 
 .card-body > .table-responsive + .btn-group .btn i:after {
-    content: "Ajouter une réponse";
+    content: "Réponse";
     font-family: "Barlow";
     font-weight: 500;
     margin-left: 4px;
