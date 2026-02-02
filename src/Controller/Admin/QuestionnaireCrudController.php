@@ -259,6 +259,12 @@ class QuestionnaireCrudController extends AbstractCrudController
             $candidateDates = $this->extractDatesFromAnswers($candidate->getReponsesDisposition() ?? [], $questionsSchema);
             $matchingDates = array_intersect($currentDates, $candidateDates);
 
+            $constraintMismatches = $this->getConstraintMismatches(
+                $questionnaire,
+                $candidate,
+                $questionsSchema
+            );
+
             $isMatchedWithCurrent = false;
             $candidateBusyDates = [];
             foreach ($candidate->getAppariements() as $match) {
@@ -320,6 +326,7 @@ class QuestionnaireCrudController extends AbstractCrudController
                 'address' => $contact->getCommune(),
                 'contactEntity' => $contact,
                 'isMatchedWithCurrent' => $isMatchedWithCurrent,
+                'constraintMismatches' => $constraintMismatches,
             ];
         }
 
@@ -382,5 +389,59 @@ class QuestionnaireCrudController extends AbstractCrudController
         }
 
         return (int) (100 - (($totalDistance / $maxDistancePossible) * 100));
+    }
+
+    /**
+     * @param array<mixed> $questionsSchema
+     *
+     * @return array<string>
+     */
+    private function getConstraintMismatches(Questionnaire $employeur, Questionnaire $participant, array $questionsSchema): array
+    {
+        $mismatches = [];
+        $questions = $questionsSchema['questions'] ?? [];
+
+        $employeurAnswers = Type::EMPLOYEUR === $employeur->getType()
+            ? $employeur->getReponsesDisposition() ?? []
+            : $participant->getReponsesDisposition() ?? [];
+
+        $participantAnswers = Type::PARTICIPANT === $employeur->getType()
+            ? $employeur->getReponsesDisposition() ?? []
+            : $participant->getReponsesDisposition() ?? [];
+
+        foreach ($questions as $index => $question) {
+            if (!isset($question['contrainte_majeure']) || true !== $question['contrainte_majeure']) {
+                continue;
+            }
+
+            $key = 'question_'.$index;
+            $employeurValue = $employeurAnswers[$key] ?? null;
+            $participantValue = $participantAnswers[$key] ?? null;
+
+            if (null === $employeurValue || null === $participantValue) {
+                continue;
+            }
+
+            $isMismatch = false;
+            $typeReponse = $question['type_reponse'] ?? 'choix unique';
+
+            if ('choix multiples' === $typeReponse) {
+                $employeurArray = is_array($employeurValue) ? $employeurValue : [$employeurValue];
+                $participantArray = is_array($participantValue) ? $participantValue : [$participantValue];
+
+                $intersection = array_intersect($employeurArray, $participantArray);
+                $isMismatch = empty($intersection);
+            } else {
+                // single choice case
+                $isMismatch = $employeurValue !== $participantValue;
+            }
+
+            if ($isMismatch) {
+                $label = $question['label_participant'] ?? $question['label_employeur'] ?? 'Question '.$index;
+                $mismatches[] = $label;
+            }
+        }
+
+        return $mismatches;
     }
 }

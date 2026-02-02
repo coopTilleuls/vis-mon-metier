@@ -146,6 +146,8 @@ class SessionCrudController extends AbstractCrudController
                 return;
             }
 
+            fwrite($handle, "\xEF\xBB\xBF");
+
             fputcsv($handle, ['Secteur d\'activité', 'Métier'], ';');
 
             foreach ($questionnaires as $questionnaire) {

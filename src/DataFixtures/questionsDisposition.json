@@ -6,6 +6,7 @@
             "label_participant": "Port de charges, manipulation de charges lourdes",
             "label_employeur": "Port de charges",
             "type_reponse": "choix unique",
+            "contrainte_majeure": true,
             "reponses_possibles": [
                 {
                     "valeur": 6,
@@ -41,6 +42,7 @@
             "label_participant": "Vous pouvez travailler en horaires atypiques, en décalés",
             "label_employeur": "Horaires atypiques",
             "type_reponse": "choix unique",
+            "contrainte_majeure": true,
             "reponses_possibles": [
                 {
                     "valeur": 1,
@@ -64,6 +66,7 @@
             "label_participant": "Vous tolérez le froid, la chaleur, ou l'humidité",
             "label_employeur": "Climat",
             "type_reponse": "choix unique",
+            "contrainte_majeure": true,
             "reponses_possibles": [
                 {
                     "valeur": 4,
