@@ -10,67 +10,115 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class Contact
 {
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $nomEntreprise = null;
-
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $secteurActivite = null;
-
-    #[Assert\Length(max: 255, groups: ['contact'])]
     public ?string $type = null;
 
-    #[Assert\Length(max: 50, groups: ['contact'])]
-    public ?string $nombreEmployes = null;
-
-    #[Assert\NotBlank(groups: ['contact'])]
-    #[Assert\Length(max: 255, groups: ['contact'])]
+    #[Assert\NotBlank(message: 'Veuillez remplir ce champ.', groups: ['contact'])]
+    #[Assert\Length(min: 2, minMessage: 'Le prénom doit contenir au moins 2 caractères.', groups: ['contact'])]
     public ?string $prenom = null;
 
-    #[Assert\NotBlank(groups: ['contact'])]
-    #[Assert\Length(max: 255, groups: ['contact'])]
+    #[Assert\NotBlank(message: 'Veuillez remplir ce champ.', groups: ['contact'])]
+    #[Assert\Length(min: 2, minMessage: 'Le nom de famille doit contenir au moins 2 caractères.', groups: ['contact'])]
     public ?string $nomFamille = null;
 
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $metier = null;
+    #[Assert\NotBlank(message: 'Veuillez remplir ce champ.', groups: ['contact'])]
+    #[Assert\Email(message: 'L\'adresse email n\'est pas valide.', groups: ['contact'])]
+    public ?string $email = null;
 
-    #[Assert\Length(min: 10, max: 10, groups: ['contact'])]
+    #[Assert\NotBlank(groups: ['contact'])]
+    #[Assert\Regex(pattern: '/^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/', message: 'Le numéro de téléphone n\'est pas valide (format français attendu).', groups: ['contact'])]
     public ?string $numeroTelephone = null;
 
-    #[Assert\Choice(
-        choices: [
-            ContactEntity::SALARIE,
-            ContactEntity::DEMANDEUR_EMPLOI,
-            ContactEntity::SCOLAIRE_ETUDIANT,
-            ContactEntity::AUTRE,
+    #[Assert\NotBlank(message: 'Veuillez remplir ce champ.', groups: ['contact'])]
+    public ?string $commune = null;
+
+    #[Assert\When(
+        expression: "this.type == 'participant'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+            new Assert\Choice(choices: [
+                ContactEntity::SCOLAIRE_ETUDIANT,
+                ContactEntity::DEMANDEUR_EMPLOI,
+                ContactEntity::SALARIE,
+                ContactEntity::AUTRE,
+            ],
+                message: 'Veuillez choisir une situation valide.'),
         ],
         groups: ['contact']
     )]
     public ?string $situation = null;
 
-    #[Assert\Choice(
-        choices: [
-            ContactEntity::MAJEUR,
-            ContactEntity::MINEUR,
+    #[Assert\When(
+        expression: "this.type == 'participant'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+            new Assert\Choice(
+                choices: [
+                    ContactEntity::MAJEUR,
+                    ContactEntity::MINEUR,
+                ],
+                message: 'Veuillez choisir une tranche d\'âge valide.'
+            ),
         ],
         groups: ['contact']
     )]
     public ?string $trancheAge = null;
 
-    #[Assert\NotBlank(groups: ['contact'])]
-    #[Assert\Email(groups: ['contact'])]
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $email = null;
+    #[Assert\Type(Referent::class, message: 'Le référent n\'est pas valide.', groups: ['contact'])]
+    public ?Referent $referent = null;
 
-    #[Assert\NotBlank(groups: ['contact'])]
-    #[Assert\Length(max: 255, groups: ['contact'])]
-    public ?string $commune = null;
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $nomEntreprise = null;
 
-    #[Assert\Length(max: 255, groups: ['contact'])]
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $secteurActivite = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+            new Assert\Positive(message: 'Veuillez saisir un nombre valide.'),
+            new Assert\Type(type: 'numeric', message: 'Veuillez saisir un nombre.'),
+        ],
+        groups: ['contact']
+    )]
+    public mixed $nombreEmployes = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $metier = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
     public ?string $prenomTuteur = null;
 
-    #[Assert\Length(max: 255, groups: ['contact'])]
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
     public ?string $nomFamilleTuteur = null;
-
-    #[Assert\Type(Referent::class, groups: ['contact'])]
-    public ?Referent $referent = null;
 }
