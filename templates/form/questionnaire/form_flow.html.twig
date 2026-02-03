@@ -168,7 +168,7 @@ input.value = JSON.stringify(editor.getValue());
 						</div>
 						{% if not is_pro %}
 							<div class="col-lg-6">
-								{{ form_row(form.contact.commune, {'attr': {'class': 'form-control', 'placeholder': 'Ville de résidence'}}) }}
+								{{ form_row(form.contact.commune, {'attr': {'class': 'form-select', 'placeholder': 'Ville de résidence'}}) }}
 							</div>
 						{% endif %}
 					</div>
@@ -225,7 +225,7 @@ input.value = JSON.stringify(editor.getValue());
 									{{ form_row(form.contact.nombreEmployes, {'attr': {'class': 'form-control'}}) }}
 								</div>
 								<div class="col-lg-12">
-									{{ form_row(form.contact.commune, {'attr': {'class': 'form-control'}}) }}
+									{{ form_row(form.contact.commune, {'attr': {'class': 'form-select'}}) }}
 								</div>
 								<div class="col-lg-12">
 									{{ form_row(form.contact.metier, {'attr': {'class': 'form-control'}}) }}

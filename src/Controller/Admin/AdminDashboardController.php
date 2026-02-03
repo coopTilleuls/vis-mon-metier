@@ -47,6 +47,7 @@ class AdminDashboardController extends AbstractDashboardController
                 'bySituation' => $questionnaireRepository->getParticipantsBySituation($activeSession),
                 'byAccompaniment' => $questionnaireRepository->getParticipantsByAccompaniment($activeSession),
                 'byCommune' => $questionnaireRepository->getEnterprisesByCommune($activeSession),
+                'byCommuneParticipants' => $questionnaireRepository->getParticipantsByCommune($activeSession),
                 'byDateCount' => $questionnaireRepository->getParticipantsByDateCount($activeSession),
                 'byQuestions' => $questionnaireRepository->getStatisticsByQuestion($activeSession),
             ];

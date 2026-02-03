@@ -539,3 +539,49 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     opacity: 1;
 }
+
+.field-array .field-collection-item {
+    margin-bottom: 12px;
+}
+
+button.field-collection-add-button {
+    border-radius: 24px !important;
+    padding: 4px 12px !important;
+    height: 32px;
+    background: var(--green-light-color) !important;
+    color: white !important;
+    border: none !important;
+    text-decoration: none !important;
+    margin-top: 12px;
+}
+
+button.field-collection-add-button:hover {
+    opacity: 0.8;
+}
+
+button.field-collection-delete-button {
+    aspect-ratio: 1/1 !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid var(--button-invisible-danger-active-color) !important;
+    color: var(--button-invisible-danger-active-color) !important;
+    background: transparent !important;
+    margin-left: 8px;
+}
+
+button.field-collection-delete-button span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button.field-collection-delete-button:hover {
+    background: var(--button-invisible-danger-active-color) !important;
+    color: white !important;
+}

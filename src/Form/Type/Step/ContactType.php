@@ -7,6 +7,7 @@ namespace App\Form\Type\Step;
 use App\Controller\QuestionnaireController;
 use App\Entity\Contact;
 use App\Entity\Referent;
+use App\Entity\Session;
 use App\Form\Dto\Step\Contact as ContactDto;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -46,6 +47,18 @@ final class ContactType extends AbstractType
         });
 
         $isPro = $options[QuestionnaireController::IS_PRO];
+        $session = $options[QuestionnaireController::SESSION_ENTITY];
+
+        $communeChoices = [];
+        if ($session instanceof Session) {
+            $modelQuestionnaire = $session->getModelQuestionnaire();
+            if ($modelQuestionnaire) {
+                foreach ($modelQuestionnaire->getCommunes() as $communeName) {
+                    $communeChoices[$communeName] = $communeName;
+                }
+            }
+        }
+
         $builder
             ->add('nomEntreprise', TextType::class, [
                 'label' => 'Nom',
@@ -101,9 +114,11 @@ final class ContactType extends AbstractType
                 'label' => 'Adresse e-mail',
                 'required' => true,
             ])
-            ->add('commune', TextType::class, [
+            ->add('commune', ChoiceType::class, [
                 'label' => $isPro ? 'Adresse du lieu d\'immersion' : 'Commune',
                 'required' => true,
+                'choices' => $communeChoices,
+                'placeholder' => 'Sélectionnez une commune',
             ])
             ->add('referent', EntityType::class, [
                 'class' => Referent::class,
@@ -128,8 +143,10 @@ final class ContactType extends AbstractType
         $resolver->setDefaults([
             'data_class' => ContactDto::class,
             QuestionnaireController::IS_PRO => false,
+            QuestionnaireController::SESSION_ENTITY => null,
         ]);
 
         $resolver->setAllowedTypes(QuestionnaireController::IS_PRO, 'bool');
+        $resolver->setAllowedTypes(QuestionnaireController::SESSION_ENTITY, ['null', Session::class]);
     }
 }

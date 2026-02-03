@@ -5,6 +5,56 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <style>
+        /* Fix collection item collapse icon rotation */
+        .form-collection-item-collapse-marker {
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        /* CSS-only fallback - target the button when aria-expanded is true */
+        button[aria-expanded="true"] .form-collection-item-collapse-marker {
+            transform: rotate(90deg) !important;
+        }
+        
+        button[aria-expanded="false"] .form-collection-item-collapse-marker {
+            transform: rotate(0deg) !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle collection collapse icon rotation using Bootstrap events
+            const collapsibles = document.querySelectorAll('.form-collection-item-collapse');
+            
+            collapsibles.forEach(function(element) {
+                // Find the toggle button for this collapsible
+                const toggleButton = document.querySelector('[data-bs-target="#' + element.id + '"]');
+                if (toggleButton) {
+                    const icon = toggleButton.querySelector('.form-collection-item-collapse-marker');
+                    
+                    if (icon) {
+                        // Listen to Bootstrap collapse events
+                        element.addEventListener('show.bs.collapse', function() {
+                            icon.style.transform = 'rotate(90deg)';
+                        });
+                        
+                        element.addEventListener('hide.bs.collapse', function() {
+                            icon.style.transform = 'rotate(0deg)';
+                        });
+                        
+                        // Set initial state based on aria-expanded
+                        if (toggleButton.getAttribute('aria-expanded') === 'true') {
+                            icon.style.transform = 'rotate(90deg)';
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block sidebar %}

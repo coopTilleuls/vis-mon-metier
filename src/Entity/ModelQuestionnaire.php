@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-namespace App\Entity;
-
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -33,6 +31,12 @@ class ModelQuestionnaire
 
     #[ORM\Column]
     private string $nom = 'Questionnaire - Vis mon Métier';
+
+    /**
+     * @var string[]
+     */
+    #[ORM\Column(type: 'json')]
+    private array $communes = [];
 
     public function getId(): int
     {
@@ -89,6 +93,24 @@ class ModelQuestionnaire
     public function setNom(string $nom): void
     {
         $this->nom = $nom;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCommunes(): array
+    {
+        return $this->communes;
+    }
+
+    /**
+     * @param string[] $communes
+     */
+    public function setCommunes(array $communes): self
+    {
+        $this->communes = $communes;
+
+        return $this;
     }
 
     public function __toString(): string

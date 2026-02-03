@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Repository\QuestionnaireRepository;
 use App\ValueObject\Type;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,7 +12,7 @@ use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: QuestionnaireRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Questionnaire
 {

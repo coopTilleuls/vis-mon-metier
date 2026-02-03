@@ -156,6 +156,7 @@ class QuestionnaireController extends AbstractController
     private function mapDtoToEntity(Session $session, QuestionnaireDto $questionnaireData, bool $isPro): Questionnaire
     {
         $questionnaire = new Questionnaire();
+
         $contact = $this->objectMapper->map($questionnaireData->contact, new Contact());
 
         $questionnaire->setSession($session);

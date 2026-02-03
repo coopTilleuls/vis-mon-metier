@@ -248,6 +248,35 @@
         <div class="col-md-6">
             <div class="stat-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Commune de résidence des volontaires</h5>
+                    {% if stats.byCommuneParticipants is defined and stats.byCommuneParticipants|length > 0 %}
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byCommuneParticipants')">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                {% if stats.byCommuneParticipants is defined and stats.byCommuneParticipants|length > 0 %}
+                    <table class="table table-sm table-view" id="table-byCommuneParticipants">
+                        <tbody>
+                        {% for item in stats.byCommuneParticipants %}
+                            <tr>
+                                <td>{{ item.label|default('Non renseigné') }}</td>
+                                <td class="text-end fw-bold">{{ item.count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="chart-container" id="chart-byCommuneParticipants">
+                        <canvas id="canvas-byCommuneParticipants"></canvas>
+                    </div>
+                {% else %}
+                    <p class="text-muted fst-italic">Aucune donnée.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">Commune des entreprises d'accueil</h5>
                     {% if stats.byCommune is defined and stats.byCommune|length > 0 %}
                         <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byCommune')">
@@ -333,6 +362,7 @@ const chartData = {
     byAccompaniment: {{ stats.byAccompaniment is defined ? (stats.byAccompaniment|json_encode|raw) : '[]' }},
     bySituation: {{ stats.bySituation is defined ? (stats.bySituation|json_encode|raw) : '[]' }},
     byCommune: {{ stats.byCommune is defined ? (stats.byCommune|json_encode|raw) : '[]' }},
+    byCommuneParticipants: {{ stats.byCommuneParticipants is defined ? (stats.byCommuneParticipants|json_encode|raw) : '[]' }},
     byDateCount: {{ stats.byDateCount is defined ? (stats.byDateCount|json_encode|raw) : '[]' }}
     {% if stats.byQuestions is defined and stats.byQuestions|length > 0 %}
         {% for question in stats.byQuestions %}

@@ -59,8 +59,8 @@ class Contact
     #[ORM\Column(length: 255)]
     private string $email;
 
-    #[ORM\Column(length: 255)]
-    private string $commune;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $commune = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenomTuteur = null;
@@ -206,12 +206,12 @@ class Contact
         return $this;
     }
 
-    public function getCommune(): string
+    public function getCommune(): ?string
     {
         return $this->commune;
     }
 
-    public function setCommune(string $commune): void
+    public function setCommune(?string $commune): void
     {
         $this->commune = $commune;
     }

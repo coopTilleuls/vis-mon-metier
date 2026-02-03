@@ -189,6 +189,15 @@ class ImportQuestionnaireCommand extends Command
         $model->setQuestionsScore($scoreData);
         $model->setQuestionsDisposition($dispData);
 
+        // Setup default communes as simple strings
+        $model->setCommunes([
+            'Blain',
+            'Bouvron',
+            'La Chevallerais',
+            'Le Gâvre',
+            'Autre',
+        ]);
+
         $this->entityManager->persist($model);
         $this->entityManager->flush();
         $io->success('ModelQuestionnaire created.');
@@ -243,6 +252,13 @@ class ImportQuestionnaireCommand extends Command
         $io->title('Importing Questionnaires from CSV...');
         $count = 0;
         $linkedParticipantsCount = 0;
+
+        $model = $session->getModelQuestionnaire();
+        $communesList = $model?->getCommunes();
+
+        if (empty($communesList)) {
+            $io->warning('No communes found for this model. Contacts will not have communes assigned.');
+        }
 
         try {
             // Skip the header row
@@ -302,7 +318,12 @@ class ImportQuestionnaireCommand extends Command
                 $contact->setNomFamille($row[37]);
                 $contact->setEmail($row[38]);
                 $contact->setNumeroTelephone($row[39]);
-                $contact->setCommune('Blain');
+
+                if (!empty($communesList)) {
+                    $randomCommune = $communesList[array_rand($communesList)];
+                    $contact->setCommune($randomCommune);
+                }
+
                 if ('employeur' === $type) {
                     $contact->setNomEntreprise($row[33]);
                 } else {

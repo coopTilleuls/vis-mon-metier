@@ -112,8 +112,11 @@ class ContactCrudController extends AbstractCrudController
         yield EmailField::new('email', 'Email');
         yield TextField::new('numeroTelephone', 'Téléphone')
             ->hideOnIndex();
+
         yield TextField::new('commune', $renderProFields ? 'Adresse lieu d\'immersion' : 'Commune')
-            ->hideOnIndex();
+            ->setLabel($renderProFields ? 'Adresse lieu d\'immersion' : 'Commune')
+            ->hideOnIndex()
+            ->setHelp('Commune sélectionnée');
 
         if ($renderProFields) {
             yield FormField::addPanel('Informations Entreprise')

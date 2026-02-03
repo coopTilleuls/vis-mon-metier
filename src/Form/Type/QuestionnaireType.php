@@ -24,6 +24,7 @@ final class QuestionnaireType extends AbstractFlowType
         $builder
             ->addStep('contact', ContactType::class, [
                 QuestionnaireController::IS_PRO => $isPro,
+                QuestionnaireController::SESSION_ENTITY => $session,
             ])
             ->addStep('reponsesScore', ReponsesScoreType::class, [
                 QuestionnaireController::SESSION_ENTITY => $session,

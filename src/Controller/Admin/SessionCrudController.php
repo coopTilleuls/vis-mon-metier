@@ -119,6 +119,7 @@ class SessionCrudController extends AbstractCrudController
             'bySituation' => $questionnaireRepository->getParticipantsBySituation($session),
             'byAccompaniment' => $questionnaireRepository->getParticipantsByAccompaniment($session),
             'byCommune' => $questionnaireRepository->getEnterprisesByCommune($session),
+            'byCommuneParticipants' => $questionnaireRepository->getParticipantsByCommune($session),
             'byDateCount' => $questionnaireRepository->getParticipantsByDateCount($session),
             'byQuestions' => $questionnaireRepository->getStatisticsByQuestion($session),
         ];

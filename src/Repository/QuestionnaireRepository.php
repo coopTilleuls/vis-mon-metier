@@ -136,6 +136,24 @@ class QuestionnaireRepository extends ServiceEntityRepository
     /**
      * @return array<mixed>
      */
+    public function getParticipantsByCommune(Session $session): array
+    {
+        return $this->createQueryBuilder('q')
+            ->select('c.commune as label, count(q.id) as count')
+            ->join('q.contact', 'c')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :type')
+            ->groupBy('c.commune')
+            ->orderBy('count', 'DESC')
+            ->setParameter('session', $session)
+            ->setParameter('type', Type::PARTICIPANT)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return array<mixed>
+     */
     public function getParticipantsByDateCount(Session $session): array
     {
         $questionnaires = $this->createQueryBuilder('q')
