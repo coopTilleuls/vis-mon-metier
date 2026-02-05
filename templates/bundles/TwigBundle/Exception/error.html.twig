@@ -55,7 +55,7 @@
             <br>
             Veuillez réessayer ultérieurement.
         </p>
-        {% set redirectUrl = app.request.pathInfo starts with '/admin' ? path('admin') : path('app_questionnaire_new') %}
+        {% set redirectUrl = app.request.pathInfo starts with '/admin' ? path('admin') : path('app_home') %}
         <a href="{{ redirectUrl }}" class="btn btn-next">
             <i class="fas fa-home me-2"></i>
             Retour à l'accueil

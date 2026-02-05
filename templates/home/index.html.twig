@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+{% endblock %}
+
+{% block title %}Accueil - Vis Mon Métier{% endblock %}
+
+{% block body %}
+    <div class="home-container">
+        <div class="home-sidebar">
+            <img class="logo" src="{{ asset('images/logo-white.png') }}" alt="Logo Vis Mon Métier"/>
+        </div>
+        <div class="home-content">
+            <div class="home-inner">
+                <h1 class="home-title">Bienvenue sur Vis Mon Métier</h1>
+                <div class="home-introduction">
+                    <p class="intro-tagline">Vis mon métier, c'est simple : <strong class="highlight-green">1 jour / 1 binôme / 1 métier !</strong></p>
+                    <div class="intro-subtitle">Pour qui ?</div>
+                    <p class="intro-paragraph">
+                        <strong class="highlight-green">→ Les personnes en recherche d'orientation professionnelle</strong>.
+                        <br>
+                        <strong class="highlight-gold">→ Les employeurs du territoire</strong> qui souhaitez faire découvrir vos métiers.
+                    </p>
+                    <div class="intro-subtitle">Comment ?</div>
+                    <p class="intro-paragraph">
+                        En répondant au <strong class="highlight-green">questionnaire</strong> ci-après (en pesant bien chacune de vos réponses, c'est important !).
+                        <br>
+                        Pas de CV ni de liste de compétences, ce sont <strong class="highlight-green">vos réponses aux questions</strong> qui déterminent votre "compatibilité" et nous permettent de vous proposer une ou plusieurs <strong class="highlight-green">journées d'immersion</strong> !</p>
+
+                </div>
+                
+                <div class="buttons-container">
+                    <a href="{{ path('app_questionnaire_new') }}" class="home-button home-button-participant">
+                        <div class="button-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="button-text">
+                            Je découvre un métier
+                        </div>
+                    </a>
+                    <a href="{{ path('app_questionnaire_new', {'pro': 1}) }}" class="home-button home-button-pro">
+                        <div class="button-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="button-text">
+                            Je fais découvrir mon métier
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

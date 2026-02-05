@@ -33,7 +33,7 @@ class QuestionnaireController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_questionnaire_new')]
+    #[Route('/questionnaire', name: 'app_questionnaire_new')]
     public function index(Request $request): Response
     {
         $questionnaireData = new QuestionnaireDto();
@@ -74,7 +74,7 @@ class QuestionnaireController extends AbstractController
         ]);
     }
 
-    #[Route('/restart', name: 'app_questionnaire_restart', methods: ['POST'])]
+    #[Route('/questionnaire/restart', name: 'app_questionnaire_restart', methods: ['POST'])]
     public function restart(Request $request): Response
     {
         if ($questionnaireId = $request->request->get('questionnaire_id')) {
@@ -89,7 +89,7 @@ class QuestionnaireController extends AbstractController
         return $this->redirectToRoute('app_questionnaire_new', $params);
     }
 
-    #[Route('/succes', name: 'app_questionnaire_success')]
+    #[Route('/questionnaire/succes', name: 'app_questionnaire_success')]
     public function success(Request $request): Response
     {
         $session = $request->getSession();

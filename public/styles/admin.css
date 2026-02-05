@@ -112,6 +112,10 @@ aside.sidebar {
     display: inline-block !important;
 }
 
+.title {
+    color: var(--orange-color);
+}
+
 .actions .btn {
     border-radius: 50%;
     aspect-ratio: 1 / 1;

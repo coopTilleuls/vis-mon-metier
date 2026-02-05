@@ -15,7 +15,7 @@
 2. Run this command: `docker compose exec php bin/console app:create-users` to create back-office log
 3. You can then load fixtures: `docker compose exec php bin/console app:import-data-2024`
 <br>Or to set your own config, see `docs/guide-administration-vis-mon-metier.md`.
-4. You can finally access the public form on: `/` and `/?pro`.
+4. You can finally access the homepage on: `/` and questionnaires on: `/questionnaire` and `/questionnaire?pro`.
 
 ## Sanitize code
 run: `docker compose exec php vendor/bin/php-cs-fixer --no-interaction fix`

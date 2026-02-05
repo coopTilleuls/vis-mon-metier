@@ -28,6 +28,10 @@ body {
     display: flex;
 }
 
+.h2 {
+    color: var(--orange-color);
+}
+
 .logo {
     width: 80%;
     height: auto;
