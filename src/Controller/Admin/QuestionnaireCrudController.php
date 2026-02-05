@@ -432,8 +432,27 @@ class QuestionnaireCrudController extends AbstractCrudController
                 $intersection = array_intersect($employeurArray, $participantArray);
                 $isMismatch = empty($intersection);
             } else {
-                // single choice case
-                $isMismatch = $employeurValue !== $participantValue;
+                if (is_numeric($employeurValue) && is_numeric($participantValue)) {
+                    $distance = abs((int) $employeurValue - (int) $participantValue);
+
+                    $threshold = 2; // default threshold
+                    if (isset($question['reponses_possibles']) && is_array($question['reponses_possibles'])) {
+                        $values = array_filter(
+                            array_map(fn ($r) => $r['valeur'] ?? null, $question['reponses_possibles']),
+                            fn ($v) => is_numeric($v) && $v > 0 // exclude 0 ("don't want to answer")
+                        );
+                        if (!empty($values)) {
+                            $maxDistance = max($values) - min($values);
+                            // For questions with small scales (max distance <= 2), use threshold of 1
+                            $threshold = $maxDistance <= 2 ? 1 : 2;
+                        }
+                    }
+
+                    $isMismatch = $distance >= $threshold;
+                } else {
+                    // For non-numeric values, fallback to strict comparison
+                    $isMismatch = $employeurValue !== $participantValue;
+                }
             }
 
             if ($isMismatch) {
