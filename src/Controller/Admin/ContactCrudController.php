@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Contact;
+use App\Entity\ModelQuestionnaire;
 use App\Entity\Roles;
 use App\Entity\User;
 use App\Security\Voter\ContactVoter;
 use App\ValueObject\Type;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
@@ -32,6 +34,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
  */
 class ContactCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Contact::class;
@@ -98,6 +105,14 @@ class ContactCrudController extends AbstractCrudController
         $contact = $this->getContext()?->getEntity()->getInstance();
         $renderProFields = Type::EMPLOYEUR === $contact?->getType();
 
+        $activeModelQuestionnaire = $this->entityManager->getRepository(ModelQuestionnaire::class)->findOneBy(['active' => true]);
+        $communeChoices = [];
+        if ($activeModelQuestionnaire) {
+            foreach ($activeModelQuestionnaire->getCommunes() as $communeName) {
+                $communeChoices[$communeName] = $communeName;
+            }
+        }
+
         yield FormField::addPanel('Informations de contact');
         yield ChoiceField::new('type', 'Type')
             ->setChoices(Type::choiceOptions())
@@ -113,8 +128,8 @@ class ContactCrudController extends AbstractCrudController
         yield TextField::new('numeroTelephone', 'Téléphone')
             ->hideOnIndex();
 
-        yield TextField::new('commune', $renderProFields ? 'Adresse lieu d\'immersion' : 'Commune')
-            ->setLabel($renderProFields ? 'Adresse lieu d\'immersion' : 'Commune')
+        yield ChoiceField::new('commune', $renderProFields ? 'Commune du lieu d\'immersion' : 'Commune')
+            ->setChoices($communeChoices)
             ->hideOnIndex()
             ->setHelp('Commune sélectionnée');
 

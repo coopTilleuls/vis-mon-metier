@@ -115,7 +115,7 @@ final class ContactType extends AbstractType
                 'required' => true,
             ])
             ->add('commune', ChoiceType::class, [
-                'label' => $isPro ? 'Adresse du lieu d\'immersion' : 'Commune',
+                'label' => $isPro ? 'Commune du lieu d\'immersion' : 'Commune',
                 'required' => true,
                 'choices' => $communeChoices,
                 'placeholder' => 'Sélectionnez une commune',
