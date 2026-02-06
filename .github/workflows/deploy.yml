@@ -36,7 +36,7 @@ jobs:
           if [[ "${{ github.ref_name }}" == "main" ]]; then
             # Tags are deployed in prod
             ENVIRONMENT=prod
-            IMAGE_TAG=${{ github.ref_name }}
+            IMAGE_TAG=sha-${GITHUB_SHA::7}
             NAMESPACE=prod-${{ vars.PROJECT }}
             RELEASE_NAME=prod
             SERVER_NAME=${{ vars.PROD_DOMAIN }}
@@ -57,6 +57,7 @@ jobs:
           echo "server_name=${SERVER_NAME}" >> $GITHUB_OUTPUT
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
           echo "app_env=${APP_ENV}" >> $GITHUB_OUTPUT
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
