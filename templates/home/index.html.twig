@@ -1,57 +1,55 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+	{{ parent() }}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="{{ asset('styles/home.css') }}">
 {% endblock %}
 
-{% block title %}Accueil - Vis Mon Métier{% endblock %}
+{% block title %}Accueil - Vis Mon Métier
+{% endblock %}
 
 {% block body %}
-    <div class="home-container">
-        <div class="home-sidebar">
-            <img class="logo" src="{{ asset('images/logo-white.png') }}" alt="Logo Vis Mon Métier"/>
-        </div>
-        <div class="home-content">
-            <div class="home-inner">
-                <h1 class="home-title">Bienvenue sur Vis Mon Métier</h1>
-                <div class="home-introduction">
-                    <p class="intro-tagline">Vis mon métier, c'est simple : <strong class="highlight-green">1 jour / 1 binôme / 1 métier !</strong></p>
-                    <div class="intro-subtitle">Pour qui ?</div>
-                    <p class="intro-paragraph">
-                        <strong class="highlight-green">→ Les personnes en recherche d'orientation professionnelle</strong>.
-                        <br>
-                        <strong class="highlight-gold">→ Les employeurs du territoire</strong> qui souhaitez faire découvrir vos métiers.
-                    </p>
-                    <div class="intro-subtitle">Comment ?</div>
-                    <p class="intro-paragraph">
-                        En répondant au <strong class="highlight-green">questionnaire</strong> ci-après (en pesant bien chacune de vos réponses, c'est important !).
-                        <br>
-                        Pas de CV ni de liste de compétences, ce sont <strong class="highlight-green">vos réponses aux questions</strong> qui déterminent votre "compatibilité" et nous permettent de vous proposer une ou plusieurs <strong class="highlight-green">journées d'immersion</strong> !</p>
+	<header class="home-header">
+		<div class="header-container">
+			<img class="home-logo" src="{{ asset('images/logo-green.svg') }}" alt="Logo Pays de Blain"/>
+		</div>
+	</header>
+	<div class="home-container">
+		<div class="home-content">
+			<h1 class="home-title">Bienvenue sur<br/>Vis Mon Métier</h1>
+			<h2 class="home-subtitle">Un jour &bull; Un binôme &bull; Un métier !</h2>
 
-                </div>
-                
-                <div class="buttons-container">
-                    <a href="{{ path('app_questionnaire_new') }}" class="home-button home-button-participant">
-                        <div class="button-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="button-text">
-                            Je découvre un métier
-                        </div>
-                    </a>
-                    <a href="{{ path('app_questionnaire_new', {'pro': 1}) }}" class="home-button home-button-pro">
-                        <div class="button-icon">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
-                        <div class="button-text">
-                            Je fais découvrir mon métier
-                        </div>
-                    </a>
+			<div class="cards-wrapper">
+				<a href="{{ path('app_questionnaire_new') }}" class="card green">
+					<svg class="card-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-6">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+					</svg>
 
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock %}
+					<p>Je suis en recherche<br>d'orientation professionnelle</p>
+					<button class="btn">Je veux découvrir un métier</button>
+				</a>
+
+				<a href="{{ path('app_questionnaire_new', {'pro': 1}) }}" class="card yellow">
+					<svg class="card-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-6">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z"/>
+					</svg>
+
+					<p>Je suis un employeur<br>du territoire</p>
+					<button class="btn">Je fais découvrir mon métier</button>
+				</a>
+			</div>
+			<div class="how-it-works">
+				<h3>Comment ça marche ?</h3>
+				<p>En répondant au questionnaire ci-après (en pesant bien chacune de vos réponses, c'est important !)</p>
+				<p>Pas de CV ni de liste de compétences, ce sont
+					<strong>vos réponses aux questions</strong>
+					qui déterminent votre "compatibilité" et nous permettent de vous proposer une ou plusieurs journées d'immersion !
+				</p>
+			</div>
+		</main>
+	</div>
+	<div class="home-image">
+		<img src="{{ asset('images/landing-image.webp') }}" alt=""/>
+	</div>
+</div>{% endblock %}
