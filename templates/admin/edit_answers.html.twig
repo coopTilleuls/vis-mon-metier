@@ -13,6 +13,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            JSONEditor.defaults.language = 'fr';
+            JSONEditor.defaults.languages.fr = {
+                error_notset: "Propriété requise",
+                error_notempty: "La valeur ne peut pas être vide",
+                error_maxLength: "La valeur doit contenir au maximum {{0}} caractère(s)",
+                error_minLength: "La valeur doit contenir au moins {{0}} caractère(s)",
+                error_minItems: "Veuillez sélectionner au moins une réponse.",
+                error_required: "Ce champ est obligatoire."
+            }
+
             var containers = document.querySelectorAll('.js-json-editor-container');
 
             containers.forEach(function(container) {

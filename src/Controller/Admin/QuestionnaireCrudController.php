@@ -396,6 +396,11 @@ class QuestionnaireCrudController extends AbstractCrudController
      *
      * @return array<string>
      */
+    /**
+     * @param array<mixed> $questionsSchema
+     *
+     * @return array<string>
+     */
     private function getConstraintMismatches(Questionnaire $employeur, Questionnaire $participant, array $questionsSchema): array
     {
         $mismatches = [];
@@ -428,36 +433,33 @@ class QuestionnaireCrudController extends AbstractCrudController
             if ('choix multiples' === $typeReponse) {
                 $employeurArray = is_array($employeurValue) ? $employeurValue : [$employeurValue];
                 $participantArray = is_array($participantValue) ? $participantValue : [$participantValue];
-
-                $intersection = array_intersect($employeurArray, $participantArray);
-                $isMismatch = empty($intersection);
+                $isMismatch = empty(array_intersect($employeurArray, $participantArray));
             } else {
                 if (is_numeric($employeurValue) && is_numeric($participantValue)) {
-                    $distance = abs((int) $employeurValue - (int) $participantValue);
+                    $employeurInt = (int) $employeurValue;
+                    $participantInt = (int) $participantValue;
 
-                    $threshold = 2; // default threshold
-                    if (isset($question['reponses_possibles']) && is_array($question['reponses_possibles'])) {
-                        $values = array_filter(
-                            array_map(fn ($r) => $r['valeur'] ?? null, $question['reponses_possibles']),
-                            fn ($v) => is_numeric($v) && $v > 0 // exclude 0 ("don't want to answer")
-                        );
-                        if (!empty($values)) {
-                            $maxDistance = max($values) - min($values);
-                            // For questions with small scales (max distance <= 2), use threshold of 1
-                            $threshold = $maxDistance <= 2 ? 1 : 2;
-                        }
+                    // 0 means "don't want to answer", skip comparison
+                    if (0 === $employeurInt || 0 === $participantInt) {
+                        continue;
                     }
 
-                    $isMismatch = $distance >= $threshold;
+                    // Range = count of non-zero options. Threshold = floor(range / 3) + 1.
+                    // Flags only real incompatibilities: 3 options → 2, 4 options → 2, 6 options → 3.
+                    $nonZeroCount = count(array_filter(
+                        $question['reponses_possibles'] ?? [],
+                        fn ($r) => isset($r['valeur']) && is_numeric($r['valeur']) && (int) $r['valeur'] > 0
+                    ));
+                    $threshold = $nonZeroCount >= 2 ? (int) floor($nonZeroCount / 3) + 1 : 1;
+
+                    $isMismatch = ($employeurInt - $participantInt) >= $threshold;
                 } else {
-                    // For non-numeric values, fallback to strict comparison
                     $isMismatch = $employeurValue !== $participantValue;
                 }
             }
 
             if ($isMismatch) {
-                $label = $question['label_participant'] ?? $question['label_employeur'] ?? 'Question '.$index;
-                $mismatches[] = $label;
+                $mismatches[] = $question['label_participant'] ?? $question['label_employeur'] ?? 'Question '.$index;
             }
         }
 

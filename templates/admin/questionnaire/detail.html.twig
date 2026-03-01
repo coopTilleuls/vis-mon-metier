@@ -203,6 +203,30 @@
                                 <i class="fas fa-print me-1"></i> Exporter la fiche
                             </button>
                         </div>
+                        {% set min_score = null %}
+                        {% set max_score = null %}
+                        {% for match in matches %}
+                            {% if min_score is null or match.score < min_score %}
+                                {% set min_score = match.score %}
+                            {% endif %}
+                            {% if max_score is null or match.score > max_score %}
+                                {% set max_score = match.score %}
+                            {% endif %}
+                        {% endfor %}
+                        <div class="d-flex gap-3 mb-3">
+                            <span>Compatibilité min :
+                                {% if min_score >= 75 %}<span class="badge badge-success">{{ min_score }}%</span>
+                                {% elseif min_score >= 50 %}<span class="badge badge-warning">{{ min_score }}%</span>
+                                {% else %}<span class="badge badge-danger">{{ min_score }}%</span>
+                                {% endif %}
+                            </span>
+                            <span>Compatibilité max :
+                                {% if max_score >= 75 %}<span class="badge badge-success">{{ max_score }}%</span>
+                                {% elseif max_score >= 50 %}<span class="badge badge-warning">{{ max_score }}%</span>
+                                {% else %}<span class="badge badge-danger">{{ max_score }}%</span>
+                                {% endif %}
+                            </span>
+                        </div>
                         <div class="datagrid">
                             <div class="datagrid-body">
                                 <table class="table table-sm table-hover">

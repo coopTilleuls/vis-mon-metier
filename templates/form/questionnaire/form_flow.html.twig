@@ -84,10 +84,10 @@ input.value = JSON.stringify(editor.getValue());
 						</h2>
 						{% if current_step == 'contact' and is_pro is defined and is_pro is true %}
 							<p class="text-muted small">Veuillez saisir le contact de la personne qui assurera le suivi de l'immersion professionnelle.</p>
-						{% elseif current_step == 'reponsesScore' %}
-							<p class="text-muted">Répondez aux questions ci-dessous pour nous aider à évaluer votre profil.</p>
-						{% elseif current_step == 'reponsesDisposition' %}
-							<p class="text-muted">Dernière ligne droite ! Indiquez vos disponibilités et les conditions de travail qui vous conviennent.</p>
+						{% elseif current_step == 'reponsesScore' and introductionScore %}
+							<p class="text-muted">{{ introductionScore }}</p>
+						{% elseif current_step == 'reponsesDisposition' and introductionDisposition %}
+							<p class="text-muted">{{ introductionDisposition }}</p>
 						{% endif %}
 					</div>
 
@@ -168,7 +168,7 @@ input.value = JSON.stringify(editor.getValue());
 						</div>
 						{% if not is_pro %}
 							<div class="col-lg-6">
-								{{ form_row(form.contact.commune, {'attr': {'class': 'form-select', 'placeholder': 'Ville de résidence'}}) }}
+								{{ form_row(form.contact.commune, {'attr': {'class': 'form-control', 'placeholder': 'Ville de résidence'}}) }}
 							</div>
 						{% endif %}
 					</div>

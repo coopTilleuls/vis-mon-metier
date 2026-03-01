@@ -14,9 +14,9 @@
         },
         "introduction": {
             "type": "string",
-            "title": "Paragraphe d'introduction",
+            "title": "Phrase d'introduction aux questions",
             "format": "textarea",
-            "default": "Pour chaque action ci-dessous, merci d'indiquer si c'est un élément important dans votre choix d'orientation professionnelle aujourd'hui. Graduation de 1 à 4 (1 = aucune importance, 4 = très important)."
+            "default": "Pour chaque action ci-dessous, merci d'indiquer si c'est un élément important dans votre choix."
         },
         "questions": {
             "type": "array",

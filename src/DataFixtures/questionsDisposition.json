@@ -45,7 +45,7 @@
             "contrainte_majeure": true,
             "reponses_possibles": [
                 {
-                    "valeur": 1,
+                    "valeur": 3,
                     "libelle": "Oui"
                 },
                 {
@@ -53,7 +53,7 @@
                     "libelle": "Ça vous paraît difficile"
                 },
                 {
-                    "valeur": 3,
+                    "valeur": 1,
                     "libelle": "Non"
                 },
                 {
@@ -123,16 +123,16 @@
             "type_reponse": "choix unique",
             "reponses_possibles": [
                 {
-                    "valeur": 1,
-                    "libelle": "Vous n'avez pas de solution de mobilité"
-                },
-                {
-                    "valeur": 2,
+                    "valeur": 3,
                     "libelle": "Vous avez une solution de mobilité"
                 },
                 {
-                    "valeur": 3,
+                    "valeur": 2,
                     "libelle": "Vous n'êtes pas sûr d'avoir une solution de mobilité"
+                },
+                {
+                    "valeur": 1,
+                    "libelle": "Vous n'avez pas de solution de mobilité"
                 },
                 {
                     "valeur": 0,

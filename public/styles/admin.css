@@ -113,7 +113,7 @@ aside.sidebar {
 }
 
 .title {
-    color: var(--orange-color);
+    color: var(--green-color);
 }
 
 .actions .btn {
@@ -137,6 +137,14 @@ aside.sidebar {
 .btn-primary:focus {
     outline-color: var(--green-light-color) !important;
     background: var(--green-color) !important;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.btn-primary:disabled,
+.btn-primary.disabled {
+    background: var(--green-color) !important;
+    border-color: var(--green-color) !important;
 }
 
 .btn {

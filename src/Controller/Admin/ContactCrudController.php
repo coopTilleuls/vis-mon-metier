@@ -128,10 +128,15 @@ class ContactCrudController extends AbstractCrudController
         yield TextField::new('numeroTelephone', 'Téléphone')
             ->hideOnIndex();
 
-        yield ChoiceField::new('commune', $renderProFields ? 'Commune du lieu d\'immersion' : 'Commune')
-            ->setChoices($communeChoices)
-            ->hideOnIndex()
-            ->setHelp('Commune sélectionnée');
+        if ($renderProFields) {
+            yield ChoiceField::new('commune', 'Commune du lieu d\'immersion')
+                ->setChoices($communeChoices)
+                ->hideOnIndex()
+                ->setHelp('Commune sélectionnée');
+        } else {
+            yield TextField::new('commune', 'Commune')
+                ->hideOnIndex();
+        }
 
         if ($renderProFields) {
             yield FormField::addPanel('Informations Entreprise')

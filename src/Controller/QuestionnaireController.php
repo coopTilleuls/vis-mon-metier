@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Contact;
+use App\Entity\ModelQuestionnaire;
 use App\Entity\Questionnaire;
 use App\Entity\Session;
 use App\Form\Dto\Questionnaire as QuestionnaireDto;
@@ -66,11 +67,17 @@ class QuestionnaireController extends AbstractController
 
             return $this->redirectToRoute('app_questionnaire_success', $params);
         }
+        /** @var ?ModelQuestionnaire $modelQuestionnaire */
+        $modelQuestionnaire = $currentSession->getModelQuestionnaire();
+        $introductionScore = $modelQuestionnaire?->getQuestionsScore()['introduction'];
+        $introductionDisposition = $modelQuestionnaire?->getQuestionsDisposition()['introduction'];
 
         return $this->render('form/questionnaire/form_flow.html.twig', [
             'form' => $flow->getStepForm()->createView(),
             'currentStep' => $questionnaireData->currentStep,
             'data' => $questionnaireData,
+            'introductionScore' => $introductionScore,
+            'introductionDisposition' => $introductionDisposition,
         ]);
     }
 

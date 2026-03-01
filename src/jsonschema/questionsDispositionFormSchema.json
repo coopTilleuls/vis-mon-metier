@@ -14,7 +14,7 @@
         },
         "introduction": {
             "type": "string",
-            "title": "Paragraphe d'introduction",
+            "title": "Phrase d'introduction aux questions",
             "format": "textarea",
             "default": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion."
         },
@@ -59,7 +59,7 @@
                         "title": "Contrainte limitante pour l'immersion",
                         "default": false,
                         "format": "checkbox",
-                        "description": "Si les réponses du participant et de l'employeur ne concordent pas, une alerte sera remontée.",
+                        "description": "Une alerte sera remontée si le participant obtient un score inférieur à celui demandé par l'employeur. Les réponses doivent être ordonnées du moins favorable (1) au plus favorable (valeur la plus haute). La valeur 0 correspond à « je ne souhaite pas répondre » et est ignorée.",
                         "options": {
                             "dependencies": {
                                 "type_reponse": [
@@ -136,9 +136,9 @@
                     "label_participant": "Vous pouvez travailler en horaires atypiques, en décalés ?",
                     "type_reponse": "choix unique",
                     "reponses_possibles": [
-                        { "valeur": 1, "libelle": "Oui" },
+                        { "valeur": 3, "libelle": "Oui" },
                         { "valeur": 2, "libelle": "Parfois" },
-                        { "valeur": 3, "libelle": "Non" },
+                        { "valeur": 1, "libelle": "Non" },
                         { "valeur": 0, "libelle": "Vous ne souhaitez pas répondre" }
                     ]
                 }
