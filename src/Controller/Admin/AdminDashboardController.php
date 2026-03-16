@@ -64,7 +64,7 @@ class AdminDashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Vis mon métier - ' . $this->brandProvider->getName())
+            ->setTitle('Vis mon métier - '.$this->brandProvider->getName())
             ->disableDarkMode();
     }
 
