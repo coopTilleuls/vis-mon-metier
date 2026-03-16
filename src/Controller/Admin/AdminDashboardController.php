@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Brand\BrandProvider;
 use App\Entity\Contact;
 use App\Entity\ModelQuestionnaire;
 use App\Entity\Questionnaire;
@@ -27,6 +28,7 @@ class AdminDashboardController extends AbstractDashboardController
         private readonly EntityManagerInterface $entityManager,
         private readonly QuestionnaireRepository $questionnaireRepository,
         private readonly AppariementRepository $appariementRepository,
+        private readonly BrandProvider $brandProvider,
     ) {
     }
 
@@ -62,7 +64,7 @@ class AdminDashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Vis mon métier - Pays de Blain')
+            ->setTitle('Vis mon métier - ' . $this->brandProvider->getName())
             ->disableDarkMode();
     }
 

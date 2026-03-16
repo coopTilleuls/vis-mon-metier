@@ -19,7 +19,7 @@
 
 <div class="layout">
     <div class="sidebar">
-        <img class="logo" src="{{ asset('images/logo-white.png') }}"/>
+        <img class="logo" src="{{ asset('images/brand/' ~ brand.slug ~ '/logo-white.png') }}" alt="{{ brand.altLogo }}"/>
         {% if show_stepper|default(true) %}
             <div class="stepper">
                 {% for step in steps %}

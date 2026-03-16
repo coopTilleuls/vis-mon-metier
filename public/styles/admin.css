@@ -1,11 +1,4 @@
 :root {
-    --green-color: #005d55;
-    --green-light-color: #00a076;
-    --gold-color: #ccad6b;
-    --orange-color: #e1a500;
-    --blue-color: #00adb7;
-    --background-color: #f8f9fa;
-    --text-secondary: #878e95;
     --sidebar-max-width: 280px;
     --form-type-check-input-checked-bg: var(--green-light-color);
     --badge-boolean-true-bg: var(--green-light-color);

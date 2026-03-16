@@ -193,6 +193,7 @@ php:
   podAnnotations: {}
   podLabels:
     app: web
+  appBrand: "pays-de-blain"
   appEnv: prod
   app_secret: "!ChangeMe!"
   xdebug_mode: "off"

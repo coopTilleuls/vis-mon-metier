@@ -12,7 +12,7 @@
 {% block body %}
 	<header class="home-header">
 		<div class="header-container">
-			<img class="home-logo" src="{{ asset('images/logo-green.svg') }}" alt="Logo Pays de Blain"/>
+			<img class="home-logo" src="{{ asset('images/brand/' ~ brand.slug ~ '/logo.' ~ brand.logoExt) }}" alt="{{ brand.altLogo }}"/>
 		</div>
 	</header>
 	<div class="home-container">

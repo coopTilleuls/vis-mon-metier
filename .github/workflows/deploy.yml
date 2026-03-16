@@ -2,6 +2,17 @@ name: Deploy
 
 on:
   workflow_call:
+    inputs:
+      brand:
+        type: string
+        required: true
+        default: pays-de-blain
+      prod_domain:
+        type: string
+        required: true
+      nonprod_domain:
+        type: string
+        required: true
     secrets:
       workload-identity-provider:
         description: GCP workload identity provider
@@ -33,20 +44,25 @@ jobs:
           set -xo pipefail
           IS_PR=false
           APP_ENV=prod
+          BRAND_SUFFIX=""
+          if [[ "${{ inputs.brand }}" != "pays-de-blain" ]]; then
+            BRAND_SUFFIX="-${{ inputs.brand }}"
+          fi
+
           if [[ "${{ github.ref_name }}" == "main" ]]; then
             # Tags are deployed in prod
             ENVIRONMENT=prod
             IMAGE_TAG=sha-${GITHUB_SHA::7}
-            NAMESPACE=prod-${{ vars.PROJECT }}
-            RELEASE_NAME=prod
-            SERVER_NAME=${{ vars.PROD_DOMAIN }}
+            NAMESPACE=prod-${{ vars.PROJECT }}
+            RELEASE_NAME=prod${BRAND_SUFFIX}
+            SERVER_NAME=${{ inputs.prod_domain }}
           else
             APP_DEBUG=true
             ENVIRONMENT=nonprod
             IMAGE_TAG=sha-${GITHUB_SHA::7}
             NAMESPACE=nonprod-${{ vars.PROJECT }}
-            RELEASE_NAME=staging
-            SERVER_NAME=${RELEASE_NAME}.${{ vars.NONPROD_DOMAIN }}
+            RELEASE_NAME=staging${BRAND_SUFFIX}
+            SERVER_NAME=${RELEASE_NAME}.${{ inputs.nonprod_domain }}
           fi
 
           echo "release_name=${RELEASE_NAME}" >> $GITHUB_OUTPUT
@@ -113,6 +129,7 @@ jobs:
             --namespace ${{ needs.meta.outputs.namespace }} \
             --set=php.image.tag=${{ needs.meta.outputs.image_tag }} \
             --set=php.appEnv=${{ needs.meta.outputs.app_env}} \
+            --set=php.appBrand=${{ inputs.brand }} \
             --set=mailer.dsn_name=${{ vars.MAILER_DSN_NAME }} \
             --set=mailer.dsn_port=${{ vars.MAILER_DSN_PORT }} \
             --set=database_url="postgresql://${{ vars.PGUSER }}:${{ secrets.PGPASSWORD }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE }}?serverVersion=14&charset=utf8" \

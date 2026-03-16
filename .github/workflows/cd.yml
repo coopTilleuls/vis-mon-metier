@@ -21,12 +21,30 @@ jobs:
         type=semver,pattern={{major}}.{{minor}}
         type=sha
 
-  deploy:
-    name: Deploy
-    needs: [ build ]
+  deploy-pays-de-blain:
+    name: Deploy Pays de Blain
+    needs: [build]
     uses: ./.github/workflows/deploy.yml
-    concurrency: ${{ github.ref }}-deploy
+    concurrency: ${{ github.ref }}-deploy-pays-de-blain
+    with:
+      brand: pays-de-blain
+      prod_domain: ${{ vars.PROD_DOMAIN }}
+      nonprod_domain: ${{ vars.NONPROD_DOMAIN }}
     secrets:
       workload-identity-provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
       project_id: ${{ secrets.PROJECT_ID }}
-      pgpassword: ${{ secrets.PGPASSWORD }}
+      pgpassword: ${{ secrets.PGPASSWORD }}
+
+  deploy-cceg:
+    name: Deploy CCEG
+    needs: [build]
+    uses: ./.github/workflows/deploy.yml
+    concurrency: ${{ github.ref }}-deploy-cceg
+    with:
+      brand: cceg
+      prod_domain: ${{ vars.PROD_DOMAIN_CCEG }}
+      nonprod_domain: ${{ vars.NONPROD_DOMAIN_CCEG }}
+    secrets:
+      workload-identity-provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      project_id: ${{ secrets.PROJECT_ID }}
+      pgpassword: ${{ secrets.PGPASSWORD_CCEG }}
