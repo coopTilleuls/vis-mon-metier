@@ -106,10 +106,10 @@ jobs:
           # the secrets and vars are set in the environment variables of the repository
           case "${{ inputs.brand }}" in
             "pays-de-blain")
-              echo "DATABASE_URL=postgresql://${{ vars.PGUSER }}:${{ secrets.PGPASSWORD }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE }}?serverVersion=14&charset=utf8" >> $GITHUB_ENV
+              echo "DATABASE_URL=postgresql://${{ vars.PGUSER }}:${{ secrets.pgpassword }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE }}?serverVersion=14&charset=utf8" >> $GITHUB_ENV
               ;;
             "cceg")
-              echo "DATABASE_URL=postgresql://${{ vars.PGUSER_CCEG }}:${{ secrets.PGPASSWORD_CCEG }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE_CCEG }}?serverVersion=14&charset=utf8" >> $GITHUB_ENV
+              echo "DATABASE_URL=postgresql://${{ vars.PGUSER_CCEG }}:${{ secrets.pgpassword }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE_CCEG }}?serverVersion=14&charset=utf8" >> $GITHUB_ENV
               ;;
             *)
               echo "Unknown brand: ${{ inputs.brand }}"
