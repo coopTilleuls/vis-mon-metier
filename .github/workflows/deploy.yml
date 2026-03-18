@@ -100,6 +100,23 @@ jobs:
         with:
           project_id: ${{ secrets.project_id }}
 
+      - name: setup database_url according to the brant
+        run: |
+          # we will have several brands in the future, so we use case to set the database url according to the brand
+          # the secrets and vars are set in the environment variables of the repository
+          case "${{ inputs.brand }}" in
+            "pays-de-blain")
+              echo "DATABASE_URL=postgresql://${{ vars.PGUSER }}:${{ secrets.PGPASSWORD }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE }}?serverVersion=14&charset=utf8" >> $GITHUB_ENV
+              ;;
+            "cceg")
+              echo "DATABASE_URL=postgresql://${{ vars.PGUSER_CCEG }}:${{ secrets.PGPASSWORD_CCEG }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE_CCEG }}?serverVersion=14&charset=utf8" >> $GITHUB_ENV
+              ;;
+            *)
+              echo "Unknown brand: ${{ inputs.brand }}"
+              exit 1
+              ;;
+          esac
+
       - name: Connect cluster
         run: |
           gcloud components install gke-gcloud-auth-plugin
@@ -132,7 +149,7 @@ jobs:
             --set=php.appBrand=${{ inputs.brand }} \
             --set=mailer.dsn_name=${{ vars.MAILER_DSN_NAME }} \
             --set=mailer.dsn_port=${{ vars.MAILER_DSN_PORT }} \
-            --set=database_url="postgresql://${{ vars.PGUSER }}:${{ secrets.PGPASSWORD }}@${{ vars.PGHOST }}:5432/${{ vars.PGDATABASE }}?serverVersion=14&charset=utf8" \
+            --set=database_url="${{ env.DATABASE_URL }}" \
             --set=project=${{ vars.PROJECT }} \
             --set=ingress.server_name=${{ needs.meta.outputs.server_name }} \
             --set=ingress.hosts[0].host=${{ needs.meta.outputs.server_name }} \
