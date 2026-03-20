@@ -116,12 +116,23 @@ final class ContactType extends AbstractType
             ])
         ;
 
+        if (!$isPro) {
+            $communeChoices['Autre'] = 'Autre';
+        }
+
         $builder
             ->add('commune', ChoiceType::class, [
                 'label' => $isPro ? 'Commune du lieu d\'immersion' : 'Commune',
                 'required' => true,
                 'choices' => $communeChoices,
                 'placeholder' => 'Sélectionnez une commune',
+            ])
+            ->add('communeAutre', TextType::class, [
+                'label' => 'Précisez votre commune',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Ex: Nantes, Saint-Nazaire...',
+                ],
             ])
             ->add('referent', EntityType::class, [
                 'class' => Referent::class,

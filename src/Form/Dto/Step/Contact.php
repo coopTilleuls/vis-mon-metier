@@ -32,6 +32,15 @@ final class Contact
     public ?string $commune = null;
 
     #[Assert\When(
+        expression: "this.type == 'participant' && this.commune == 'Autre'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez préciser votre commune.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $communeAutre = null;
+
+    #[Assert\When(
         expression: "this.type == 'participant'",
         constraints: [
             new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),

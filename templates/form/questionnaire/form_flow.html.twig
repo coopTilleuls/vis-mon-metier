@@ -57,6 +57,28 @@ input.value = JSON.stringify(editor.getValue());
 }
 });
 });
+
+const communeSelect = document.querySelector('[data-commune-select]');
+if (communeSelect) {
+	const autreWrapper = document.getElementById('commune-autre-wrapper');
+	const communeAutreInput = autreWrapper ? autreWrapper.querySelector('input') : null;
+
+	function toggleCommuneAutre() {
+		if (communeSelect.value === 'Autre') {
+			autreWrapper.classList.remove('d-none');
+			if (communeAutreInput) communeAutreInput.required = true;
+		} else {
+			autreWrapper.classList.add('d-none');
+			if (communeAutreInput) {
+				communeAutreInput.required = false;
+				communeAutreInput.value = '';
+			}
+		}
+	}
+
+	communeSelect.addEventListener('change', toggleCommuneAutre);
+	toggleCommuneAutre();
+}
 });
 	</script>
 {% endblock %}
@@ -163,12 +185,17 @@ input.value = JSON.stringify(editor.getValue());
 						<div class="col-12">
 							{{ form_row(form.contact.email, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
 						</div>
+						{% if not is_pro %}
+							<div class="col-lg-6">
+								{{ form_row(form.contact.commune, {'attr': {'class': 'form-select', 'data-commune-select': 'true'}}) }}
+							</div>
+						{% endif %}
 						<div class="col-lg-6">
 							{{ form_row(form.contact.numeroTelephone, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
 						</div>
 						{% if not is_pro %}
-							<div class="col-lg-6">
-								{{ form_row(form.contact.commune, {'attr': {'class': 'form-control', 'placeholder': 'Ville de résidence'}}) }}
+							<div class="col-lg-6 d-none" id="commune-autre-wrapper">
+								{{ form_row(form.contact.communeAutre, {'attr': {'class': 'form-control'}}) }}
 							</div>
 						{% endif %}
 					</div>
