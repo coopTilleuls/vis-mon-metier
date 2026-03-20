@@ -34,7 +34,8 @@
                 "required": [
                     "label_participant",
                     "label_employeur",
-                    "reponses_possibles"
+                    "reponses_possibles_participant",
+                    "reponses_possibles_employeur"
                 ],
                 "properties": {
                     "label_participant": {
@@ -47,8 +48,40 @@
                         "title": "Intitulé Employeur·euse",
                         "minLength": 1
                     },
-                    "reponses_possibles": {
-                        "title": "Réponses",
+                    "reponses_possibles_participant": {
+                        "title": "Réponses Participant·e",
+                        "type": "array",
+                        "format": "table",
+                        "minItems": 4,
+                        "maxItems": 4,
+                        "options": {
+                            "disable_array_add": true,
+                            "disable_array_delete": true,
+                            "disable_array_reorder": true
+                        },
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "valeur": {
+                                    "type": "integer",
+                                    "title": "Score",
+                                    "readonly": true
+                                },
+                                "libelle": {
+                                    "type": "string",
+                                    "title": "Libellé"
+                                }
+                            }
+                        },
+                        "default": [
+                            { "valeur": 1, "libelle": "Pas du tout" },
+                            { "valeur": 2, "libelle": "Un peu" },
+                            { "valeur": 3, "libelle": "Moyennement" },
+                            { "valeur": 4, "libelle": "Beaucoup" }
+                        ]
+                    },
+                    "reponses_possibles_employeur": {
+                        "title": "Réponses Employeur·euse",
                         "type": "array",
                         "format": "table",
                         "minItems": 4,
