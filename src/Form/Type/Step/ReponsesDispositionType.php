@@ -131,6 +131,7 @@ final class ReponsesDispositionType extends AbstractType
                     $property['type'] = 'string';
                     $property['format'] = 'radio';
                     $property['minLength'] = 1;
+                    $property['default'] = '';
 
                     [$enums, $titles] = $this->extractOptions($question['reponses_possibles'] ?? []);
                     $property['enum'] = $enums;
@@ -144,6 +145,7 @@ final class ReponsesDispositionType extends AbstractType
                     $property['format'] = 'checkbox';
                     $property['uniqueItems'] = true;
                     $property['minItems'] = 1;
+                    $property['default'] = [];
 
                     [$enums, $titles] = $this->extractOptions($question['reponses_possibles'] ?? []);
 
@@ -160,6 +162,7 @@ final class ReponsesDispositionType extends AbstractType
                     $property['format'] = 'checkbox';
                     $property['uniqueItems'] = true;
                     $property['minItems'] = 1;
+                    $property['default'] = [];
 
                     $dates = $question['dates_possibles'] ?? [];
                     $enums = [];

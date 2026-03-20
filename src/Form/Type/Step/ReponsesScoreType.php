@@ -89,6 +89,7 @@ final class ReponsesScoreType extends AbstractType
                 'title' => $label,
                 'enum' => $enums,
                 'format' => 'radio',
+                'default' => '',
                 'options' => [
                     'enum_titles' => $enumTitles,
                 ],

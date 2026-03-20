@@ -40,16 +40,18 @@ console.error('Erreur parsing JSON config', e);
 return;
 }
 
-let startVal = {};
+let startVal = null;
 try {
-startVal = JSON.parse(input.value);
+const parsed = JSON.parse(input.value);
+if (parsed && Object.keys(parsed).length > 0) {
+startVal = parsed;
+}
 } catch (e) {}
 
-const editor = new JSONEditor(container, {
-schema: schema,
-startval: startVal,
-... options
-});
+const editorOptions = { schema: schema, ...options };
+if (startVal !== null) editorOptions.startval = startVal;
+
+const editor = new JSONEditor(container, editorOptions);
 
 editor.on('change', function () {
 if (editor.ready) {
