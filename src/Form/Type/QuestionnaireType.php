@@ -10,7 +10,6 @@ use App\Form\Dto\Questionnaire;
 use App\Form\Type\Step\ContactType;
 use App\Form\Type\Step\ReponsesDispositionType;
 use App\Form\Type\Step\ReponsesScoreType;
-use App\ValueObject\Type;
 use Symfony\Component\Form\Flow\AbstractFlowType;
 use Symfony\Component\Form\Flow\FormFlowBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,7 +25,6 @@ final class QuestionnaireType extends AbstractFlowType
             ->addStep('contact', ContactType::class, [
                 QuestionnaireController::IS_PRO => $isPro,
                 QuestionnaireController::SESSION_ENTITY => $session,
-                'type' => $isPro ? Type::EMPLOYEUR : Type::PARTICIPANT,
             ])
             ->addStep('reponsesScore', ReponsesScoreType::class, [
                 QuestionnaireController::SESSION_ENTITY => $session,

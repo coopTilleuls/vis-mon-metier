@@ -9,7 +9,6 @@ use App\Entity\Contact;
 use App\Entity\Referent;
 use App\Entity\Session;
 use App\Form\Dto\Step\Contact as ContactDto;
-use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -49,7 +48,6 @@ final class ContactType extends AbstractType
 
         $isPro = $options[QuestionnaireController::IS_PRO];
         $session = $options[QuestionnaireController::SESSION_ENTITY];
-        $type = $options['type'] ?? null;
 
         $communeChoices = [];
         if ($session instanceof Session) {
@@ -118,24 +116,13 @@ final class ContactType extends AbstractType
             ])
         ;
 
-        if (Type::PARTICIPANT === $type) {
-            $builder->add('commune', TextType::class, [
-                'label' => 'Commune',
-                'required' => true,
-                'attr' => [
-                    'placeholder' => 'Ex: Blain, Nantes, etc.',
-                ],
-            ]);
-        } else {
-            $builder->add('commune', ChoiceType::class, [
+        $builder
+            ->add('commune', ChoiceType::class, [
                 'label' => $isPro ? 'Commune du lieu d\'immersion' : 'Commune',
                 'required' => true,
                 'choices' => $communeChoices,
                 'placeholder' => 'Sélectionnez une commune',
-            ]);
-        }
-
-        $builder
+            ])
             ->add('referent', EntityType::class, [
                 'class' => Referent::class,
                 'label' => 'Structure de votre référent·e',
@@ -160,11 +147,9 @@ final class ContactType extends AbstractType
             'data_class' => ContactDto::class,
             QuestionnaireController::IS_PRO => false,
             QuestionnaireController::SESSION_ENTITY => null,
-            'type' => null,
         ]);
 
         $resolver->setAllowedTypes(QuestionnaireController::IS_PRO, 'bool');
         $resolver->setAllowedTypes(QuestionnaireController::SESSION_ENTITY, ['null', Session::class]);
-        $resolver->setAllowedTypes('type', ['null', 'string']);
     }
 }
