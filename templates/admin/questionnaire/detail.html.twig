@@ -196,12 +196,19 @@
                                 {% set has_any_mismatches = true %}
                             {% endif %}
                         {% endfor %}
-                        
+
                         <div class="mb-3 mt-4 d-flex justify-content-between align-items-center">
                             <h3 class="section-title">Liste des profils les plus compatibles</h3>
-                            <button onclick="window.print()" class="btn btn-secondary d-print-none">
-                                <i class="fas fa-print me-1"></i> Exporter la fiche
-                            </button>
+                            <div class="d-flex gap-2 d-print-none">
+                                <button onclick="window.print()" class="btn btn-secondary">
+                                    <i class="fas fa-print me-1"></i> Analyse des scores
+                                </button>
+                                {% if existingMatches|length > 0 %}
+                                    <button onclick="printImmersionSheet()" class="btn btn-primary">
+                                        <i class="fas fa-handshake me-1"></i> Fiche immersion
+                                    </button>
+                                {% endif %}
+                            </div>
                         </div>
                         {% set min_score = null %}
                         {% set max_score = null %}
@@ -240,8 +247,8 @@
                                             <th class="text-center">Nom</th>
                                             <th class="text-center">Tranche d'âge</th>
                                         {% endif %}
-                                        <th class="text-center">Mail</th>
-                                        <th class="text-center">Téléphone</th>
+                                        <th class="text-center d-print-none">Mail</th>
+                                        <th class="text-center d-print-none">Téléphone</th>
                                         <th class="text-center">Compatibilité</th>
                                         <th class="text-center">Dates</th>
                                         {% if has_any_mismatches %}
@@ -255,13 +262,13 @@
                                             {% if is_participant %}
                                                 <td>{{ match.entreprise|default('non précisée') }}</td>
                                                 <td>{{ match.job|default('non précisé') }}</td>
-                                                <td><a href="{{ match.detailUrl }}">{{ match.name }}</a></td>
+                                                <td><a href="{{ match.detailUrl }}" class="d-print-none">{{ match.name }}</a><span class="d-none d-print-inline">{{ match.name }}</span></td>
                                             {% else %}
-                                                <td><a href="{{ match.detailUrl }}">{{ match.label }}</a></td>
+                                                <td><a href="{{ match.detailUrl }}" class="d-print-none">{{ match.label }}</a><span class="d-none d-print-inline">{{ match.label }}</span></td>
                                                 <td class="text-center">{{ match.trancheAge }}</td>
                                             {% endif %}
-                                            <td class="text-center">{{ match.email }}</td>
-                                            <td class="text-center">{{ match.phone }}</td>
+                                            <td class="text-center d-print-none">{{ match.email }}</td>
+                                            <td class="text-center d-print-none">{{ match.phone }}</td>
                                             <td class="text-center">
                                                 {% if match.score >= 75 %}<span class="badge badge-success">{{ match.score }}%</span>
                                                 {% elseif match.score >= 50 %}<span class="badge badge-warning">{{ match.score }}%</span>
@@ -309,10 +316,10 @@
                                                                 {% endfor %}
                                                             </ul>
                                                         {% endset %}
-                                                        <span class="badge badge-danger" 
+                                                        <span class="badge badge-danger"
                                                               style="cursor: pointer;"
-                                                              data-bs-toggle="popover" 
-                                                              data-bs-placement="left" 
+                                                              data-bs-toggle="popover"
+                                                              data-bs-placement="left"
                                                               data-bs-trigger="hover focus"
                                                               data-bs-html="true"
                                                               data-bs-title="Contraintes limitantes immersion"
@@ -331,6 +338,73 @@
                     {% endif %}
                 </div>
             </div>
+
+            {# Hidden immersion sheet — only rendered to DOM for printing via printImmersionSheet() #}
+            {% if existingMatches|length > 0 %}
+                <div id="fiche-immersion-print" style="display:none;">
+                    <div class="page-header">
+                        <h2>Fiche Immersion</h2>
+                        <div class="subtitle">{{ questionnaire.session.nom|default('') }}</div>
+                    </div>
+
+                    {# Current profile block — shown once #}
+                    <div class="immersion-card profile-card">
+                        {% if not is_pro %}
+                            <div class="card-header"><span class="party">Informations volontaire</span></div>
+                            <div class="card-body">
+                                <p>{{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
+                                <p>{{ questionnaire.contact.email }}</p>
+                                <p>{{ questionnaire.contact.numeroTelephone }}</p>
+                                <p>{{ questionnaire.contact.commune }}</p>
+                                {% if questionnaire.contact.situation %}<p>{{ questionnaire.contact.situation }}</p>{% endif %}
+                            </div>
+                        {% else %}
+                            <div class="card-header"><span class="party">Structure d'accueil</span></div>
+                            <div class="card-body">
+                                <p>{{ questionnaire.contact.nomEntreprise }}</p>
+                                <p>{{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
+                                <p>{{ questionnaire.contact.email }}</p>
+                                <p>{{ questionnaire.contact.numeroTelephone }}</p>
+                                <p>{{ questionnaire.contact.commune }}</p>
+                                {% if questionnaire.metier %}<p>{{ questionnaire.metier }}</p>{% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# One card per booked immersion — only the other party's info + date #}
+                    {% for appariement in existingMatches|sort((a, b) => a.dateMatch <=> b.dateMatch) %}
+                        {% if not is_pro %}
+                            {% set other_contact = appariement.entreprise.contact %}
+                            {% set other_metier = appariement.entreprise.metier %}
+                        {% else %}
+                            {% set other_contact = appariement.participant.contact %}
+                            {% set other_metier = null %}
+                        {% endif %}
+                        <div class="immersion-card">
+                            <div class="card-header">
+                                <span class="party">{{ not is_pro ? 'Employeur' : 'Volontaire' }}</span>
+                                <span class="date">Immersion le {{ appariement.dateMatch ? appariement.dateMatch|date('d/m/Y') : 'date non précisée' }}</span>
+                            </div>
+                            <div class="card-body">
+                                {% if not is_pro %}
+                                    <p>{{ other_contact.nomEntreprise }}</p>
+                                    <p>{{ other_contact.prenom }} {{ other_contact.nomFamille }}</p>
+                                    <p>{{ other_contact.email }}</p>
+                                    <p>{{ other_contact.numeroTelephone }}</p>
+                                    <p>{{ other_contact.commune }}</p>
+                                    {% if other_metier %}<p>{{ other_metier }}</p>{% endif %}
+                                {% else %}
+                                    <p>{{ other_contact.prenom }} {{ other_contact.nomFamille }}</p>
+                                    <p>{{ other_contact.email }}</p>
+                                    <p>{{ other_contact.numeroTelephone }}</p>
+                                    <p>{{ other_contact.commune }}</p>
+                                    {% if other_contact.situation %}<p>{{ other_contact.situation }}</p>{% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     {% endif %}
 {% endblock %}
@@ -346,5 +420,40 @@
                 });
             });
         });
+
+        function printImmersionSheet() {
+            const content = document.getElementById('fiche-immersion-print').innerHTML;
+            const iframe = document.createElement('iframe');
+            iframe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;border:0;';
+            document.body.appendChild(iframe);
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(`<!DOCTYPE html><html lang="fr"><head>
+                <meta charset="UTF-8">
+                <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+                <style>
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
+                    body { font-family: 'Barlow', Arial, sans-serif; font-size: 11pt; color: #1a1a1a; background: white; padding: 32px 44px; }
+
+                    .page-header { text-align: center; border-bottom: 3px solid #1a1a1a; padding-bottom: 16px; margin-bottom: 28px; }
+                    .page-header h2 { font-size: 20pt; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+                    .page-header .subtitle { font-size: 10pt; color: #555; font-style: italic; }
+
+                    .immersion-card { border: 1px solid #c8c8c8; border-radius: 4px; margin-bottom: 16px; page-break-inside: avoid; overflow: hidden; }
+                    .profile-card { border: 2px solid #0a1f3d; border-radius: 4px; background: #f0f4f9; margin-bottom: 32px; }
+                    .card-header { padding: 11px 18px; background: #000; color: white; display: flex; justify-content: space-between; align-items: center; }
+                    .profile-card .card-header { background: #1e3a5f; padding: 12px 18px; }
+                    .card-header .party { font-size: 13pt; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+                    .card-header .date { font-size: 12pt; font-weight: 700; }
+                    .card-body { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; }
+
+                    .card-body p { margin: 0; padding: 3px 0; font-size: 11pt; line-height: 1.5; }
+                </style>
+            </head><body>${content}</body></html>`);
+            doc.close();
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            setTimeout(() => document.body.removeChild(iframe), 1000);
+        }
     </script>
 {% endblock %}
