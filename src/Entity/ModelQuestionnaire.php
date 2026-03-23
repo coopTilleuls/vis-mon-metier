@@ -100,7 +100,7 @@ class ModelQuestionnaire
      */
     public function getCommunes(): array
     {
-        return $this->communes;
+        return array_values(array_filter($this->communes, fn (string $c) => 'Autre' !== $c));
     }
 
     /**
@@ -108,7 +108,7 @@ class ModelQuestionnaire
      */
     public function setCommunes(array $communes): self
     {
-        $this->communes = $communes;
+        $this->communes = array_values(array_filter($communes, fn (string $c) => 'Autre' !== $c));
 
         return $this;
     }

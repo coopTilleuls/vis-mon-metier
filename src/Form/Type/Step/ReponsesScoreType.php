@@ -29,6 +29,7 @@ final class ReponsesScoreType extends AbstractType
 
         $builder->add('reponses', JsonEditorType::class, [
             'json_schema' => json_encode($jsonSchema),
+            'error_bubbling' => true,
             'editor_options' => [
                 'theme' => 'bootstrap5',
                 'disable_edit_json' => true,
@@ -93,6 +94,7 @@ final class ReponsesScoreType extends AbstractType
                 'title' => $label,
                 'enum' => $enums,
                 'format' => 'radio',
+                'minLength' => 1,
                 'default' => '',
                 'options' => [
                     'enum_titles' => $enumTitles,

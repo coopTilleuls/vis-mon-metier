@@ -19,6 +19,8 @@ JSONEditor.defaults.languages.fr = {
     error_minLength: "La valeur doit contenir au moins {{ '{{0}}' }} caractère(s)",
     error_maxItems: "Veuillez sélectionner au maximum {{ '{{0}}' }} élément(s)",
     error_minItems: "Veuillez sélectionner au moins {{ '{{0}}' }} élément(s)",
+    error_enum: "Veuillez sélectionner une proposition",
+    error_notempty: "Ce champ est obligatoire",
 }
 
 document.querySelectorAll('.js-json-editor-container').forEach(container => {
@@ -49,7 +51,10 @@ startVal = parsed;
 } catch (e) {}
 
 const editorOptions = { schema: schema, ...options };
-if (startVal !== null) editorOptions.startval = startVal;
+if (startVal !== null) {
+    editorOptions.startval = startVal;
+    editorOptions.show_errors = 'always';
+}
 
 const editor = new JSONEditor(container, editorOptions);
 

@@ -22,6 +22,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+use function Symfony\Component\String\u;
+
 class QuestionnaireController extends AbstractController
 {
     public const string SESSION_ENTITY = 'session_entity';
@@ -165,6 +167,10 @@ class QuestionnaireController extends AbstractController
         $questionnaire = new Questionnaire();
 
         $contact = $this->objectMapper->map($questionnaireData->contact, new Contact());
+
+        if ('Autre' === $questionnaireData->contact->commune && !empty($questionnaireData->contact->communeAutre)) {
+            $contact->setCommune(u($questionnaireData->contact->communeAutre)->trim()->collapseWhitespace()->lower()->title()->toString());
+        }
 
         $questionnaire->setSession($session);
         $questionnaire->setContact($contact);

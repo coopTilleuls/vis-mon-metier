@@ -59,6 +59,10 @@ final class ContactType extends AbstractType
             }
         }
 
+        if (!$isPro) {
+            $communeChoices['Autre'] = 'Autre';
+        }
+
         $builder
             ->add('nomEntreprise', TextType::class, [
                 'label' => 'Nom',
@@ -115,10 +119,6 @@ final class ContactType extends AbstractType
                 'required' => true,
             ])
         ;
-
-        if (!$isPro) {
-            $communeChoices['Autre'] = 'Autre';
-        }
 
         $builder
             ->add('commune', ChoiceType::class, [
