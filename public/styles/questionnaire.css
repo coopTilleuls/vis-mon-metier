@@ -247,11 +247,19 @@ textarea[data-json-editor="true"] {
     }
 }
 
-label {
+label:not(.form-check-label) {
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 14px;
     margin-bottom: 4px;
+}
+
+legend.col-form-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    padding: 0;
 }
 
 .form-nav {

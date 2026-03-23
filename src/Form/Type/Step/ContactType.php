@@ -14,6 +14,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -148,6 +149,37 @@ final class ContactType extends AbstractType
             ->add('nomFamilleTuteur', TextType::class, [
                 'label' => 'Nom',
                 'required' => true,
+            ])
+            ->add('siret', TextType::class, [
+                'label' => 'Numéro SIRET',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Ex: 12345678901234',
+                    'maxlength' => 14,
+                ],
+            ])
+            ->add('horaires', TextType::class, [
+                'label' => 'Horaires du stage',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Ex: Lundi-Vendredi 8h-17h',
+                ],
+            ])
+            ->add('epiDisponible', ChoiceType::class, [
+                'label' => 'Mise à disposition d\'équipement de protection individuelle (EPI)',
+                'choices' => ['Oui' => '1', 'Non' => '0'],
+                'expanded' => true,
+                'required' => true,
+            ])
+            ->add('autresMesuresPrevention', ChoiceType::class, [
+                'label' => 'Présence d\'autres mesures de prévention',
+                'choices' => ['Oui' => '1', 'Non' => '0'],
+                'expanded' => true,
+                'required' => true,
+            ])
+            ->add('precisionMesuresPrevention', TextareaType::class, [
+                'label' => 'Précisez les autres mesures de prévention',
+                'required' => false,
             ])
         ;
     }

@@ -65,6 +65,26 @@ input.value = JSON.stringify(editor.getValue());
 });
 });
 
+const autresMesuresWrapper = document.querySelector('[data-autres-mesures-wrapper]');
+if (autresMesuresWrapper) {
+	const autresMesuresRadios = autresMesuresWrapper.querySelectorAll('input[type="radio"]');
+	const precisionWrapper = document.getElementById('precision-mesures-wrapper');
+
+	function togglePrecisionMesures() {
+		const selectedRadio = autresMesuresWrapper.querySelector('input[type="radio"]:checked');
+		if (selectedRadio && selectedRadio.value === '1') {
+			precisionWrapper.classList.remove('d-none');
+		} else {
+			precisionWrapper.classList.add('d-none');
+			const textarea = precisionWrapper ? precisionWrapper.querySelector('textarea') : null;
+			if (textarea) textarea.value = '';
+		}
+	}
+
+	autresMesuresRadios.forEach(radio => radio.addEventListener('change', togglePrecisionMesures));
+	togglePrecisionMesures();
+}
+
 const communeSelect = document.querySelector('[data-commune-select]');
 if (communeSelect) {
 	const autreWrapper = document.getElementById('commune-autre-wrapper');
@@ -244,6 +264,11 @@ if (communeSelect) {
 					{% do form.contact.metier.setRendered() %}
 					{% do form.contact.prenomTuteur.setRendered() %}
 					{% do form.contact.nomFamilleTuteur.setRendered() %}
+					{% do form.contact.siret.setRendered() %}
+					{% do form.contact.horaires.setRendered() %}
+					{% do form.contact.epiDisponible.setRendered() %}
+					{% do form.contact.autresMesuresPrevention.setRendered() %}
+					{% do form.contact.precisionMesuresPrevention.setRendered() %}
 				{% else %}
 					<div class="col-12 mt-4">
 						<div class="p-4 rounded-4 shadow-lg">
@@ -263,6 +288,21 @@ if (communeSelect) {
 								</div>
 								<div class="col-lg-12">
 									{{ form_row(form.contact.metier, {'attr': {'class': 'form-control'}}) }}
+								</div>
+								<div class="col-lg-6">
+									{{ form_row(form.contact.siret, {'attr': {'class': 'form-control'}}) }}
+								</div>
+								<div class="col-lg-6">
+									{{ form_row(form.contact.horaires, {'attr': {'class': 'form-control'}}) }}
+								</div>
+								<div class="col-12">
+									{{ form_row(form.contact.epiDisponible) }}
+								</div>
+								<div class="col-12" data-autres-mesures-wrapper="true">
+									{{ form_row(form.contact.autresMesuresPrevention) }}
+								</div>
+								<div class="col-12 d-none" id="precision-mesures-wrapper">
+									{{ form_row(form.contact.precisionMesuresPrevention, {'attr': {'class': 'form-control'}}) }}
 								</div>
 							</div>
 						</div>

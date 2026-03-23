@@ -108,15 +108,28 @@
                             <div class="col-6">
                                 <p><strong>Structure :</strong> {{ questionnaire.contact.nomEntreprise }}</p>
                                 <p><strong>Contact :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
-                                <p><strong>Adresse :</strong> {{ questionnaire.contact.commune }}</p>
+                                <p><strong>SIRET :</strong> {{ questionnaire.contact.siret }}</p>
                             </div>
                             <div class="col-6">
                                 <p><strong>Adresse mail :</strong> {{ questionnaire.contact.email }}</p>
                                 <p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>
+                                <p><strong>Adresse :</strong> {{ questionnaire.contact.commune }}</p>
                             </div>
                         </div>
                         <div class="col-12">
                             <p><strong>Métier proposé à l'immersion :</strong> {{ questionnaire.metier }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p><strong>Horaires du stage :</strong> {{ questionnaire.contact.horaires }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p><strong>EPI disponible :</strong> {{ questionnaire.contact.epiDisponible is not null ? (questionnaire.contact.epiDisponible ? 'Oui' : 'Non') : '' }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p><strong>Autres mesures de prévention :</strong> {{ questionnaire.contact.autresMesuresPrevention is not null ? (questionnaire.contact.autresMesuresPrevention ? 'Oui' : 'Non') : '' }}</p>
+                            {% if questionnaire.contact.autresMesuresPrevention %}
+                                <p><strong>Précision :</strong> {{ questionnaire.contact.precisionMesuresPrevention }}</p>
+                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
@@ -355,21 +368,26 @@
                         {% if not is_pro %}
                             <div class="card-header"><span class="party">Informations volontaire</span></div>
                             <div class="card-body">
-                                <p>{{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
-                                <p>{{ questionnaire.contact.email }}</p>
-                                <p>{{ questionnaire.contact.numeroTelephone }}</p>
-                                <p>{{ questionnaire.contact.commune }}</p>
-                                {% if questionnaire.contact.situation %}<p>{{ questionnaire.contact.situation }}</p>{% endif %}
+                                <p><strong>Nom :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
+                                <p><strong>Email :</strong> {{ questionnaire.contact.email }}</p>
+                                {% if questionnaire.contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>{% endif %}
+                                {% if questionnaire.contact.commune %}<p><strong>Commune :</strong> {{ questionnaire.contact.commune }}</p>{% endif %}
+                                {% if questionnaire.contact.situation %}<p><strong>Situation :</strong> {{ questionnaire.contact.situation }}</p>{% endif %}
                             </div>
                         {% else %}
                             <div class="card-header"><span class="party">Structure d'accueil</span></div>
                             <div class="card-body">
-                                <p>{{ questionnaire.contact.nomEntreprise }}</p>
-                                <p>{{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
-                                <p>{{ questionnaire.contact.email }}</p>
-                                <p>{{ questionnaire.contact.numeroTelephone }}</p>
-                                <p>{{ questionnaire.contact.commune }}</p>
-                                {% if questionnaire.metier %}<p>{{ questionnaire.metier }}</p>{% endif %}
+                                {% if questionnaire.contact.nomEntreprise %}<p><strong>Entreprise :</strong> {{ questionnaire.contact.nomEntreprise }}</p>{% endif %}
+                                <p><strong>Nom :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
+                                <p><strong>Email :</strong> {{ questionnaire.contact.email }}</p>
+                                {% if questionnaire.contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>{% endif %}
+                                {% if questionnaire.contact.commune %}<p><strong>Commune :</strong> {{ questionnaire.contact.commune }}</p>{% endif %}
+                                {% if questionnaire.metier %}<p><strong>Métier :</strong> {{ questionnaire.metier }}</p>{% endif %}
+                                {% if questionnaire.contact.siret %}<p><strong>SIRET :</strong> {{ questionnaire.contact.siret }}</p>{% endif %}
+                                {% if questionnaire.contact.horaires %}<p><strong>Horaires :</strong> {{ questionnaire.contact.horaires }}</p>{% endif %}
+                                {% if questionnaire.contact.epiDisponible is not null %}<p><strong>EPI disponible :</strong> {{ questionnaire.contact.epiDisponible ? 'Oui' : 'Non' }}</p>{% endif %}
+                                {% if questionnaire.contact.autresMesuresPrevention is not null %}<p><strong>Autres mesures de prévention :</strong> {{ questionnaire.contact.autresMesuresPrevention ? 'Oui' : 'Non' }}</p>{% endif %}
+                                {% if questionnaire.contact.precisionMesuresPrevention %}<p><strong>Précision :</strong> {{ questionnaire.contact.precisionMesuresPrevention }}</p>{% endif %}
                             </div>
                         {% endif %}
                     </div>
@@ -390,18 +408,23 @@
                             </div>
                             <div class="card-body">
                                 {% if not is_pro %}
-                                    <p>{{ other_contact.nomEntreprise }}</p>
-                                    <p>{{ other_contact.prenom }} {{ other_contact.nomFamille }}</p>
-                                    <p>{{ other_contact.email }}</p>
-                                    <p>{{ other_contact.numeroTelephone }}</p>
-                                    <p>{{ other_contact.commune }}</p>
-                                    {% if other_metier %}<p>{{ other_metier }}</p>{% endif %}
+                                    {% if other_contact.nomEntreprise %}<p><strong>Entreprise :</strong> {{ other_contact.nomEntreprise }}</p>{% endif %}
+                                    <p><strong>Nom :</strong> {{ other_contact.prenom }} {{ other_contact.nomFamille }}</p>
+                                    <p><strong>Email :</strong> {{ other_contact.email }}</p>
+                                    {% if other_contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ other_contact.numeroTelephone }}</p>{% endif %}
+                                    {% if other_contact.commune %}<p><strong>Commune :</strong> {{ other_contact.commune }}</p>{% endif %}
+                                    {% if other_metier %}<p><strong>Métier :</strong> {{ other_metier }}</p>{% endif %}
+                                    {% if other_contact.siret %}<p><strong>SIRET :</strong> {{ other_contact.siret }}</p>{% endif %}
+                                    {% if other_contact.horaires %}<p><strong>Horaires :</strong> {{ other_contact.horaires }}</p>{% endif %}
+                                    {% if other_contact.epiDisponible is not null %}<p><strong>EPI disponible :</strong> {{ other_contact.epiDisponible ? 'Oui' : 'Non' }}</p>{% endif %}
+                                    {% if other_contact.autresMesuresPrevention is not null %}<p><strong>Autres mesures de prévention :</strong> {{ other_contact.autresMesuresPrevention ? 'Oui' : 'Non' }}</p>{% endif %}
+                                    {% if other_contact.precisionMesuresPrevention %}<p><strong>Précision :</strong> {{ other_contact.precisionMesuresPrevention }}</p>{% endif %}
                                 {% else %}
-                                    <p>{{ other_contact.prenom }} {{ other_contact.nomFamille }}</p>
-                                    <p>{{ other_contact.email }}</p>
-                                    <p>{{ other_contact.numeroTelephone }}</p>
-                                    <p>{{ other_contact.commune }}</p>
-                                    {% if other_contact.situation %}<p>{{ other_contact.situation }}</p>{% endif %}
+                                    <p><strong>Nom :</strong> {{ other_contact.prenom }} {{ other_contact.nomFamille }}</p>
+                                    <p><strong>Email :</strong> {{ other_contact.email }}</p>
+                                    {% if other_contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ other_contact.numeroTelephone }}</p>{% endif %}
+                                    {% if other_contact.commune %}<p><strong>Commune :</strong> {{ other_contact.commune }}</p>{% endif %}
+                                    {% if other_contact.situation %}<p><strong>Situation :</strong> {{ other_contact.situation }}</p>{% endif %}
                                 {% endif %}
                             </div>
                         </div>

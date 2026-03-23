@@ -130,4 +130,52 @@ final class Contact
         groups: ['contact']
     )]
     public ?string $nomFamilleTuteur = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+            new Assert\Regex(pattern: '/^\d{14}$/', message: 'Le SIRET doit contenir exactement 14 chiffres.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $siret = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $horaires = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez répondre à cette question.'),
+            new Assert\Choice(choices: ['1', '0'], message: 'Valeur invalide.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $epiDisponible = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez répondre à cette question.'),
+            new Assert\Choice(choices: ['1', '0'], message: 'Valeur invalide.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $autresMesuresPrevention = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur' && this.autresMesuresPrevention == '1'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez préciser les autres mesures de prévention.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $precisionMesuresPrevention = null;
 }

@@ -68,6 +68,23 @@ class Contact
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomFamilleTuteur = null;
 
+    #[ORM\Column(length: 14, nullable: true)]
+    private ?string $siret = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $horaires = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Map(if: false)]
+    private ?bool $epiDisponible = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Map(if: false)]
+    private ?bool $autresMesuresPrevention = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $precisionMesuresPrevention = null;
+
     #[ORM\ManyToOne(targetEntity: Referent::class, cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Map(if: false)]
@@ -234,6 +251,56 @@ class Contact
     public function setNomFamilleTuteur(?string $nomFamilleTuteur): void
     {
         $this->nomFamilleTuteur = $nomFamilleTuteur;
+    }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $siret): void
+    {
+        $this->siret = $siret;
+    }
+
+    public function getHoraires(): ?string
+    {
+        return $this->horaires;
+    }
+
+    public function setHoraires(?string $horaires): void
+    {
+        $this->horaires = $horaires;
+    }
+
+    public function getEpiDisponible(): ?bool
+    {
+        return $this->epiDisponible;
+    }
+
+    public function setEpiDisponible(?bool $epiDisponible): void
+    {
+        $this->epiDisponible = $epiDisponible;
+    }
+
+    public function getAutresMesuresPrevention(): ?bool
+    {
+        return $this->autresMesuresPrevention;
+    }
+
+    public function setAutresMesuresPrevention(?bool $autresMesuresPrevention): void
+    {
+        $this->autresMesuresPrevention = $autresMesuresPrevention;
+    }
+
+    public function getPrecisionMesuresPrevention(): ?string
+    {
+        return $this->precisionMesuresPrevention;
+    }
+
+    public function setPrecisionMesuresPrevention(?string $precisionMesuresPrevention): void
+    {
+        $this->precisionMesuresPrevention = $precisionMesuresPrevention;
     }
 
     public function __toString(): string

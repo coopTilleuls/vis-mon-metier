@@ -158,6 +158,11 @@ class QuestionnaireController extends AbstractController
         $dto->situation = $contact->getSituation();
         $dto->trancheAge = $contact->getTrancheAge();
         $dto->referent = $contact->getReferent();
+        $dto->siret = $contact->getSiret();
+        $dto->horaires = $contact->getHoraires();
+        $dto->epiDisponible = null !== $contact->getEpiDisponible() ? ($contact->getEpiDisponible() ? '1' : '0') : null;
+        $dto->autresMesuresPrevention = null !== $contact->getAutresMesuresPrevention() ? ($contact->getAutresMesuresPrevention() ? '1' : '0') : null;
+        $dto->precisionMesuresPrevention = $contact->getPrecisionMesuresPrevention();
 
         return $dto;
     }
@@ -176,6 +181,8 @@ class QuestionnaireController extends AbstractController
         $questionnaire->setContact($contact);
         $questionnaire->setType($isPro ? Type::EMPLOYEUR : Type::PARTICIPANT);
         $questionnaire->setMetier($isPro ? $questionnaireData->contact->metier : null);
+        $contact->setEpiDisponible($isPro && null !== $questionnaireData->contact->epiDisponible ? '1' === $questionnaireData->contact->epiDisponible : null);
+        $contact->setAutresMesuresPrevention($isPro && null !== $questionnaireData->contact->autresMesuresPrevention ? '1' === $questionnaireData->contact->autresMesuresPrevention : null);
         $questionnaire->setReponsesDisposition($questionnaireData->reponsesDisposition->reponses);
         $questionnaire->setReponsesScore($questionnaireData->reponsesScore->reponses);
 
