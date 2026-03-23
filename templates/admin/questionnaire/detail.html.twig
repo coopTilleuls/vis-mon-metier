@@ -99,6 +99,7 @@
                                 <p><strong>Situation :</strong> {{ questionnaire.contact.situation }}</p>
                             </div>
                             <p><strong>Commune de résidence :</strong> {{ questionnaire.contact.commune }}</p>
+                            {% if questionnaire.contact.referent %}<p><strong>Référent·e :</strong> {{ questionnaire.contact.referent }}</p>{% endif %}
                         </div>
                     </div>
                 {% else %}
@@ -217,7 +218,7 @@
                             <h3 class="section-title">Liste des profils les plus compatibles</h3>
                             <div class="d-flex gap-2 d-print-none">
                                 <button onclick="window.print()" class="btn btn-secondary">
-                                    <i class="fas fa-print me-1"></i> Analyse des scores
+                                    <i class="fas fa-chart-column me-1"></i> Analyse des scores
                                 </button>
                                 {% if existingMatches|length > 0 %}
                                     <button onclick="printImmersionSheet()" class="btn btn-primary">
@@ -373,6 +374,7 @@
                                 {% if questionnaire.contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>{% endif %}
                                 {% if questionnaire.contact.commune %}<p><strong>Commune :</strong> {{ questionnaire.contact.commune }}</p>{% endif %}
                                 {% if questionnaire.contact.situation %}<p><strong>Situation :</strong> {{ questionnaire.contact.situation }}</p>{% endif %}
+                                {% if questionnaire.contact.referent %}<p><strong>Référent·e :</strong> {{ questionnaire.contact.referent }}</p>{% endif %}
                             </div>
                         {% else %}
                             <div class="card-header"><span class="party">Structure d'accueil</span></div>
@@ -425,6 +427,7 @@
                                     {% if other_contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ other_contact.numeroTelephone }}</p>{% endif %}
                                     {% if other_contact.commune %}<p><strong>Commune :</strong> {{ other_contact.commune }}</p>{% endif %}
                                     {% if other_contact.situation %}<p><strong>Situation :</strong> {{ other_contact.situation }}</p>{% endif %}
+                                    {% if other_contact.referent %}<p><strong>Référent·e :</strong> {{ other_contact.referent }}</p>{% endif %}
                                 {% endif %}
                             </div>
                         </div>
