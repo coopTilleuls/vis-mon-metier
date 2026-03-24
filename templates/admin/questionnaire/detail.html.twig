@@ -95,15 +95,11 @@
                                 <p><strong>Age :</strong> {{ questionnaire.contact.trancheAge }}</p>
                             </div>
                             <div class="col-6">
-                                <p><strong>Adresse mail :</strong> {{ questionnaire.contact.email }}</p>
-                                <p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>
                                 <p><strong>Situation :</strong> {{ questionnaire.contact.situation }}</p>
+                                <p><strong>Commune de résidence :</strong> {{ questionnaire.contact.commune }}</p>
                             </div>
-                            <p><strong>Commune de résidence :</strong> {{ questionnaire.contact.commune }}</p>
                             {% if questionnaire.contact.referent %}
                                 <p><strong>Référent·e :</strong> {{ questionnaire.contact.referent.prenom }} {{ questionnaire.contact.referent.nomFamille }}{% if questionnaire.contact.referent.fonction %} — {{ questionnaire.contact.referent.fonction }}{% endif %}{% if questionnaire.contact.referent.structure %} ({{ questionnaire.contact.referent.structure }}){% endif %}</p>
-                                {% if questionnaire.contact.referent.email %}<p><strong>Email référent·e :</strong> {{ questionnaire.contact.referent.email }}</p>{% endif %}
-                                {% if questionnaire.contact.referent.telephone %}<p><strong>Tél. référent·e :</strong> {{ questionnaire.contact.referent.telephone }}</p>{% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -352,15 +348,18 @@
                         {% if not is_pro %}
                             <div class="card-header"><span class="party">Informations volontaire</span></div>
                             <div class="card-body">
+                                <p class="card-section">Volontaire</p>
                                 <p><strong>Nom :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}</p>
                                 <p><strong>Email :</strong> {{ questionnaire.contact.email }}</p>
                                 {% if questionnaire.contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>{% endif %}
                                 {% if questionnaire.contact.commune %}<p><strong>Commune :</strong> {{ questionnaire.contact.commune }}</p>{% endif %}
                                 {% if questionnaire.contact.situation %}<p><strong>Situation :</strong> {{ questionnaire.contact.situation }}</p>{% endif %}
+
                                 {% if questionnaire.contact.referent %}
-                                    <p><strong>Référent·e :</strong> {{ questionnaire.contact.referent.prenom }} {{ questionnaire.contact.referent.nomFamille }}{% if questionnaire.contact.referent.fonction %} — {{ questionnaire.contact.referent.fonction }}{% endif %}{% if questionnaire.contact.referent.structure %} ({{ questionnaire.contact.referent.structure }}){% endif %}</p>
-                                    {% if questionnaire.contact.referent.email %}<p><strong>Email référent·e :</strong> {{ questionnaire.contact.referent.email }}</p>{% endif %}
-                                    {% if questionnaire.contact.referent.telephone %}<p><strong>Tél. référent·e :</strong> {{ questionnaire.contact.referent.telephone }}</p>{% endif %}
+                                    <p class="card-section">Référent·e</p>
+                                    <p><strong>Nom :</strong> {{ questionnaire.contact.referent.prenom }} {{ questionnaire.contact.referent.nomFamille }}{% if questionnaire.contact.referent.fonction %} — {{ questionnaire.contact.referent.fonction }}{% endif %}{% if questionnaire.contact.referent.structure %} ({{ questionnaire.contact.referent.structure }}){% endif %}</p>
+                                    {% if questionnaire.contact.referent.email %}<p><strong>Email :</strong> {{ questionnaire.contact.referent.email }}</p>{% endif %}
+                                    {% if questionnaire.contact.referent.telephone %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.referent.telephone }}</p>{% endif %}
                                 {% endif %}
                             </div>
                         {% else %}
@@ -386,8 +385,7 @@
                                 {% if questionnaire.contact.telephoneTuteur %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.telephoneTuteur }}</p>{% endif %}
 
                                 <p class="card-section">Conditions d'accueil</p>
-                                <p><strong>Nombre d'immersions :</strong> {{ questionnaire.nombreImmersion }}</p>
-                                {% if questionnaire.nombreImmersion > 1 and questionnaire.immersionMemeDate is not null %}<p><strong>Même date :</strong> {{ questionnaire.immersionMemeDate ? 'Oui' : 'Non' }}</p>{% endif %}
+                                {% if questionnaire.immersionMemeDate %}<p><strong>Plusieurs immersions le même jour :</strong> Oui</p>{% endif %}
                                 {% if questionnaire.contact.horaires %}<p><strong>Horaires :</strong> {{ questionnaire.contact.horaires }}</p>{% endif %}
                                 {% if questionnaire.contact.epiDisponible is not null %}<p><strong>EPI disponible :</strong> {{ questionnaire.contact.epiDisponible ? 'Oui' : 'Non' }}</p>{% endif %}
                                 {% if questionnaire.contact.autresMesuresPrevention %}<p><strong>Mesures de prévention :</strong> {{ questionnaire.contact.precisionMesuresPrevention }}</p>{% endif %}
@@ -406,7 +404,7 @@
                         {% endif %}
                         <div class="immersion-card">
                             <div class="card-header">
-                                <span class="party">{{ not is_pro ? 'Employeur' : 'Volontaire' }}</span>
+                                <span class="party">{{ not is_pro ? 'Professionnel·le' : 'Volontaire' }}</span>
                                 <span class="date">Immersion le {{ appariement.dateMatch ? appariement.dateMatch|date('d/m/Y') : 'date non précisée' }}</span>
                             </div>
                             <div class="card-body">
@@ -429,21 +427,23 @@
                                     {% if other_contact.telephoneTuteur %}<p><strong>Téléphone :</strong> {{ other_contact.telephoneTuteur }}</p>{% endif %}
 
                                     <p class="card-section">Conditions d'accueil</p>
-                                    <p><strong>Nombre d'immersions :</strong> {{ appariement.entreprise.nombreImmersion }}</p>
-                                    {% if appariement.entreprise.nombreImmersion > 1 and appariement.entreprise.immersionMemeDate is not null %}<p><strong>Même date :</strong> {{ appariement.entreprise.immersionMemeDate ? 'Oui' : 'Non' }}</p>{% endif %}
+                                    {% if appariement.entreprise.immersionMemeDate %}<p><strong>Plusieurs immersions le même jour :</strong> Oui</p>{% endif %}
                                     {% if other_contact.horaires %}<p><strong>Horaires :</strong> {{ other_contact.horaires }}</p>{% endif %}
                                     {% if other_contact.epiDisponible is not null %}<p><strong>EPI disponible :</strong> {{ other_contact.epiDisponible ? 'Oui' : 'Non' }}</p>{% endif %}
                                     {% if other_contact.autresMesuresPrevention %}<p><strong>Mesures de prévention :</strong> {{ other_contact.precisionMesuresPrevention }}</p>{% endif %}
                                 {% else %}
+                                    <p class="card-section">Volontaire</p>
                                     <p><strong>Nom :</strong> {{ other_contact.prenom }} {{ other_contact.nomFamille }}</p>
                                     <p><strong>Email :</strong> {{ other_contact.email }}</p>
                                     {% if other_contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ other_contact.numeroTelephone }}</p>{% endif %}
                                     {% if other_contact.commune %}<p><strong>Commune :</strong> {{ other_contact.commune }}</p>{% endif %}
                                     {% if other_contact.situation %}<p><strong>Situation :</strong> {{ other_contact.situation }}</p>{% endif %}
+
                                     {% if other_contact.referent %}
-                                        <p><strong>Référent·e :</strong> {{ other_contact.referent.prenom }} {{ other_contact.referent.nomFamille }}{% if other_contact.referent.fonction %} — {{ other_contact.referent.fonction }}{% endif %}{% if other_contact.referent.structure %} ({{ other_contact.referent.structure }}){% endif %}</p>
-                                        {% if other_contact.referent.email %}<p><strong>Email référent·e :</strong> {{ other_contact.referent.email }}</p>{% endif %}
-                                        {% if other_contact.referent.telephone %}<p><strong>Tél. référent·e :</strong> {{ other_contact.referent.telephone }}</p>{% endif %}
+                                        <p class="card-section">Référent·e</p>
+                                        <p><strong>Nom :</strong> {{ other_contact.referent.prenom }} {{ other_contact.referent.nomFamille }}{% if other_contact.referent.fonction %} — {{ other_contact.referent.fonction }}{% endif %}{% if other_contact.referent.structure %} ({{ other_contact.referent.structure }}){% endif %}</p>
+                                        {% if other_contact.referent.email %}<p><strong>Email :</strong> {{ other_contact.referent.email }}</p>{% endif %}
+                                        {% if other_contact.referent.telephone %}<p><strong>Téléphone :</strong> {{ other_contact.referent.telephone }}</p>{% endif %}
                                     {% endif %}
                                 {% endif %}
                             </div>

@@ -73,10 +73,10 @@ class AdminDashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
         yield MenuItem::linkToCrud('Sessions', 'fas fa-calendar-days', Session::class)
             ->setPermission(Roles::ADMIN);
-        yield MenuItem::linkToCrud('Questions', 'fas fa-question', ModelQuestionnaire::class)
+        yield MenuItem::linkToCrud('Questionnaires', 'fas fa-question', ModelQuestionnaire::class)
             ->setPermission(Roles::ADMIN);
         yield MenuItem::linkToCrud('Contacts', 'fas fa-users', Contact::class);
-        yield MenuItem::linkToCrud('Questionnaires remplis', 'fas fa-clipboard-list', Questionnaire::class);
+        yield MenuItem::linkToCrud('Résultats de matchings', 'fas fa-clipboard-list', Questionnaire::class);
         yield MenuItem::linkToCrud('Référent·es', 'fas fa-person', Referent::class)
             ->setPermission(Roles::ADMIN);
         yield MenuItem::linkToCrud('Utilisateur·ices', 'fas fa-user', User::class)

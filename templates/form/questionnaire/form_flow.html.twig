@@ -334,7 +334,7 @@ if (communeSelect) {
 								<div>
 									<small class="text-muted">
 										<i class="fas fa-info-circle me-1"></i>
-										Personne qui accompagnera durant l'immersion (peut être la même personne que le signataire de la convention).
+										Peut être la même personne que le signataire de la convention.
 									</small>
 								</div>
 								<div class="col-lg-6">
@@ -347,10 +347,10 @@ if (communeSelect) {
 									{{ form_row(form.contact.fonctionTuteur, {'attr': {'class': 'form-control'}}) }}
 								</div>
 								<div class="col-lg-6">
-									{{ form_row(form.contact.telephoneTuteur, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
+									{{ form_row(form.contact.emailTuteur, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
 								</div>
 								<div class="col-lg-6">
-									{{ form_row(form.contact.emailTuteur, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
+									{{ form_row(form.contact.telephoneTuteur, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
 								</div>
 							</div>
 						</div>

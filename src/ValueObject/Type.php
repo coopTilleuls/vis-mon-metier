@@ -15,8 +15,8 @@ final class Type
     public static function choiceOptions(): array
     {
         return [
-            'Participant·e' => self::PARTICIPANT,
-            'Employeur·euse' => self::EMPLOYEUR,
+            'Volontaire' => self::PARTICIPANT,
+            'Professionnel·le' => self::EMPLOYEUR,
         ];
     }
 }

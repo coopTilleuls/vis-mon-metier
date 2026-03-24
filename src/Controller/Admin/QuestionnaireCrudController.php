@@ -59,9 +59,9 @@ class QuestionnaireCrudController extends AbstractCrudController
         }
 
         return $crud
-            ->setEntityLabelInSingular('Questionnaire')
-            ->setEntityLabelInPlural('Questionnaires')
-            ->setPageTitle('index', 'Liste des questionnaires remplis')
+            ->setEntityLabelInSingular('Résultat de matching')
+            ->setEntityLabelInPlural('Résultats de matchings')
+            ->setPageTitle('index', 'Liste des résultats de matchings')
             ->overrideTemplate('crud/detail', 'admin/questionnaire/detail.html.twig')
             ->showEntityActionsInlined()
             ->setSearchFields(['metier', 'contact.prenom', 'contact.nomFamille', 'contact.nomEntreprise', 'contact.email'])

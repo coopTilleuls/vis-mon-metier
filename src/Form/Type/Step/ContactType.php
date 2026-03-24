@@ -87,7 +87,7 @@ final class ContactType extends AbstractType
                 ],
             ])
             ->add('adresseEntreprise', TextType::class, [
-                'label' => 'Adresse de l\'entreprise',
+                'label' => 'Adresse',
                 'required' => true,
             ])
             ->add('metier', TextType::class, [
@@ -200,7 +200,7 @@ final class ContactType extends AbstractType
                 ],
             ])
             ->add('horaires', TextType::class, [
-                'label' => 'Horaires du stage',
+                'label' => 'Horaires de l\'immersion',
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Ex: Lundi-Vendredi 8h-17h',
