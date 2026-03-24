@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Contact;
 use App\Entity\ModelQuestionnaire;
 use App\Entity\Questionnaire;
+use App\Entity\Referent;
 use App\Entity\Session;
 use App\Form\Dto\Questionnaire as QuestionnaireDto;
 use App\Form\Dto\Step\Contact as ContactDto;
@@ -191,6 +192,11 @@ class QuestionnaireController extends AbstractController
                 ? '1' === $questionnaireData->contact->immersionMemeDate
                 : null
         );
+        $referent = $questionnaireData->contact->referent;
+        if ($referent?->getId()) {
+            $referent = $this->entityManager->getRepository(Referent::class)->find($referent->getId());
+        }
+        $contact->setReferent($referent);
         $contact->setEpiDisponible($isPro && null !== $questionnaireData->contact->epiDisponible ? '1' === $questionnaireData->contact->epiDisponible : null);
         $contact->setAutresMesuresPrevention($isPro && null !== $questionnaireData->contact->autresMesuresPrevention ? '1' === $questionnaireData->contact->autresMesuresPrevention : null);
         $questionnaire->setReponsesDisposition($questionnaireData->reponsesDisposition->reponses);
