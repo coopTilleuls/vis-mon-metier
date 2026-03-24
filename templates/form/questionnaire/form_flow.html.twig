@@ -131,9 +131,7 @@ if (communeSelect) {
 							{% if current_step == 'reponsesDisposition' %}Vos disponibilités
 							{% endif %}
 						</h2>
-						{% if current_step == 'contact' and is_pro is defined and is_pro is true %}
-							<p class="text-muted small">Veuillez saisir le contact de la personne qui assurera le suivi de l'immersion professionnelle.</p>
-						{% elseif current_step == 'reponsesScore' and introductionScore %}
+						{% if current_step == 'reponsesScore' and introductionScore %}
 							<p class="text-muted">{{ introductionScore }}</p>
 						{% elseif current_step == 'reponsesDisposition' and introductionDisposition %}
 							<p class="text-muted">{{ introductionDisposition }}</p>
@@ -201,7 +199,7 @@ if (communeSelect) {
 			<div class="d-flex flex-column gap-2">
 
 				<div class="p-4 rounded-4 shadow-lg">
-					<h6 class="h4 text-green fw-bold mb-3">Votre identité</h6>
+					<h6 class="h4 text-green fw-bold mb-3">{% if is_pro %}Coordonnées du signataire de la convention de stage{% else %}Votre identité{% endif %}</h6>
 					<div class="row gx-3 gy-4">
 						<div class="col-lg-6">
 							{{ form_row(form.contact.prenom, {'attr': {'class': 'form-control'}}) }}
@@ -209,7 +207,14 @@ if (communeSelect) {
 						<div class="col-lg-6">
 							{{ form_row(form.contact.nomFamille, {'attr': {'label': 'Nom','class': 'form-control'}}) }}
 						</div>
-						<div class="col-12">
+						{% if is_pro %}
+						<div class="col-lg-12">
+							{{ form_row(form.contact.fonctionSignataire, {'attr': {'class': 'form-control'}}) }}
+						</div>
+						{% else %}
+							{% do form.contact.fonctionSignataire.setRendered() %}
+						{% endif %}
+						<div class="col-6">
 							{{ form_row(form.contact.email, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
 						</div>
 						{% if not is_pro %}
@@ -261,11 +266,15 @@ if (communeSelect) {
 					{% do form.contact.nomEntreprise.setRendered() %}
 					{% do form.contact.secteurActivite.setRendered() %}
 					{% do form.contact.nombreEmployes.setRendered() %}
+					{% do form.contact.adresseEntreprise.setRendered() %}
 					{% do form.contact.metier.setRendered() %}
 					{% do form.contact.nombreImmersion.setRendered() %}
 					{% do form.contact.immersionMemeDate.setRendered() %}
 					{% do form.contact.prenomTuteur.setRendered() %}
 					{% do form.contact.nomFamilleTuteur.setRendered() %}
+					{% do form.contact.fonctionTuteur.setRendered() %}
+					{% do form.contact.emailTuteur.setRendered() %}
+					{% do form.contact.telephoneTuteur.setRendered() %}
 					{% do form.contact.siret.setRendered() %}
 					{% do form.contact.horaires.setRendered() %}
 					{% do form.contact.epiDisponible.setRendered() %}
@@ -283,7 +292,10 @@ if (communeSelect) {
 									{{ form_row(form.contact.secteurActivite, {'attr': {'class': 'form-control'}}) }}
 								</div>
 								<div class="col-lg-6">
-									{{ form_row(form.contact.nombreEmployes, {'attr': {'class': 'form-control'}}) }}
+									{{ form_row(form.contact.nombreEmployes, {'attr': {'class': 'form-select'}}) }}
+								</div>
+								<div class="col-lg-12">
+									{{ form_row(form.contact.adresseEntreprise, {'attr': {'class': 'form-control'}}) }}
 								</div>
 								<div class="col-lg-6">
 									{{ form_row(form.contact.commune, {'attr': {'class': 'form-select'}}) }}
@@ -318,19 +330,28 @@ if (communeSelect) {
 					<div class="col-12 mt-4">
 						<div class="p-4 rounded-4 shadow-lg">
 							<div class="row g-3">
-								<h6 class="h4 text-green fw-bold mb-3">Tuteur·ice professionnel·le</h6>
+								<h6 class="h4 text-green fw-bold mb-3">Tuteur ou tutrice pendant l'immersion</h6>
 								<div>
 									<small class="text-muted">
 										<i class="fas fa-info-circle me-1"></i>
-										Personne qui accompagnera durant l'immersion (peut être la même personne que le contact).
+										Personne qui accompagnera durant l'immersion (peut être la même personne que le signataire de la convention).
 									</small>
 								</div>
-							</div>
-							<div class="col-lg-6">
-								{{ form_row(form.contact.prenomTuteur, {'attr': {'class': 'form-control'}}) }}
-							</div>
-							<div class="col-lg-6">
-								{{ form_row(form.contact.nomFamilleTuteur, {'attr': {'class': 'form-control'}}) }}
+								<div class="col-lg-6">
+									{{ form_row(form.contact.prenomTuteur, {'attr': {'class': 'form-control'}}) }}
+								</div>
+								<div class="col-lg-6">
+									{{ form_row(form.contact.nomFamilleTuteur, {'attr': {'class': 'form-control'}}) }}
+								</div>
+								<div class="col-lg-12">
+									{{ form_row(form.contact.fonctionTuteur, {'attr': {'class': 'form-control'}}) }}
+								</div>
+								<div class="col-lg-6">
+									{{ form_row(form.contact.telephoneTuteur, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
+								</div>
+								<div class="col-lg-6">
+									{{ form_row(form.contact.emailTuteur, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
+								</div>
 							</div>
 						</div>
 					</div>

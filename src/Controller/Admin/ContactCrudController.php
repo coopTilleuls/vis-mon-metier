@@ -115,7 +115,7 @@ class ContactCrudController extends AbstractCrudController
             }
         }
 
-        yield FormField::addPanel('Informations de contact');
+        yield FormField::addPanel('Coordonnées du signataire de la convention de stage');
         yield ChoiceField::new('type', 'Type')
             ->setChoices(Type::choiceOptions())
             ->renderAsBadges([
@@ -126,32 +126,45 @@ class ContactCrudController extends AbstractCrudController
 
         yield TextField::new('prenom', 'Prénom');
         yield TextField::new('nomFamille', 'Nom');
+        if ($renderProFields) {
+            yield TextField::new('fonctionSignataire', 'Fonction signataire')->hideOnIndex();
+        }
         yield EmailField::new('email', 'Email');
         yield TextField::new('numeroTelephone', 'Téléphone')
             ->hideOnIndex();
 
-        if ($renderProFields) {
-            yield ChoiceField::new('commune', 'Commune du lieu d\'immersion')
-                ->setChoices($communeChoices)
-                ->hideOnIndex()
-                ->setHelp('Commune sélectionnée');
-        } else {
+        if (!$renderProFields) {
             yield TextField::new('commune', 'Commune')
                 ->hideOnIndex();
         }
 
         if ($renderProFields) {
             yield FormField::addPanel('Informations Entreprise')
-                ->hideOnIndex()
-            ;
+                ->hideOnIndex();
             yield TextField::new('nomEntreprise', 'Nom')->hideOnIndex();
             yield TextField::new('secteurActivite', 'Secteur d\'activité')->hideOnIndex();
-            yield TextField::new('nombreEmployes', 'Effectif')->hideOnIndex();
-            yield TextField::new('prenomTuteur', 'Prénom Tuteur·ice')->hideOnIndex();
-            yield TextField::new('nomFamilleTuteur', 'Nom Tuteur·ice')->hideOnIndex();
+            yield ChoiceField::new('nombreEmployes', 'Effectif')
+                ->setChoices([
+                    '- de 10 salarié·e·s' => '- de 10 salarié·e·s',
+                    'Entre 11 et 50 salarié·e·s' => 'Entre 11 et 50 salarié·e·s',
+                    'Entre 51 et 250 salarié·e·s' => 'Entre 51 et 250 salarié·e·s',
+                    '+ de 250 salarié·e·s' => '+ de 250 salarié·e·s',
+                ])
+                ->hideOnIndex();
+            yield TextField::new('siret', 'SIRET')->hideOnIndex();
+            yield ChoiceField::new('commune', 'Commune du lieu d\'immersion')
+                ->setChoices($communeChoices)
+                ->hideOnIndex()
+                ->setHelp('Commune sélectionnée');
+            yield TextField::new('adresseEntreprise', 'Adresse entreprise')->hideOnIndex();
+            yield FormField::addPanel('Tuteur ou tutrice pendant l\'immersion')->hideOnIndex();
+            yield TextField::new('prenomTuteur', 'Prénom')->hideOnIndex();
+            yield TextField::new('nomFamilleTuteur', 'Nom')->hideOnIndex();
+            yield TextField::new('fonctionTuteur', 'Fonction')->hideOnIndex();
+            yield EmailField::new('emailTuteur', 'Email')->hideOnIndex();
+            yield TextField::new('telephoneTuteur', 'Téléphone')->hideOnIndex();
 
             yield FormField::addPanel('Mise en place administrative')->hideOnIndex();
-            yield TextField::new('siret', 'SIRET')->hideOnIndex();
             yield TextField::new('horaires', 'Horaires du stage')->hideOnIndex();
             yield BooleanField::new('epiDisponible', 'EPI disponible')
                 ->hideOnIndex();

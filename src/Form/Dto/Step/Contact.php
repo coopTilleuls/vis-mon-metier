@@ -20,6 +20,15 @@ final class Contact
     #[Assert\Length(min: 2, minMessage: 'Le nom de famille doit contenir au moins 2 caractères.', groups: ['contact'])]
     public ?string $nomFamille = null;
 
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $fonctionSignataire = null;
+
     #[Assert\NotBlank(message: 'Veuillez remplir ce champ.', groups: ['contact'])]
     #[Assert\Email(message: 'L\'adresse email n\'est pas valide.', groups: ['contact'])]
     public ?string $email = null;
@@ -97,12 +106,25 @@ final class Contact
         expression: "this.type == 'employeur'",
         constraints: [
             new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
-            new Assert\Positive(message: 'Veuillez saisir un nombre valide.'),
-            new Assert\Type(type: 'numeric', message: 'Veuillez saisir un nombre.'),
+            new Assert\Choice(choices: [
+                '- de 10 salarié·e·s',
+                'Entre 11 et 50 salarié·e·s',
+                'Entre 51 et 250 salarié·e·s',
+                '+ de 250 salarié·e·s',
+            ], message: 'Veuillez choisir une valeur valide.'),
         ],
         groups: ['contact']
     )]
-    public mixed $nombreEmployes = null;
+    public ?string $nombreEmployes = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $adresseEntreprise = null;
 
     #[Assert\When(
         expression: "this.type == 'employeur'",
@@ -150,6 +172,21 @@ final class Contact
         groups: ['contact']
     )]
     public ?string $nomFamilleTuteur = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $fonctionTuteur = null;
+
+    #[Assert\Email(message: 'L\'adresse email n\'est pas valide.', groups: ['contact'])]
+    public ?string $emailTuteur = null;
+
+    #[Assert\Regex(pattern: '/^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/', message: 'Le numéro de téléphone n\'est pas valide (format français attendu).', groups: ['contact'])]
+    public ?string $telephoneTuteur = null;
 
     #[Assert\When(
         expression: "this.type == 'employeur'",

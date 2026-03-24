@@ -15,6 +15,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -74,13 +75,25 @@ final class ContactType extends AbstractType
                 'label' => 'Secteur d\'activité',
                 'required' => true,
             ])
-            ->add('nombreEmployes', TextType::class, [
-                'label' => 'Nombre d\'employés',
+            ->add('nombreEmployes', ChoiceType::class, [
+                'label' => 'Nombre de salarié·e·s',
+                'required' => true,
+                'placeholder' => 'Sélectionnez une tranche',
+                'choices' => [
+                    '- de 10 salarié·e·s' => '- de 10 salarié·e·s',
+                    'Entre 11 et 50 salarié·e·s' => 'Entre 11 et 50 salarié·e·s',
+                    'Entre 51 et 250 salarié·e·s' => 'Entre 51 et 250 salarié·e·s',
+                    '+ de 250 salarié·e·s' => '+ de 250 salarié·e·s',
+                ],
+            ])
+            ->add('adresseEntreprise', TextType::class, [
+                'label' => 'Adresse de l\'entreprise',
                 'required' => true,
             ])
             ->add('metier', TextType::class, [
                 'label' => 'Métier proposé à l\'immersion',
                 'required' => true,
+                'help' => '1 seul métier par réponse, possibilité de répondre pour un autre métier en fin de questionnaire',
             ])
             ->add('nombreImmersion', IntegerType::class, [
                 'label' => 'Combien d\'immersions d\'une journée proposez-vous pour ce métier ?',
@@ -134,6 +147,10 @@ final class ContactType extends AbstractType
         ;
 
         $builder
+            ->add('fonctionSignataire', TextType::class, [
+                'label' => 'Fonction',
+                'required' => true,
+            ])
             ->add('commune', ChoiceType::class, [
                 'label' => $isPro ? 'Commune du lieu d\'immersion' : 'Commune',
                 'required' => true,
@@ -162,11 +179,23 @@ final class ContactType extends AbstractType
                 'label' => 'Nom',
                 'required' => true,
             ])
+            ->add('fonctionTuteur', TextType::class, [
+                'label' => 'Fonction',
+                'required' => true,
+            ])
+            ->add('emailTuteur', EmailType::class, [
+                'label' => 'Adresse e-mail (optionnel)',
+                'required' => false,
+            ])
+            ->add('telephoneTuteur', TelType::class, [
+                'label' => 'Numéro de téléphone (optionnel)',
+                'required' => false,
+                'attr' => ['placeholder' => '06 12 34 56 78'],
+            ])
             ->add('siret', TextType::class, [
                 'label' => 'Numéro SIRET',
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Ex: 12345678901234',
                     'maxlength' => 14,
                 ],
             ])

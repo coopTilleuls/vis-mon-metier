@@ -63,10 +63,25 @@ class Contact
     private ?string $commune = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fonctionSignataire = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenomTuteur = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomFamilleTuteur = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fonctionTuteur = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $emailTuteur = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $telephoneTuteur = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $adresseEntreprise = null;
 
     #[ORM\Column(length: 14, nullable: true)]
     private ?string $siret = null;
@@ -233,6 +248,16 @@ class Contact
         $this->commune = $commune;
     }
 
+    public function getFonctionSignataire(): ?string
+    {
+        return $this->fonctionSignataire;
+    }
+
+    public function setFonctionSignataire(?string $fonctionSignataire): void
+    {
+        $this->fonctionSignataire = $fonctionSignataire;
+    }
+
     public function getPrenomTuteur(): ?string
     {
         return $this->prenomTuteur;
@@ -251,6 +276,46 @@ class Contact
     public function setNomFamilleTuteur(?string $nomFamilleTuteur): void
     {
         $this->nomFamilleTuteur = $nomFamilleTuteur;
+    }
+
+    public function getFonctionTuteur(): ?string
+    {
+        return $this->fonctionTuteur;
+    }
+
+    public function setFonctionTuteur(?string $fonctionTuteur): void
+    {
+        $this->fonctionTuteur = $fonctionTuteur;
+    }
+
+    public function getEmailTuteur(): ?string
+    {
+        return $this->emailTuteur;
+    }
+
+    public function setEmailTuteur(?string $emailTuteur): void
+    {
+        $this->emailTuteur = $emailTuteur;
+    }
+
+    public function getTelephoneTuteur(): ?string
+    {
+        return $this->telephoneTuteur;
+    }
+
+    public function setTelephoneTuteur(?string $telephoneTuteur): void
+    {
+        $this->telephoneTuteur = $telephoneTuteur;
+    }
+
+    public function getAdresseEntreprise(): ?string
+    {
+        return $this->adresseEntreprise;
+    }
+
+    public function setAdresseEntreprise(?string $adresseEntreprise): void
+    {
+        $this->adresseEntreprise = $adresseEntreprise;
     }
 
     public function getSiret(): ?string
