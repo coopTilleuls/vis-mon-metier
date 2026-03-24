@@ -590,3 +590,21 @@ button.field-collection-delete-button:hover {
     background: var(--button-invisible-danger-active-color) !important;
     color: white !important;
 }
+
+/* EasyAdmin inverts label/value for BooleanField by default — restore normal order */
+.ea-detail .field-group.field-boolean {
+    flex-direction: row;
+}
+.ea-detail .field-group.field-boolean .field-label {
+    flex: unset;
+    inline-size: 130px;
+    min-inline-size: 0;
+    margin: 0 15px 0 0;
+    text-align: right;
+}
+.ea-detail .field-group.field-boolean .field-value {
+    flex: 1;
+    inline-size: unset;
+    min-inline-size: 66%;
+    text-align: left;
+}

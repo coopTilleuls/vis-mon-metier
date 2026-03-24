@@ -262,6 +262,8 @@ if (communeSelect) {
 					{% do form.contact.secteurActivite.setRendered() %}
 					{% do form.contact.nombreEmployes.setRendered() %}
 					{% do form.contact.metier.setRendered() %}
+					{% do form.contact.nombreImmersion.setRendered() %}
+					{% do form.contact.immersionMemeDate.setRendered() %}
 					{% do form.contact.prenomTuteur.setRendered() %}
 					{% do form.contact.nomFamilleTuteur.setRendered() %}
 					{% do form.contact.siret.setRendered() %}
@@ -283,16 +285,22 @@ if (communeSelect) {
 								<div class="col-lg-6">
 									{{ form_row(form.contact.nombreEmployes, {'attr': {'class': 'form-control'}}) }}
 								</div>
-								<div class="col-lg-12">
+								<div class="col-lg-6">
 									{{ form_row(form.contact.commune, {'attr': {'class': 'form-select'}}) }}
+								</div>
+								<div class="col-lg-6">
+									{{ form_row(form.contact.siret, {'attr': {'class': 'form-control'}}) }}
 								</div>
 								<div class="col-lg-12">
 									{{ form_row(form.contact.metier, {'attr': {'class': 'form-control'}}) }}
 								</div>
 								<div class="col-lg-6">
-									{{ form_row(form.contact.siret, {'attr': {'class': 'form-control'}}) }}
+									{{ form_row(form.contact.nombreImmersion, {'attr': {'class': 'form-control'}}) }}
 								</div>
-								<div class="col-lg-6">
+								<div class="col-lg-12" id="immersion-meme-date-wrapper">
+									{{ form_row(form.contact.immersionMemeDate) }}
+								</div>
+								<div class="col-lg-12">
 									{{ form_row(form.contact.horaires, {'attr': {'class': 'form-control'}}) }}
 								</div>
 								<div class="col-12">

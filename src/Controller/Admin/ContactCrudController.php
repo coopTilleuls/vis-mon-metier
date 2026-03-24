@@ -22,6 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
@@ -152,16 +153,10 @@ class ContactCrudController extends AbstractCrudController
             yield FormField::addPanel('Mise en place administrative')->hideOnIndex();
             yield TextField::new('siret', 'SIRET')->hideOnIndex();
             yield TextField::new('horaires', 'Horaires du stage')->hideOnIndex();
-            yield TextField::new('epiDisponible', 'EPI disponible')
-                ->hideOnIndex()
-                ->formatValue(fn (?bool $v) => match ($v) {
-                    true => 'Oui', false => 'Non', default => '-',
-                });
-            yield TextField::new('autresMesuresPrevention', 'Autres mesures de prévention')
-                ->hideOnIndex()
-                ->formatValue(fn (?bool $v) => match ($v) {
-                    true => 'Oui', false => 'Non', default => '-',
-                });
+            yield BooleanField::new('epiDisponible', 'EPI disponible')
+                ->hideOnIndex();
+            yield BooleanField::new('autresMesuresPrevention', 'Autres mesures de prévention')
+                ->hideOnIndex();
             yield TextareaField::new('precisionMesuresPrevention', 'Précision mesures de prévention')
                 ->hideOnIndex();
         } else {

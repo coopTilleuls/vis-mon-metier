@@ -116,6 +116,26 @@ final class Contact
     #[Assert\When(
         expression: "this.type == 'employeur'",
         constraints: [
+            new Assert\NotNull(message: 'Ce champ est obligatoire.'),
+            new Assert\Positive(message: 'Le nombre d\'immersions doit être supérieur à 0.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?int $nombreImmersion = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
+            new Assert\NotBlank(message: 'Veuillez répondre à cette question.'),
+            new Assert\Choice(choices: ['1', '0'], message: 'Valeur invalide.'),
+        ],
+        groups: ['contact']
+    )]
+    public ?string $immersionMemeDate = null;
+
+    #[Assert\When(
+        expression: "this.type == 'employeur'",
+        constraints: [
             new Assert\NotBlank(message: 'Veuillez remplir ce champ.'),
         ],
         groups: ['contact']

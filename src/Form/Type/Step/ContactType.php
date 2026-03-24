@@ -14,6 +14,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -79,6 +80,17 @@ final class ContactType extends AbstractType
             ])
             ->add('metier', TextType::class, [
                 'label' => 'Métier proposé à l\'immersion',
+                'required' => true,
+            ])
+            ->add('nombreImmersion', IntegerType::class, [
+                'label' => 'Combien d\'immersions d\'une journée proposez-vous pour ce métier ?',
+                'required' => true,
+                'attr' => ['min' => 1],
+            ])
+            ->add('immersionMemeDate', ChoiceType::class, [
+                'label' => 'Si vous proposez plusieurs journées d\'immersion, auront-elles lieu à la même date ?',
+                'choices' => ['Oui' => '1', 'Non' => '0'],
+                'expanded' => true,
                 'required' => true,
             ])
             ->add('type', TextType::class, [

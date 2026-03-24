@@ -121,6 +121,12 @@
                             <p><strong>Métier proposé à l'immersion :</strong> {{ questionnaire.metier }}</p>
                         </div>
                         <div class="col-12">
+                            <p><strong>Nombre d'immersions :</strong> {{ questionnaire.nombreImmersion }}</p>
+                            {% if questionnaire.nombreImmersion > 1 and questionnaire.immersionMemeDate is not null %}
+                                <p><strong>Même date :</strong> {{ questionnaire.immersionMemeDate ? 'Oui' : 'Non' }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-12">
                             <p><strong>Horaires du stage :</strong> {{ questionnaire.contact.horaires }}</p>
                         </div>
                         <div class="col-12">
@@ -385,6 +391,8 @@
                                 {% if questionnaire.contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>{% endif %}
                                 {% if questionnaire.contact.commune %}<p><strong>Commune :</strong> {{ questionnaire.contact.commune }}</p>{% endif %}
                                 {% if questionnaire.metier %}<p><strong>Métier :</strong> {{ questionnaire.metier }}</p>{% endif %}
+                                <p><strong>Nombre d'immersions :</strong> {{ questionnaire.nombreImmersion }}</p>
+                                {% if questionnaire.nombreImmersion > 1 and questionnaire.immersionMemeDate is not null %}<p><strong>Même date :</strong> {{ questionnaire.immersionMemeDate ? 'Oui' : 'Non' }}</p>{% endif %}
                                 {% if questionnaire.contact.siret %}<p><strong>SIRET :</strong> {{ questionnaire.contact.siret }}</p>{% endif %}
                                 {% if questionnaire.contact.horaires %}<p><strong>Horaires :</strong> {{ questionnaire.contact.horaires }}</p>{% endif %}
                                 {% if questionnaire.contact.epiDisponible is not null %}<p><strong>EPI disponible :</strong> {{ questionnaire.contact.epiDisponible ? 'Oui' : 'Non' }}</p>{% endif %}
@@ -416,6 +424,8 @@
                                     {% if other_contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ other_contact.numeroTelephone }}</p>{% endif %}
                                     {% if other_contact.commune %}<p><strong>Commune :</strong> {{ other_contact.commune }}</p>{% endif %}
                                     {% if other_metier %}<p><strong>Métier :</strong> {{ other_metier }}</p>{% endif %}
+                                    <p><strong>Nombre d'immersions :</strong> {{ appariement.entreprise.nombreImmersion }}</p>
+                                    {% if appariement.entreprise.nombreImmersion > 1 and appariement.entreprise.immersionMemeDate is not null %}<p><strong>Même date :</strong> {{ appariement.entreprise.immersionMemeDate ? 'Oui' : 'Non' }}</p>{% endif %}
                                     {% if other_contact.siret %}<p><strong>SIRET :</strong> {{ other_contact.siret }}</p>{% endif %}
                                     {% if other_contact.horaires %}<p><strong>Horaires :</strong> {{ other_contact.horaires }}</p>{% endif %}
                                     {% if other_contact.epiDisponible is not null %}<p><strong>EPI disponible :</strong> {{ other_contact.epiDisponible ? 'Oui' : 'Non' }}</p>{% endif %}

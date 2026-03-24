@@ -132,6 +132,10 @@ class QuestionnaireController extends AbstractController
             $questionnaireData->contact = $this->mapEntityToContactDto($previousContact);
 
             $questionnaireData->contact->metier = $previousQuestionnaire->getMetier();
+            $questionnaireData->contact->nombreImmersion = $previousQuestionnaire->getNombreImmersion();
+            $questionnaireData->contact->immersionMemeDate = null !== $previousQuestionnaire->getImmersionMemeDate()
+                ? ($previousQuestionnaire->getImmersionMemeDate() ? '1' : '0')
+                : null;
 
             $questionnaireData->reponsesScore = new ReponsesScore();
             $questionnaireData->reponsesScore->reponses = $previousQuestionnaire->getReponsesScore();
@@ -181,6 +185,12 @@ class QuestionnaireController extends AbstractController
         $questionnaire->setContact($contact);
         $questionnaire->setType($isPro ? Type::EMPLOYEUR : Type::PARTICIPANT);
         $questionnaire->setMetier($isPro ? $questionnaireData->contact->metier : null);
+        $questionnaire->setNombreImmersion($isPro ? $questionnaireData->contact->nombreImmersion : 1);
+        $questionnaire->setImmersionMemeDate(
+            $isPro && null !== $questionnaireData->contact->immersionMemeDate
+                ? '1' === $questionnaireData->contact->immersionMemeDate
+                : null
+        );
         $contact->setEpiDisponible($isPro && null !== $questionnaireData->contact->epiDisponible ? '1' === $questionnaireData->contact->epiDisponible : null);
         $contact->setAutresMesuresPrevention($isPro && null !== $questionnaireData->contact->autresMesuresPrevention ? '1' === $questionnaireData->contact->autresMesuresPrevention : null);
         $questionnaire->setReponsesDisposition($questionnaireData->reponsesDisposition->reponses);

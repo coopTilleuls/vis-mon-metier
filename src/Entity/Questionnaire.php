@@ -36,6 +36,12 @@ class Questionnaire
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $metier = null;
 
+    #[ORM\Column(nullable: false, options: ['default' => 1])]
+    private int $nombreImmersion = 1;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $immersionMemeDate = null;
+
     /**
      * @var array<mixed>
      */
@@ -126,6 +132,26 @@ class Questionnaire
     public function setMetier(?string $metier): void
     {
         $this->metier = $metier;
+    }
+
+    public function getNombreImmersion(): int
+    {
+        return $this->nombreImmersion;
+    }
+
+    public function setNombreImmersion(int $nombreImmersion): void
+    {
+        $this->nombreImmersion = $nombreImmersion;
+    }
+
+    public function getImmersionMemeDate(): ?bool
+    {
+        return $this->immersionMemeDate;
+    }
+
+    public function setImmersionMemeDate(?bool $immersionMemeDate): void
+    {
+        $this->immersionMemeDate = $immersionMemeDate;
     }
 
     /**

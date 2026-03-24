@@ -23,8 +23,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -140,6 +142,10 @@ class QuestionnaireCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        /** @var ?Questionnaire $questionnaire */
+        $questionnaire = $this->getContext()?->getEntity()->getInstance();
+        $isEmployeur = $questionnaire instanceof Questionnaire && Type::EMPLOYEUR === $questionnaire->getType();
+
         if ($this->isGranted(Roles::ADMIN)) {
             yield AssociationField::new('session', 'Session')
                 ->autocomplete()
@@ -155,6 +161,14 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->hideOnForm();
 
         yield TextField::new('metier', 'Métier');
+
+        if ($isEmployeur) {
+            yield IntegerField::new('nombreImmersion', 'Nombre d\'immersions')
+                ->hideOnIndex();
+
+            yield BooleanField::new('immersionMemeDate', 'Plusieurs immersions à la même date ?')
+                ->hideOnIndex();
+        }
 
         yield ChoiceField::new('type', 'Type de profil')
             ->setChoices(Type::choiceOptions())
