@@ -133,7 +133,13 @@ final class ReponsesDispositionType extends AbstractType
                     $property['minLength'] = 1;
                     $property['default'] = '';
 
-                    [$enums, $titles] = $this->extractOptions($question['reponses_possibles'] ?? []);
+                    $targetAnswers = array_map(fn (array $r) => [
+                        'valeur' => $r['valeur'],
+                        'libelle' => $isPro
+                            ? ($r['libelle_employeur'] ?? $r['libelle'] ?? '')
+                            : ($r['libelle_participant'] ?? $r['libelle'] ?? ''),
+                    ], $question['reponses_possibles'] ?? []);
+                    [$enums, $titles] = $this->extractOptions($targetAnswers);
                     $property['enum'] = $enums;
                     $property['options'] = ['enum_titles' => $titles];
 
@@ -147,7 +153,13 @@ final class ReponsesDispositionType extends AbstractType
                     $property['minItems'] = 1;
                     $property['default'] = [];
 
-                    [$enums, $titles] = $this->extractOptions($question['reponses_possibles'] ?? []);
+                    $targetAnswers = array_map(fn (array $r) => [
+                        'valeur' => $r['valeur'],
+                        'libelle' => $isPro
+                            ? ($r['libelle_employeur'] ?? $r['libelle'] ?? '')
+                            : ($r['libelle_participant'] ?? $r['libelle'] ?? ''),
+                    ], $question['reponses_possibles'] ?? []);
+                    [$enums, $titles] = $this->extractOptions($targetAnswers);
 
                     $property['items'] = [
                         'type' => 'string',

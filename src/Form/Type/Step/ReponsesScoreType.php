@@ -80,13 +80,11 @@ final class ReponsesScoreType extends AbstractType
             $enums = [];
             $enumTitles = [];
 
-            $targetAnswers = $isPro
-                ? ($question['reponses_possibles_employeur'] ?? $question['reponses_possibles'] ?? [])
-                : ($question['reponses_possibles_participant'] ?? $question['reponses_possibles'] ?? []);
-
-            foreach ($targetAnswers as $reponse) {
+            foreach ($question['reponses_possibles'] ?? [] as $reponse) {
                 $enums[] = (string) $reponse['valeur'];
-                $enumTitles[] = $reponse['libelle'];
+                $enumTitles[] = $isPro
+                    ? ($reponse['libelle_employeur'] ?? $reponse['libelle'] ?? '')
+                    : ($reponse['libelle_participant'] ?? $reponse['libelle'] ?? '');
             }
 
             $schema['properties'][$key] = [

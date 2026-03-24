@@ -150,15 +150,18 @@
                             {% if question.reponses_possibles is defined %}
                                 {% set found_labels = [] %}
                                 {% for option in question.reponses_possibles %}
+                                    {% set opt_libelle = is_pro
+                                        ? option.libelle_employeur|default(option.libelle|default(''))
+                                        : option.libelle_participant|default(option.libelle|default('')) %}
                                     {% if answer_value is iterable %}
                                         {% for val in answer_value %}
                                             {% if option.valeur ~ '' == val ~ '' %}
-                                                {% set found_labels = found_labels|merge([option.libelle]) %}
+                                                {% set found_labels = found_labels|merge([opt_libelle]) %}
                                             {% endif %}
                                         {% endfor %}
                                     {% else %}
                                         {% if option.valeur ~ '' == answer_value ~ '' %}
-                                            {% set found_labels = found_labels|merge([option.libelle]) %}
+                                            {% set found_labels = found_labels|merge([opt_libelle]) %}
                                         {% endif %}
                                     {% endif %}
                                 {% endfor %}

@@ -393,8 +393,8 @@ class ImportQuestionnaireCommand extends Command
         $question = $this->questionsDispositionSchema['questions'][$questionIndex];
         $cleanCsv = mb_strtolower(trim($csvValue));
 
-        foreach ($question['reponses_possibles'] as $option) {
-            $libelle = mb_strtolower(trim($option['libelle']));
+        foreach ($question['reponses_possibles'] ?? [] as $option) {
+            $libelle = mb_strtolower(trim($option['libelle_participant'] ?? $option['libelle'] ?? ''));
 
             if ($cleanCsv === $libelle) {
                 return $option['valeur'];

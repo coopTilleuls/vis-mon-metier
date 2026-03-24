@@ -271,9 +271,9 @@ class QuestionnaireRepository extends ServiceEntityRepository
             if (!empty($countsParticipant) || !empty($countsEmployeur)) {
                 $reponsesMap = [];
                 $reponsesOrder = [];
-                foreach ($questionSchema['reponses_possibles_participant'] ?? $questionSchema['reponses_possibles'] ?? [] as $reponse) {
+                foreach ($questionSchema['reponses_possibles'] ?? [] as $reponse) {
                     $valeur = (string) $reponse['valeur'];
-                    $reponsesMap[$valeur] = $reponse['libelle'];
+                    $reponsesMap[$valeur] = $reponse['libelle_participant'] ?? $reponse['libelle'] ?? $valeur;
                     $reponsesOrder[] = $valeur;
                 }
 

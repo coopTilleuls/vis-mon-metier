@@ -93,9 +93,13 @@
                                     "title": "Score",
                                     "default": 1
                                 },
-                                "libelle": {
+                                "libelle_participant": {
                                     "type": "string",
-                                    "title": "Libellé"
+                                    "title": "Libellé Participant·e"
+                                },
+                                "libelle_employeur": {
+                                    "type": "string",
+                                    "title": "Libellé Employeur·euse"
                                 }
                             }
                         }
@@ -136,10 +140,10 @@
                     "label_participant": "Vous pouvez travailler en horaires atypiques, en décalés ?",
                     "type_reponse": "choix unique",
                     "reponses_possibles": [
-                        { "valeur": 3, "libelle": "Oui" },
-                        { "valeur": 2, "libelle": "Parfois" },
-                        { "valeur": 1, "libelle": "Non" },
-                        { "valeur": 0, "libelle": "Vous ne souhaitez pas répondre" }
+                        { "valeur": 3, "libelle_participant": "Oui", "libelle_employeur": "Oui" },
+                        { "valeur": 2, "libelle_participant": "Parfois", "libelle_employeur": "Parfois" },
+                        { "valeur": 1, "libelle_participant": "Non", "libelle_employeur": "Non" },
+                        { "valeur": 0, "libelle_participant": "Vous ne souhaitez pas répondre", "libelle_employeur": "Vous ne souhaitez pas répondre" }
                     ]
                 }
             ]

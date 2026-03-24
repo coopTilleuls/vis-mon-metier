@@ -8,34 +8,13 @@
             "type_reponse": "choix unique",
             "contrainte_majeure": true,
             "reponses_possibles": [
-                {
-                    "valeur": 6,
-                    "libelle": "Oui, aucun problème"
-                },
-                {
-                    "valeur": 5,
-                    "libelle": "Oui, dans une certaine mesure ou avec une aide mécanique"
-                },
-                {
-                    "valeur": 4,
-                    "libelle": "Oui, si nécessaire"
-                },
-                {
-                    "valeur": 3,
-                    "libelle": "Oui, un peu"
-                },
-                {
-                    "valeur": 2,
-                    "libelle": "Ça vous paraît difficile"
-                },
-                {
-                    "valeur": 1,
-                    "libelle": "Non"
-                },
-                {
-                    "valeur": 0,
-                    "libelle": "Vous ne souhaitez pas répondre"
-                }
+                { "valeur": 6, "libelle_participant": "Oui, aucun problème", "libelle_employeur": "Oui, aucun problème" },
+                { "valeur": 5, "libelle_participant": "Oui, dans une certaine mesure ou avec une aide mécanique", "libelle_employeur": "Oui, dans une certaine mesure ou avec une aide mécanique" },
+                { "valeur": 4, "libelle_participant": "Oui, si nécessaire", "libelle_employeur": "Oui, si nécessaire" },
+                { "valeur": 3, "libelle_participant": "Oui, un peu", "libelle_employeur": "Oui, un peu" },
+                { "valeur": 2, "libelle_participant": "Ça vous paraît difficile", "libelle_employeur": "Ça vous paraît difficile" },
+                { "valeur": 1, "libelle_participant": "Non", "libelle_employeur": "Non" },
+                { "valeur": 0, "libelle_participant": "Vous ne souhaitez pas répondre", "libelle_employeur": "Vous ne souhaitez pas répondre" }
             ]
         },
         {
@@ -44,22 +23,10 @@
             "type_reponse": "choix unique",
             "contrainte_majeure": true,
             "reponses_possibles": [
-                {
-                    "valeur": 3,
-                    "libelle": "Oui"
-                },
-                {
-                    "valeur": 2,
-                    "libelle": "Ça vous paraît difficile"
-                },
-                {
-                    "valeur": 1,
-                    "libelle": "Non"
-                },
-                {
-                    "valeur": 0,
-                    "libelle": "Vous ne souhaitez pas répondre"
-                }
+                { "valeur": 3, "libelle_participant": "Oui", "libelle_employeur": "Oui" },
+                { "valeur": 2, "libelle_participant": "Ça vous paraît difficile", "libelle_employeur": "Ça vous paraît difficile" },
+                { "valeur": 1, "libelle_participant": "Non", "libelle_employeur": "Non" },
+                { "valeur": 0, "libelle_participant": "Vous ne souhaitez pas répondre", "libelle_employeur": "Vous ne souhaitez pas répondre" }
             ]
         },
         {
@@ -68,26 +35,11 @@
             "type_reponse": "choix unique",
             "contrainte_majeure": true,
             "reponses_possibles": [
-                {
-                    "valeur": 4,
-                    "libelle": "Oui, ça n'est pas un problème pour vous"
-                },
-                {
-                    "valeur": 3,
-                    "libelle": "Plutôt oui, ça peut faire partie de votre environnement de travail par moment"
-                },
-                {
-                    "valeur": 2,
-                    "libelle": "Plutôt non, vous pouvez être en difficulté dans un environnement climatique spécifique"
-                },
-                {
-                    "valeur": 1,
-                    "libelle": "Non, c'est incompatible avec votre santé"
-                },
-                {
-                    "valeur": 0,
-                    "libelle": "Vous ne souhaitez pas répondre"
-                }
+                { "valeur": 4, "libelle_participant": "Oui, ça n'est pas un problème pour vous", "libelle_employeur": "Oui, ça n'est pas un problème pour vous" },
+                { "valeur": 3, "libelle_participant": "Plutôt oui, ça peut faire partie de votre environnement de travail par moment", "libelle_employeur": "Plutôt oui, ça peut faire partie de votre environnement de travail par moment" },
+                { "valeur": 2, "libelle_participant": "Plutôt non, vous pouvez être en difficulté dans un environnement climatique spécifique", "libelle_employeur": "Plutôt non, vous pouvez être en difficulté dans un environnement climatique spécifique" },
+                { "valeur": 1, "libelle_participant": "Non, c'est incompatible avec votre santé", "libelle_employeur": "Non, c'est incompatible avec votre santé" },
+                { "valeur": 0, "libelle_participant": "Vous ne souhaitez pas répondre", "libelle_employeur": "Vous ne souhaitez pas répondre" }
             ]
         },
         {
@@ -95,26 +47,11 @@
             "label_employeur": "Aisance Numérique",
             "type_reponse": "choix unique",
             "reponses_possibles": [
-                {
-                    "valeur": 4,
-                    "libelle": "Oui, tout à fait"
-                },
-                {
-                    "valeur": 3,
-                    "libelle": "Plutôt oui, pas de difficulté particulière pour un usage courant"
-                },
-                {
-                    "valeur": 2,
-                    "libelle": "Plutôt non, vous n'êtes pas habitué à utiliser les outils numériques"
-                },
-                {
-                    "valeur": 1,
-                    "libelle": "Non, vous n'utilisez pratiquement pas les outils numériques et c'est compliqué pour vous"
-                },
-                {
-                    "valeur": 0,
-                    "libelle": "Vous ne souhaitez pas répondre"
-                }
+                { "valeur": 4, "libelle_participant": "Oui, tout à fait", "libelle_employeur": "Oui, tout à fait" },
+                { "valeur": 3, "libelle_participant": "Plutôt oui, pas de difficulté particulière pour un usage courant", "libelle_employeur": "Plutôt oui, pas de difficulté particulière pour un usage courant" },
+                { "valeur": 2, "libelle_participant": "Plutôt non, vous n'êtes pas habitué à utiliser les outils numériques", "libelle_employeur": "Plutôt non, vous n'êtes pas habitué à utiliser les outils numériques" },
+                { "valeur": 1, "libelle_participant": "Non, vous n'utilisez pratiquement pas les outils numériques et c'est compliqué pour vous", "libelle_employeur": "Non, vous n'utilisez pratiquement pas les outils numériques et c'est compliqué pour vous" },
+                { "valeur": 0, "libelle_participant": "Vous ne souhaitez pas répondre", "libelle_employeur": "Vous ne souhaitez pas répondre" }
             ]
         },
         {
@@ -122,22 +59,10 @@
             "label_employeur": "Mobilité",
             "type_reponse": "choix unique",
             "reponses_possibles": [
-                {
-                    "valeur": 3,
-                    "libelle": "Vous avez une solution de mobilité"
-                },
-                {
-                    "valeur": 2,
-                    "libelle": "Vous n'êtes pas sûr d'avoir une solution de mobilité"
-                },
-                {
-                    "valeur": 1,
-                    "libelle": "Vous n'avez pas de solution de mobilité"
-                },
-                {
-                    "valeur": 0,
-                    "libelle": "Vous ne souhaitez pas répondre"
-                }
+                { "valeur": 3, "libelle_participant": "Vous avez une solution de mobilité", "libelle_employeur": "Vous avez une solution de mobilité" },
+                { "valeur": 2, "libelle_participant": "Vous n'êtes pas sûr d'avoir une solution de mobilité", "libelle_employeur": "Vous n'êtes pas sûr d'avoir une solution de mobilité" },
+                { "valeur": 1, "libelle_participant": "Vous n'avez pas de solution de mobilité", "libelle_employeur": "Vous n'avez pas de solution de mobilité" },
+                { "valeur": 0, "libelle_participant": "Vous ne souhaitez pas répondre", "libelle_employeur": "Vous ne souhaitez pas répondre" }
             ]
         },
         {
@@ -145,18 +70,9 @@
             "label_employeur": "Contraintes horaires",
             "type_reponse": "choix multiples",
             "reponses_possibles": [
-                {
-                    "valeur": 1,
-                    "libelle": "Oui, le matin"
-                },
-                {
-                    "valeur": 2,
-                    "libelle": "Oui, le soir"
-                },
-                {
-                    "valeur": 3,
-                    "libelle": "Non, pas de contrainte horaire"
-                }
+                { "valeur": 1, "libelle_participant": "Oui, le matin", "libelle_employeur": "Oui, le matin" },
+                { "valeur": 2, "libelle_participant": "Oui, le soir", "libelle_employeur": "Oui, le soir" },
+                { "valeur": 3, "libelle_participant": "Non, pas de contrainte horaire", "libelle_employeur": "Non, pas de contrainte horaire" }
             ]
         },
         {
@@ -170,22 +86,10 @@
             "label_employeur": "Durée souhaitée",
             "type_reponse": "choix unique",
             "reponses_possibles": [
-                {
-                    "valeur": 1,
-                    "libelle": "1 jour (= 1 métier)"
-                },
-                {
-                    "valeur": 2,
-                    "libelle": "2 jours (= 2 métiers)"
-                },
-                {
-                    "valeur": 3,
-                    "libelle": "3 jours (= 3 métiers)"
-                },
-                {
-                    "valeur": 4,
-                    "libelle": "4 jours (= 4 métiers)"
-                }
+                { "valeur": 1, "libelle_participant": "1 jour (= 1 métier)", "libelle_employeur": "1 jour (= 1 métier)" },
+                { "valeur": 2, "libelle_participant": "2 jours (= 2 métiers)", "libelle_employeur": "2 jours (= 2 métiers)" },
+                { "valeur": 3, "libelle_participant": "3 jours (= 3 métiers)", "libelle_employeur": "3 jours (= 3 métiers)" },
+                { "valeur": 4, "libelle_participant": "4 jours (= 4 métiers)", "libelle_employeur": "4 jours (= 4 métiers)" }
             ]
         },
         {
