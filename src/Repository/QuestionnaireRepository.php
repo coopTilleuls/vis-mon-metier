@@ -20,6 +20,25 @@ class QuestionnaireRepository extends ServiceEntityRepository
         parent::__construct($registry, Questionnaire::class);
     }
 
+    /**
+     * @return list<Questionnaire>
+     */
+    public function findOpposingCandidatesFor(Questionnaire $questionnaire): array
+    {
+        $targetType = Type::EMPLOYEUR === $questionnaire->getType() ? Type::PARTICIPANT : Type::EMPLOYEUR;
+
+        /** @var list<Questionnaire> $result */
+        $result = $this->createQueryBuilder('q')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :targetType')
+            ->setParameter('session', $questionnaire->getSession())
+            ->setParameter('targetType', $targetType)
+            ->getQuery()
+            ->getResult();
+
+        return $result;
+    }
+
     public function countParticipants(Session $session): int
     {
         return (int) $this->createQueryBuilder('q')

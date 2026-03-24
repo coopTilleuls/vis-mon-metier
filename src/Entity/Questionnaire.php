@@ -129,6 +129,19 @@ class Questionnaire
         return $this->metier;
     }
 
+    // These methods exist solely to satisfy EasyAdmin's PropertyAccessor, which requires a getter
+    // for every declared field name. The actual values are computed in QuestionnaireCrudController
+    // via formatValue() and never read from here.
+    public function getScoreMin(): ?int
+    {
+        return null;
+    }
+
+    public function getScoreMax(): ?int
+    {
+        return null;
+    }
+
     public function setMetier(?string $metier): void
     {
         $this->metier = $metier;

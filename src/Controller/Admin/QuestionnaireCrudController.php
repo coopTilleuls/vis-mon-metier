@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\Questionnaire;
 use App\Entity\Roles;
 use App\Entity\User;
+use App\Repository\QuestionnaireRepository;
 use App\Security\Voter\QuestionnaireVoter;
 use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,6 +41,7 @@ class QuestionnaireCrudController extends AbstractCrudController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly QuestionnaireRepository $questionnaireRepository,
     ) {
     }
 
@@ -62,7 +64,7 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->setPageTitle('index', 'Liste des questionnaires remplis')
             ->overrideTemplate('crud/detail', 'admin/questionnaire/detail.html.twig')
             ->showEntityActionsInlined()
-            ->setSearchFields(null)
+            ->setSearchFields(['metier', 'contact.prenom', 'contact.nomFamille', 'contact.nomEntreprise', 'contact.email'])
         ;
     }
 
@@ -178,8 +180,30 @@ class QuestionnaireCrudController extends AbstractCrudController
             ])
             ->hideOnForm();
 
+        if ($this->isGranted(Roles::ADMIN)) {
+            yield TextField::new('scoreMin', 'Score bas')
+                ->onlyOnIndex()
+                ->setSortable(false)
+                ->setTextAlign('center')
+                ->formatValue(function ($value, Questionnaire $questionnaire) {
+                    $range = $this->getScoreRange($questionnaire);
+
+                    return null !== $range['min'] ? $range['min'].'%' : '-';
+                });
+
+            yield TextField::new('scoreMax', 'Score haut')
+                ->onlyOnIndex()
+                ->setSortable(false)
+                ->setTextAlign('center')
+                ->formatValue(function ($value, Questionnaire $questionnaire) {
+                    $range = $this->getScoreRange($questionnaire);
+
+                    return null !== $range['max'] ? $range['max'].'%' : '-';
+                });
+        }
+
         yield DateTimeField::new('createdAt', 'Créé le')
-            ->hideOnForm();
+            ->onlyOnDetail();
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -204,11 +228,55 @@ class QuestionnaireCrudController extends AbstractCrudController
         $this->denyAccessUnlessGranted(QuestionnaireVoter::VIEW, $questionnaire);
 
         $matches = $this->getTopMatches($questionnaire);
+        $scoreRange = $this->getScoreRange($questionnaire);
 
         $context->getRequest()->attributes->set('matches', $matches);
         $context->getRequest()->attributes->set('questionnaire', $questionnaire);
+        $context->getRequest()->attributes->set('scoreRange', $scoreRange);
 
         return parent::detail($context);
+    }
+
+    /**
+     * @return array{min: int|null, max: int|null}
+     */
+    private function getScoreRange(Questionnaire $questionnaire): array
+    {
+        $candidates = $this->questionnaireRepository->findOpposingCandidatesFor($questionnaire);
+
+        return $this->computeRange($questionnaire, $candidates);
+    }
+
+    /**
+     * @param list<Questionnaire> $candidates
+     *
+     * @return array{min: int|null, max: int|null}
+     */
+    private function computeRange(Questionnaire $questionnaire, array $candidates): array
+    {
+        $currentScores = $questionnaire->getReponsesScore() ?? [];
+        if (empty($currentScores) || empty($candidates)) {
+            return ['min' => null, 'max' => null];
+        }
+
+        $scores = [];
+        foreach ($candidates as $candidate) {
+            $candidateScores = $candidate->getReponsesScore() ?? [];
+            if (empty($candidateScores)) {
+                continue;
+            }
+            if (Type::EMPLOYEUR === $questionnaire->getType()) {
+                $scores[] = $this->calculateMatchScore($currentScores, $candidateScores);
+            } else {
+                $scores[] = $this->calculateMatchScore($candidateScores, $currentScores);
+            }
+        }
+
+        if (empty($scores)) {
+            return ['min' => null, 'max' => null];
+        }
+
+        return ['min' => min($scores), 'max' => max($scores)];
     }
 
     /**

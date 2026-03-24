@@ -51,6 +51,7 @@
 {% block detail_fields %}
     {% set matches = matches|default(app.request.attributes.get('matches')) %}
     {% set questionnaire = questionnaire|default(app.request.attributes.get('questionnaire')) %}
+    {% set scoreRange = scoreRange|default(app.request.attributes.get('scoreRange')) %}
 
     {% if questionnaire is not null %}
         {% set is_participant = (questionnaire.type == 'participant') %}
@@ -233,25 +234,19 @@
                                 {% endif %}
                             </div>
                         </div>
-                        {% set min_score = null %}
-                        {% set max_score = null %}
-                        {% for match in matches %}
-                            {% if min_score is null or match.score < min_score %}
-                                {% set min_score = match.score %}
-                            {% endif %}
-                            {% if max_score is null or match.score > max_score %}
-                                {% set max_score = match.score %}
-                            {% endif %}
-                        {% endfor %}
+                        {% set min_score = scoreRange.min ?? null %}
+                        {% set max_score = scoreRange.max ?? null %}
                         <div class="d-flex gap-3 mb-3">
                             <span>Compatibilité min :
-                                {% if min_score >= 75 %}<span class="badge badge-success">{{ min_score }}%</span>
+                                {% if min_score is null %}<span class="text-muted">-</span>
+                                {% elseif min_score >= 75 %}<span class="badge badge-success">{{ min_score }}%</span>
                                 {% elseif min_score >= 50 %}<span class="badge badge-warning">{{ min_score }}%</span>
                                 {% else %}<span class="badge badge-danger">{{ min_score }}%</span>
                                 {% endif %}
                             </span>
                             <span>Compatibilité max :
-                                {% if max_score >= 75 %}<span class="badge badge-success">{{ max_score }}%</span>
+                                {% if max_score is null %}<span class="text-muted">-</span>
+                                {% elseif max_score >= 75 %}<span class="badge badge-success">{{ max_score }}%</span>
                                 {% elseif max_score >= 50 %}<span class="badge badge-warning">{{ max_score }}%</span>
                                 {% else %}<span class="badge badge-danger">{{ max_score }}%</span>
                                 {% endif %}
