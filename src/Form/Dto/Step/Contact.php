@@ -81,6 +81,13 @@ final class Contact
     )]
     public ?string $trancheAge = null;
 
+    #[Assert\When(
+        expression: "this.type == 'participant' && this.situation == 'Scolaire, Etudiant·e'",
+        constraints: [
+            new Assert\NotNull(message: 'Veuillez sélectionner un·e référent·e (obligatoire pour les scolaires et étudiant·e·s).'),
+        ],
+        groups: ['contact']
+    )]
     #[Assert\Type(Referent::class, message: 'Le référent n\'est pas valide.', groups: ['contact'])]
     public ?Referent $referent = null;
 
