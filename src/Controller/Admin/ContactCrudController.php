@@ -152,9 +152,13 @@ class ContactCrudController extends AbstractCrudController
                 ])
                 ->hideOnIndex();
             yield TextField::new('siret', 'SIRET')->hideOnIndex();
+            yield TextField::new('commune', 'Commune du lieu d\'immersion')
+                ->hideOnIndex()
+                ->onlyOnDetail();
             yield ChoiceField::new('commune', 'Commune du lieu d\'immersion')
                 ->setChoices($communeChoices)
                 ->hideOnIndex()
+                ->onlyOnForms()
                 ->setHelp('Commune sélectionnée');
             yield TextField::new('adresseEntreprise', 'Adresse entreprise')->hideOnIndex();
             yield FormField::addPanel('Tuteur ou tutrice pendant l\'immersion')->hideOnIndex();
