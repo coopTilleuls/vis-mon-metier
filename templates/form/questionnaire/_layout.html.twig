@@ -19,7 +19,11 @@
 
 <div class="layout">
     <div class="sidebar">
-        <img class="logo" src="{{ asset('images/brand/' ~ brand.slug ~ '/logo-white.png') }}" alt="{{ brand.altLogo }}"/>
+        <div class="sidebar-event-title">
+            <span class="sidebar-title-line1">Vis mon métier</span>
+            <span class="sidebar-title-line2">au Pays de Blain</span>
+            <div class="sidebar-title-line3">1 Jour - 1 Binôme - 1 Expérience !</div>
+        </div>
         {% if show_stepper|default(true) %}
             <div class="stepper">
                 {% for step in steps %}
@@ -55,6 +59,9 @@
                 {% endfor %}
             </div>
         {% endif %}
+        <div class="sidebar-logo-container">
+            <img class="logo" src="{{ asset('images/brand/' ~ brand.slug ~ '/logo-white.png') }}" alt="{{ brand.altLogo }}"/>
+        </div>
     </div>
     <div class="form">
         {% block content %}{% endblock %}

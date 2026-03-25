@@ -1,3 +1,14 @@
+@font-face {
+    font-family: 'Baby Child';
+    src: url('../fonts/baby-child-regular.woff2') format('woff2'),
+         url('../fonts/baby-child-regular.woff') format('woff'),
+         url('../fonts/baby-child-regular.otf') format('opentype'),
+         url('../fonts/baby-child-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 * {
     font-family: "Barlow", sans-serif;
 }
@@ -25,7 +36,53 @@ body {
 .logo {
     width: 80%;
     height: auto;
-    max-width: 240px;
+    max-width: 200px;
+}
+
+.sidebar-event-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-bottom: 8px;
+    align-items: center;
+    text-align: center;
+}
+
+.sidebar-title-line1 {
+    font-family: 'Baby Child', cursive;
+    font-size: 3.2rem;
+    font-weight: normal;
+    color: white;
+    line-height: 1;
+    display: block;
+}
+
+.sidebar-title-line2 {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 1.6rem;
+    color: var(--orange-color);
+    line-height: 1.1;
+    display: block;
+    letter-spacing: 0.02em;
+}
+
+.sidebar-title-line3 {
+    font-family: 'Barlow', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    padding: 8px 18px;
+    display: inline-block;
+    align-self: center;
+    margin-top: 8px;
+    letter-spacing: 0.03em;
+}
+
+.sidebar-logo-container {
+    margin-top: auto;
+    padding-top: 16px;
 }
 
 .layout {
@@ -211,6 +268,13 @@ textarea[data-json-editor="true"] {
         justify-content: space-between;
         gap: 1rem;
         padding: 12px;
+    }
+    .sidebar-event-title {
+        display: none;
+    }
+    .sidebar-logo-container {
+        margin-top: 0;
+        padding-top: 0;
     }
     .logo {
         width: 140px;

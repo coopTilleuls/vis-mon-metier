@@ -1,3 +1,14 @@
+@font-face {
+    font-family: 'Baby Child';
+    src: url('../fonts/baby-child-regular.woff2') format('woff2'),
+         url('../fonts/baby-child-regular.woff') format('woff'),
+         url('../fonts/baby-child-regular.otf') format('opentype'),
+         url('../fonts/baby-child-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 * {
     font-family: "Barlow", sans-serif;
 }
@@ -47,11 +58,11 @@ body {
 }
 
 .home-image {
-    height: 100%;
-    max-height: calc(100vh - 120px);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    position: sticky;
+    top: 24px;
 }
 
 .home-image img {
@@ -72,19 +83,46 @@ body {
     text-align: left;
 }
 
-.home-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1;
-    color: white;
+.event-title {
     margin-top: 32px;
     margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    text-align: center;
 }
 
-.home-subtitle {
+.event-title-line1 {
+    font-family: 'Baby Child', cursive;
+    font-size: 4rem;
+    font-weight: normal;
+    color: white;
+    line-height: 1;
+    display: block;
+}
+
+.event-title-line2 {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
     color: var(--orange-color);
-    font-size: 1.5rem;
-    font-weight: 700;
+    line-height: 1.1;
+    display: block;
+    letter-spacing: 0.02em;
+}
+
+.event-title-line3 {
+    font-family: 'Barlow', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    padding: 8px 18px;
+    display: inline-block;
+    align-self: center;
+    margin-top: 8px;
+    letter-spacing: 0.03em;
 }
 
 .cards-wrapper {
@@ -160,23 +198,107 @@ body {
     margin-bottom: 8px;
   }
 
-  .how-it-works {
-    margin-top: 24px;
+  .info-section {
+    margin-top: 20px;
     max-width: 600px;
   }
 
-  .how-it-works h3 {
+  .info-title {
     color: var(--orange-color);
     font-size: 1rem;
-    margin-bottom: 0.8rem;
-    font-weight: 600;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
   }
 
-  .how-it-works p {
+  .info-section p {
     color: white;
     font-size: 0.85rem;
     line-height: 1.5;
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .info-section strong {
+    color: white;
+  }
+
+  .info-list {
+    color: white;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+
+  .info-list li {
+    margin-bottom: 0.3rem;
+  }
+
+  .home-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .home-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: white;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .home-step p {
+    margin: 0;
+    color: white;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .home-step strong {
+    color: white;
+  }
+
+  .home-step-number {
+    background-color: var(--orange-color);
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .home-step-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .contact-section {
+    margin-top: 24px;
+    max-width: 600px;
+    background-color: var(--orange-color);
+    color: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  .contact-section strong {
+    font-size: 1rem;
+  }
+
+  .contact-section a {
+    color: white;
+    text-decoration: underline;
   }
 
   @media screen and (max-width: 992px) {
@@ -191,13 +313,20 @@ body {
         margin: 0 auto;
     }
 
-    .home-title {
-        font-size: 2.8rem;
+    .event-title {
         margin-top: 16px;
     }
 
-    .home-subtitle {
-        font-size: 1.3rem;
+    .event-title-line1 {
+        font-size: 4rem;
+    }
+
+    .event-title-line2 {
+        font-size: 1.9rem;
+    }
+
+    .event-title-line3 {
+        font-size: 1.1rem;
     }
 
     .home-image img {
@@ -214,8 +343,17 @@ body {
         padding-top: 16px;
     }
 
-    .home-title {
-        font-size: 2.2rem;
+    .event-title-line1 {
+        font-size: 3rem;
+    }
+
+    .event-title-line2 {
+        font-size: 1.5rem;
+    }
+
+    .event-title-line3 {
+        font-size: 0.95rem;
+        padding: 6px 12px;
     }
 
     .card {
