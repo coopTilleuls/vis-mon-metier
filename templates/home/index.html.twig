@@ -19,7 +19,7 @@
 		<div class="home-content">
 			<div class="event-title">
 				<span class="event-title-line1">Vis mon métier</span>
-				<span class="event-title-line2">au Pays de Blain</span>
+				<span class="event-title-line2">{{ brand.subtitle }}</span>
 				<div class="event-title-line3">1 Jour - 1 Binôme - 1 Expérience !</div>
 			</div>
 
@@ -48,7 +48,7 @@
 
 			<div class="info-section">
 				<h3 class="info-title">Qui peut y participer ?</h3>
-				<p>Les professionnel·le·s <strong>exerçant leur métier sur le territoire de Pays de Blain Communauté</strong>, qui souhaitent partager leur quotidien&nbsp;!</p>
+				<p>Les professionnel·le·s <strong>exerçant leur métier sur le territoire de {{ brand.territoire }}</strong>, qui souhaitent partager leur quotidien&nbsp;!</p>
 				<p>Les <strong>demandeurs d'emploi, les élèves et les salarié·e·s du territoire</strong>, qui veulent découvrir un métier et un environnement de travail grandeur nature&nbsp;!</p>
 			</div>
 
@@ -83,16 +83,16 @@
 					</div>
 					<div class="home-step">
 						<span class="home-step-number">3</span>
-						<p>Pays de Blain Communauté et ses partenaires <strong>me contactent pour me donner les résultats et mettre en place les journées d'immersion.</strong></p>
+						<p>{{ brand.communaute }} et ses partenaires <strong>me contactent pour me donner les résultats et mettre en place les journées d'immersion.</strong></p>
 					</div>
 				</div>
 			</div>
 
 			<div class="contact-section">
-				<strong>Pays de Blain Communauté</strong><br>
-				7 rue Victor Schoelcher – 44130 Blain<br>
-				Tél. 02.40.79.99.01 – service.emploi@paysdeblain.fr<br>
-				<a href="https://www.pays-de-blain.com" target="_blank">www.pays-de-blain.com</a>
+				<strong>{{ brand.communaute }}</strong><br>
+				{{ brand.address }}<br>
+				Tél. {{ brand.phone }} – {{ brand.email }}<br>
+				{% if brand.website %}<a href="{{ brand.website }}" target="_blank">{{ brand.website|replace({'https://': '', 'http://': ''})|trim('/') }}</a>{% endif %}
 			</div>
 		</main>
 	</div>
