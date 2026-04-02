@@ -2,9 +2,18 @@
     --green-color: #003399;
     --green-light-color: #0099cc;
     --gold-color: #ffcc00;
-    --orange-color: #cc0099;
+    --orange-color: #ffcc00;
     --blue-color: #0086cc;
     --background-color: #f8f9fa;
     --text-primary: #333333;
     --text-secondary: #666666;
+}
+
+body .home-step-number,
+body .contact-section {
+    color: var(--text-primary);
+}
+
+body .contact-section a {
+    color: var(--text-primary);
 }
