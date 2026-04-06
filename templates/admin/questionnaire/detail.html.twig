@@ -254,7 +254,7 @@
                                     </thead>
                                     <tbody>
                                     {% for match in matches %}
-                                        <tr class="{{ match.isMatchedWithCurrent ? 'table-secondary d-print-none' : '' }}">
+                                        <tr class="{{ match.isMatchedWithCurrent ? 'table-secondary' : '' }}" {% if match.isMatchedWithCurrent %}style="color: #6c757d;"{% endif %}>
                                             {% if is_participant %}
                                                 <td>{{ match.entreprise|default('non précisée') }}</td>
                                                 <td>{{ match.job|default('non précisé') }}</td>
@@ -296,7 +296,7 @@
                                                     {% endfor %}
 
                                                     {% if not has_available_dates %}
-                                                        <span class="badge badge-warning mb-1 d-none d-print-inline-block">Incompatible</span>
+                                                        <span class="badge {{ match.isMatchedWithCurrent ? 'badge-success' : 'badge-warning' }} mb-1 d-none d-print-inline-block">{{ match.isMatchedWithCurrent ? 'Immersion prévue' : 'Incompatible' }}</span>
                                                     {% endif %}
                                                 {% else %}
                                                     <span class="badge badge-warning mb-1">Indisponible</span>

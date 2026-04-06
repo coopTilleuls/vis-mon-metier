@@ -311,9 +311,7 @@ class QuestionnaireCrudController extends AbstractCrudController
         $candidates = $qb->getQuery()->getResult();
 
         $currentBusyDates = [];
-        $existingMatchesCount = 0;
         foreach ($questionnaire->getAppariements() as $match) {
-            ++$existingMatchesCount;
             if ($match->getDateMatch()) {
                 $currentBusyDates[] = $match->getDateMatch()->format('d/m');
             }
@@ -414,7 +412,7 @@ class QuestionnaireCrudController extends AbstractCrudController
 
         usort($results, fn ($a, $b) => $b['score'] <=> $a['score']);
 
-        return array_slice($results, 0, 10 + $existingMatchesCount);
+        return array_slice($results, 0, 10);
     }
 
     /**
