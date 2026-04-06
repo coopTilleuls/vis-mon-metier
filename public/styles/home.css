@@ -275,9 +275,18 @@ body {
   }
 
   .home-step-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .home-step-or {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--orange-color);
+    text-transform: uppercase;
+    text-align: left;
+    padding: 4px 0;
   }
 
   .contact-section {
