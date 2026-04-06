@@ -1,6 +1,7 @@
 {
     "titre": "Questions disposition (logistiques et contraintes)",
-    "introduction": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion.",
+    "introduction_participant": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion.",
+    "introduction_employeur": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion.",
     "questions": [
         {
             "label_participant": "Port de charges, manipulation de charges lourdes",

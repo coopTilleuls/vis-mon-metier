@@ -3,7 +3,8 @@
     "type": "object",
     "required": [
         "titre",
-        "introduction",
+        "introduction_participant",
+        "introduction_employeur",
         "questions"
     ],
     "properties": {
@@ -12,9 +13,15 @@
             "title": "Nom du questionnaire",
             "default": "Questions score d'intérêt"
         },
-        "introduction": {
+        "introduction_participant": {
             "type": "string",
-            "title": "Phrase d'introduction aux questions",
+            "title": "Phrase d'introduction Volontaire",
+            "format": "textarea",
+            "default": "Pour chaque action ci-dessous, merci d'indiquer si c'est un élément important dans votre choix."
+        },
+        "introduction_employeur": {
+            "type": "string",
+            "title": "Phrase d'introduction Professionnel·le",
             "format": "textarea",
             "default": "Pour chaque action ci-dessous, merci d'indiquer si c'est un élément important dans votre choix."
         },
@@ -39,12 +46,12 @@
                 "properties": {
                     "label_participant": {
                         "type": "string",
-                        "title": "Intitulé Participant·e",
+                        "title": "Intitulé Volontaire",
                         "minLength": 1
                     },
                     "label_employeur": {
                         "type": "string",
-                        "title": "Intitulé Employeur·euse",
+                        "title": "Intitulé Professionnel·le",
                         "minLength": 1
                     },
                     "reponses_possibles": {
@@ -68,11 +75,11 @@
                                 },
                                 "libelle_participant": {
                                     "type": "string",
-                                    "title": "Libellé Participant·e"
+                                    "title": "Libellé Volontaire"
                                 },
                                 "libelle_employeur": {
                                     "type": "string",
-                                    "title": "Libellé Employeur·euse"
+                                    "title": "Libellé Professionnel·le"
                                 }
                             }
                         },

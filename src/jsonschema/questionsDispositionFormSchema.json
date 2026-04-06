@@ -3,7 +3,8 @@
     "type": "object",
     "required": [
         "titre",
-        "introduction",
+        "introduction_participant",
+        "introduction_employeur",
         "questions"
     ],
     "properties": {
@@ -12,9 +13,15 @@
             "title": "Nom du questionnaire",
             "default": "Questions disposition (logistiques et contraintes)"
         },
-        "introduction": {
+        "introduction_participant": {
             "type": "string",
-            "title": "Phrase d'introduction aux questions",
+            "title": "Phrase d'introduction Volontaire",
+            "format": "textarea",
+            "default": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion."
+        },
+        "introduction_employeur": {
+            "type": "string",
+            "title": "Phrase d'introduction Professionnel·le",
             "format": "textarea",
             "default": "Nous avons besoin de quelques informations pour vous recontacter et mettre en place l'immersion."
         },
@@ -37,11 +44,11 @@
                 "properties": {
                     "label_participant": {
                         "type": "string",
-                        "title": "Intitulé Participant·e"
+                        "title": "Intitulé Volontaire"
                     },
                     "label_employeur": {
                         "type": "string",
-                        "title": "Intitulé Employeur·euse"
+                        "title": "Intitulé Professionnel·le"
                     },
                     "type_reponse": {
                         "type": "string",
@@ -95,11 +102,11 @@
                                 },
                                 "libelle_participant": {
                                     "type": "string",
-                                    "title": "Libellé Participant·e"
+                                    "title": "Libellé Volontaire"
                                 },
                                 "libelle_employeur": {
                                     "type": "string",
-                                    "title": "Libellé Employeur·euse"
+                                    "title": "Libellé Professionnel·le"
                                 }
                             }
                         }

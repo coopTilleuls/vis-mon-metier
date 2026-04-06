@@ -72,8 +72,9 @@ class QuestionnaireController extends AbstractController
         }
         /** @var ?ModelQuestionnaire $modelQuestionnaire */
         $modelQuestionnaire = $currentSession->getModelQuestionnaire();
-        $introductionScore = $modelQuestionnaire?->getQuestionsScore()['introduction'];
-        $introductionDisposition = $modelQuestionnaire?->getQuestionsDisposition()['introduction'];
+        $introKey = $isPro ? 'introduction_employeur' : 'introduction_participant';
+        $introductionScore = $modelQuestionnaire?->getQuestionsScore()[$introKey] ?? null;
+        $introductionDisposition = $modelQuestionnaire?->getQuestionsDisposition()[$introKey] ?? null;
 
         return $this->render('form/questionnaire/form_flow.html.twig', [
             'form' => $flow->getStepForm()->createView(),
