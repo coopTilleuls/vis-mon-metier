@@ -183,7 +183,7 @@ class QuestionnaireRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
 
-        $questionsSchema = $session->getModelQuestionnaire()->getQuestionsDisposition();
+        $questionsSchema = $session->getModelQuestionnaire()?->getQuestionsDisposition() ?? [];
         $dateCounts = [];
 
         foreach ($questionnaires as $questionnaire) {
@@ -253,7 +253,7 @@ class QuestionnaireRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
 
-        $questionsScoreSchema = $session->getModelQuestionnaire()->getQuestionsScore();
+        $questionsScoreSchema = $session->getModelQuestionnaire()?->getQuestionsScore() ?? [];
         $questions = $questionsScoreSchema['questions'] ?? [];
 
         if (empty($questions)) {
