@@ -53,14 +53,22 @@
                                 {% if step.name == 'contact' %}{{ is_pro ? 'Fiche contact' : 'Vos informations' }}{% endif %}
                                 {% if step.name == 'reponsesScore' %}Questionnaire{% endif %}
                                 {% if step.name == 'reponsesDisposition' %}Disponibilité{% endif %}
+                                {% if step.name == 'consentement' %}Mes données{% endif %}
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
-        <div class="sidebar-logo-container">
-            <img class="logo" src="{{ asset('images/brand/' ~ brand.slug ~ '/logo-white.png') }}" alt="{{ brand.altLogo }}"/>
+        <div class="sidebar-footer">
+            <div class="sidebar-logo-container">
+                <img class="logo" src="{{ asset('images/brand/' ~ brand.slug ~ '/logo-white.png') }}" alt="{{ brand.altLogo }}"/>
+            </div>
+            {% if brand.privacyUrl %}
+                <div class="sidebar-privacy-link">
+                    <a href="{{ brand.privacyUrl }}" target="_blank">Politique de confidentialité</a>
+                </div>
+            {% endif %}
         </div>
     </div>
     <div class="form">

@@ -100,6 +100,14 @@ class Contact
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $precisionMesuresPrevention = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Map(if: false)]
+    private ?bool $consentementRgpd = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[Map(if: false)]
+    private ?\DateTimeImmutable $consentementRgpdAt = null;
+
     #[ORM\ManyToOne(targetEntity: Referent::class, cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Map(if: false)]
@@ -366,6 +374,26 @@ class Contact
     public function setPrecisionMesuresPrevention(?string $precisionMesuresPrevention): void
     {
         $this->precisionMesuresPrevention = $precisionMesuresPrevention;
+    }
+
+    public function getConsentementRgpd(): ?bool
+    {
+        return $this->consentementRgpd;
+    }
+
+    public function setConsentementRgpd(?bool $consentementRgpd): void
+    {
+        $this->consentementRgpd = $consentementRgpd;
+    }
+
+    public function getConsentementRgpdAt(): ?\DateTimeImmutable
+    {
+        return $this->consentementRgpdAt;
+    }
+
+    public function setConsentementRgpdAt(?\DateTimeImmutable $consentementRgpdAt): void
+    {
+        $this->consentementRgpdAt = $consentementRgpdAt;
     }
 
     public function __toString(): string

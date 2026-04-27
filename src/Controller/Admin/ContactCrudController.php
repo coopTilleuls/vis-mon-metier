@@ -24,6 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
@@ -203,6 +204,14 @@ class ContactCrudController extends AbstractCrudController
                     ->hideOnIndex();
             }
         }
+
+        yield FormField::addPanel('Consentement RGPD')->onlyOnDetail();
+        yield BooleanField::new('consentementRgpd', 'Consentement donné')
+            ->onlyOnDetail()
+            ->renderAsSwitch(false);
+        yield DateTimeField::new('consentementRgpdAt', 'Date du consentement')
+            ->onlyOnDetail()
+            ->setFormat('dd/MM/yyyy HH:mm');
     }
 
     public function configureActions(Actions $actions): Actions

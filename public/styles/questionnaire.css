@@ -13,6 +13,14 @@
     font-family: "Barlow", sans-serif;
 }
 
+[data-consent-checkbox] {
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+    --bs-form-valid-color: var(--green-light-color);
+    --bs-form-valid-border-color: var(--green-light-color);
+}
+
 html,
 body {
     width: 100%;
@@ -80,9 +88,31 @@ body {
     letter-spacing: 0.03em;
 }
 
-.sidebar-logo-container {
+.sidebar-footer {
     margin-top: auto;
     padding-top: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sidebar-logo-container {
+}
+
+.sidebar-privacy-link {
+    font-size: 0.75rem;
+}
+
+.sidebar-privacy-link a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.sidebar-privacy-link a:hover {
+    color: #fff;
 }
 
 .layout {
@@ -275,6 +305,9 @@ textarea[data-json-editor="true"] {
     .sidebar-logo-container {
         margin-top: 0;
         padding-top: 0;
+    }
+    .sidebar-privacy-link {
+        display: none;
     }
     .logo {
         width: 140px;

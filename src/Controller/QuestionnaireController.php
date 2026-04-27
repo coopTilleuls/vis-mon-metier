@@ -203,6 +203,11 @@ class QuestionnaireController extends AbstractController
         $questionnaire->setReponsesDisposition($questionnaireData->reponsesDisposition->reponses);
         $questionnaire->setReponsesScore($questionnaireData->reponsesScore->reponses);
 
+        if ($questionnaireData->consentement?->consentementRgpd) {
+            $contact->setConsentementRgpd(true);
+            $contact->setConsentementRgpdAt(new \DateTimeImmutable());
+        }
+
         $this->entityManager->persist($contact);
         $this->entityManager->persist($questionnaire);
         $this->entityManager->flush();

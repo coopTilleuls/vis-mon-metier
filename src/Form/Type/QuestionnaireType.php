@@ -7,6 +7,7 @@ namespace App\Form\Type;
 use App\Controller\QuestionnaireController;
 use App\Entity\Session;
 use App\Form\Dto\Questionnaire;
+use App\Form\Type\Step\ConsentementType;
 use App\Form\Type\Step\ContactType;
 use App\Form\Type\Step\ReponsesDispositionType;
 use App\Form\Type\Step\ReponsesScoreType;
@@ -34,6 +35,7 @@ final class QuestionnaireType extends AbstractFlowType
                 QuestionnaireController::SESSION_ENTITY => $session,
                 QuestionnaireController::IS_PRO => $isPro,
             ])
+            ->addStep('consentement', ConsentementType::class)
             ->add('navigator', QuestionnaireNavigatorType::class)
         ;
     }

@@ -20,6 +20,17 @@ class BrandProvider
             'phone' => '02.40.79.99.01',
             'email' => 'service.emploi@paysdeblain.fr',
             'website' => 'https://www.pays-de-blain.com',
+            'privacy_url' => 'https://www.pays-de-blain.com/politique-de-confidentialite/',
+            'partners' => [
+                'Mission Locale Nord Atlantique antenne de Blain',
+                'France Travail agence de Blain',
+                'Unité Emploi de Blain du Conseil Départemental de Loire-Atlantique',
+                'Structures d\'insertion par l\'activité économique ATRE et AIRE',
+                'Organismes de formation intervenant sur le territoire de Pays de Blain Communauté',
+                'Etablissements scolaires situés à Blain (collèges et lycées)',
+                'CIO de l\'académie de Nantes',
+                'Avenir Actifs (pour les personnes salariées)',
+            ],
         ],
         'cceg' => [
             'name' => 'CCEG Erdre & Gesvres',
@@ -32,6 +43,17 @@ class BrandProvider
             'phone' => '02 28 02 22 40',
             'email' => 'contact@cceg.fr',
             'website' => 'https://www.cceg.fr/',
+            'privacy_url' => 'https://www.cceg.fr/informations-pratiques/politique-de-gestion-des-donnees-a-caractere-personnel',
+            'partners' => [
+                'Mission Locale Nord Atlantique',
+                'France Travail',
+                'Unité Emploi du Conseil Départemental de Loire-Atlantique',
+                'Structures d\'insertion par l\'activité économique ATRE et AIRE',
+                'Organismes de formation intervenant sur le territoire de Communauté de Communes d\'Erdre & Gesvres',
+                'Etablissements scolaires',
+                'CIO de l\'académie de Nantes',
+                'Avenir Actifs (pour les personnes salariées)',
+            ],
         ],
     ];
 
@@ -92,5 +114,18 @@ class BrandProvider
     public function getWebsite(): ?string
     {
         return self::BRANDS[$this->brand]['website'] ?? null;
+    }
+
+    public function getPrivacyUrl(): ?string
+    {
+        return self::BRANDS[$this->brand]['privacy_url'] ?? null;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPartners(): array
+    {
+        return self::BRANDS[$this->brand]['partners'] ?? [];
     }
 }

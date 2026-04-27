@@ -100,4 +100,9 @@
 	<div class="home-image">
 		<img src="{{ asset('images/landing-image.webp') }}" alt=""/>
 	</div>
+	{% if brand.privacyUrl %}
+		<div class="privacy-link">
+			<a href="{{ brand.privacyUrl }}" target="_blank">Politique de confidentialité {{ brand.communaute }}</a>
+		</div>
+	{% endif %}
 </div>{% endblock %}

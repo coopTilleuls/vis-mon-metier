@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dto;
 
+use App\Form\Dto\Step\Consentement;
 use App\Form\Dto\Step\Contact;
 use App\Form\Dto\Step\ReponsesDisposition;
 use App\Form\Dto\Step\ReponsesScore;
@@ -21,4 +22,7 @@ final class Questionnaire
 
     #[Assert\Valid(groups: ['reponsesDisposition'])]
     public ?ReponsesDisposition $reponsesDisposition = null;
+
+    #[Assert\Valid(groups: ['consentement'])]
+    public ?Consentement $consentement = null;
 }
