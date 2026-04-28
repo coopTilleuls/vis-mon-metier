@@ -405,7 +405,7 @@ if (consentCheckbox) {
 					<div class="d-flex align-items-start gap-2">
 						{{ form_widget(form.consentement.consentementRgpd, {'attr': {'class': 'form-check-input mt-1 flex-shrink-0', 'data-consent-checkbox': 'true'}}) }}
 						<label class="form-check-label" for="{{ form.consentement.consentementRgpd.vars.id }}">
-							J'accepte que mes données soient communiquées aux organismes cités ci-dessus dans le cadre de l'action Vis mon métier {{ brand.communaute }} 2026 et selon les modalités indiquées.
+							J'accepte que mes données soient communiquées aux organismes cités ci-dessus dans le cadre de l'action Vis mon métier {{ brand.communaute }} {{ "now"|date("Y") }} et selon les modalités indiquées.
 						</label>
 					</div>
 				</div>
