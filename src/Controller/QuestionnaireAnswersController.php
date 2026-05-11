@@ -18,6 +18,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -40,6 +43,21 @@ class QuestionnaireAnswersController extends AbstractController
             ->generateUrl();
 
         $builder = $this->createFormBuilder($questionnaire);
+
+        if (Type::EMPLOYEUR === $questionnaire->getType()) {
+            $builder->add('metier', TextType::class, [
+                'label' => 'Métier',
+                'required' => false,
+            ]);
+            $builder->add('nombreImmersion', IntegerType::class, [
+                'label' => 'Nombre d\'immersions',
+                'required' => true,
+            ]);
+            $builder->add('immersionMemeDate', CheckboxType::class, [
+                'label' => 'Plusieurs journées d\'immersions prévues à la même date ?',
+                'required' => false,
+            ]);
+        }
 
         $builder->add('reponsesDisposition', ReponsesDispositionType::class, [
             'label' => 'Réponses Disposition',

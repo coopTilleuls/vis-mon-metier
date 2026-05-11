@@ -113,6 +113,22 @@
                         </div>
                     {% endif %}
 
+                    {% if form.metier is defined %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="{{ form.metier.vars.id }}">{{ form.metier.vars.label }}</label>
+                            {{ form_widget(form.metier, {'attr': {'class': 'form-control col-md-6'}}) }}
+                            {{ form_errors(form.metier) }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="{{ form.nombreImmersion.vars.id }}">{{ form.nombreImmersion.vars.label }}</label>
+                            {{ form_widget(form.nombreImmersion, {'attr': {'class': 'form-control col-md-3'}}) }}
+                            {{ form_errors(form.nombreImmersion) }}
+                        </div>
+                        <div class="mb-4">
+                            {{ form_row(form.immersionMemeDate) }}
+                        </div>
+                    {% endif %}
+
                     <div class="mb-5">
                         {% if form.reponsesDisposition.reponses is defined %}
                             {{ _self.render_json_editor_widget(form.reponsesDisposition.reponses) }}
