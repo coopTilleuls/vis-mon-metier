@@ -29,6 +29,19 @@
             const autosaveUrl = '{{ autosave_url|default('')|e("js") }}';
             const fieldName = '{{ field_name|default('')|e("js") }}';
 
+            function renderAlert(text) {
+                const div = document.createElement('div');
+                div.className = 'alert alert-danger';
+                div.textContent = text;
+                return div;
+            }
+
+            function renderStatus(el, iconClass, text) {
+                const i = document.createElement('i');
+                i.className = iconClass + ' me-1';
+                el.replaceChildren(i, document.createTextNode(' ' + text));
+            }
+
             const initEditor = function() {
                 // Ensure JSONEditor is loaded before using it
                 if (typeof JSONEditor === 'undefined') {
@@ -136,7 +149,7 @@
                         startVal = JSON.parse(input.value);
                     }
                 } catch (e) {
-                    container.innerHTML = '<div class="alert alert-danger">Configuration invalide: ' + e.message + '</div>';
+                    container.replaceChildren(renderAlert('Configuration invalide: ' + e.message));
                     return;
                 }
 
@@ -162,7 +175,7 @@
                                 if (statusBadge) {
                                     statusBadge.classList.remove('d-none', 'bg-success', 'text-white', 'bg-danger');
                                     statusBadge.classList.add('bg-warning', 'text-dark');
-                                    statusBadge.innerHTML = '<i class="fas fa-sync fa-spin me-1"></i> Enregistrement...';
+                                    renderStatus(statusBadge, 'fas fa-sync fa-spin', 'Enregistrement...');
                                 }
 
                                 clearTimeout(timeoutId);
@@ -185,7 +198,7 @@
                                             if (statusBadge) {
                                                 statusBadge.classList.remove('bg-warning', 'text-dark');
                                                 statusBadge.classList.add('bg-success', 'text-white');
-                                                statusBadge.innerHTML = '<i class="fas fa-check me-1"></i> Enregistré à ' + data.timestamp;
+                                                renderStatus(statusBadge, 'fas fa-check', 'Enregistré à ' + data.timestamp);
                                             }
                                         })
                                         .catch(error => {
@@ -193,7 +206,7 @@
                                             if (statusBadge) {
                                                 statusBadge.classList.remove('bg-warning', 'text-dark');
                                                 statusBadge.classList.add('bg-danger', 'text-white');
-                                                statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Erreur sauvegarde';
+                                                renderStatus(statusBadge, 'fas fa-exclamation-triangle', 'Erreur sauvegarde');
                                             }
                                         });
                                 }, 1000);
@@ -203,7 +216,7 @@
 
                 } catch (err) {
                     console.error(err);
-                    container.innerHTML = '<div class="alert alert-danger">Erreur JS: ' + err.message + '</div>';
+                    container.replaceChildren(renderAlert('Erreur JS: ' + err.message));
                 }
             };
 

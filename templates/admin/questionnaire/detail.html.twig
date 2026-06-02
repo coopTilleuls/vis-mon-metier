@@ -335,7 +335,15 @@
                 </div>
             </div>
 
-            {# Hidden immersion sheet — only rendered to DOM for printing via printImmersionSheet() #}
+            {#
+                SANDBOXED PRINT EXPORT — DO NOT ADD `|raw` or inline event handlers
+                (onclick=, onload=, etc.) inside this block.
+
+                printImmersionSheet() reads this subtree's innerHTML and writes it
+                into an iframe via doc.write(). Twig autoescape currently keeps the
+                content safe, but any `|raw` or inline JS handler would re-execute
+                on print. New content here must rely on autoescape only.
+            #}
             {% if existingMatches|length > 0 %}
                 <div id="fiche-immersion-print" style="display:none;">
                     <div class="page-header">

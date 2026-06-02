@@ -79,7 +79,7 @@
                 <i class="fas fa-download me-1"></i> Exporter les métiers
             </a>
             {% endif %}
-            <button onclick="window.print()" class="btn btn-secondary">
+            <button type="button" class="btn btn-secondary btn-print-stats">
                 <i class="fas fa-print me-1"></i> Exporter les statistiques
             </button>
         </div>
@@ -128,7 +128,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">Âge des volontaires</h5>
                     {% if stats.byAge is defined and stats.byAge|length > 0 %}
-                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byAge')">
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none btn-toggle-chart" data-chart-key="byAge">
                             <i class="fas fa-table"></i>
                         </button>
                     {% endif %}
@@ -158,7 +158,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">Accompagnement des volontaires</h5>
                     {% if stats.byAccompaniment is defined and stats.byAccompaniment|length > 0 %}
-                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byAccompaniment')">
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none btn-toggle-chart" data-chart-key="byAccompaniment">
                             <i class="fas fa-table"></i>
                         </button>
                     {% endif %}
@@ -190,7 +190,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">Situation des volontaires</h5>
                     {% if stats.bySituation is defined and stats.bySituation|length > 0 %}
-                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('bySituation')">
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none btn-toggle-chart" data-chart-key="bySituation">
                             <i class="fas fa-table"></i>
                         </button>
                     {% endif %}
@@ -219,7 +219,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">Nombre de dates sélectionnées par volontaire</h5>
                     {% if stats.byDateCount is defined and stats.byDateCount|length > 0 %}
-                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byDateCount')">
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none btn-toggle-chart" data-chart-key="byDateCount">
                             <i class="fas fa-table"></i>
                         </button>
                     {% endif %}
@@ -250,7 +250,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">Commune de résidence des volontaires</h5>
                     {% if stats.byCommuneParticipants is defined and stats.byCommuneParticipants|length > 0 %}
-                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byCommuneParticipants')">
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none btn-toggle-chart" data-chart-key="byCommuneParticipants">
                             <i class="fas fa-table"></i>
                         </button>
                     {% endif %}
@@ -279,7 +279,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">Commune des entreprises d'accueil</h5>
                     {% if stats.byCommune is defined and stats.byCommune|length > 0 %}
-                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('byCommune')">
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none btn-toggle-chart" data-chart-key="byCommune">
                             <i class="fas fa-table"></i>
                         </button>
                     {% endif %}
@@ -310,7 +310,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="fw-bold mb-0 text-secondary">Statistiques par question</h4>
-                <button type="button" class="btn btn-sm btn-primary d-print-none px-3 py-2" onclick="toggleQuestionsStats()">
+                <button type="button" class="btn btn-sm btn-primary d-print-none px-3 py-2 btn-toggle-questions-stats">
                     <i class="fas fa-chevron-down me-1" id="questions-stats-icon"></i>
                     <span id="questions-stats-text">Afficher</span>
                 </button>
@@ -323,7 +323,7 @@
             <div class="stat-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-secondary">{{ question.title }}</h5>
-                    <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="toggleChart('{{ question.key }}')">
+                    <button type="button" class="btn btn-sm btn-outline-secondary d-print-none btn-toggle-chart" data-chart-key="{{ question.key }}">
                         <i class="fas fa-table"></i>
                     </button>
                 </div>
@@ -355,18 +355,21 @@
     {% endif %}
 </div>
 
+{# JSON encoded inside <script> must escape <, >, &, ', " so user-supplied
+   values cannot break out of the script tag or the surrounding JS string. #}
+{% set json_safe = constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') %}
 <script>
 const charts = {};
 const chartData = {
-    byAge: {{ stats.byAge is defined ? (stats.byAge|json_encode|raw) : '[]' }},
-    byAccompaniment: {{ stats.byAccompaniment is defined ? (stats.byAccompaniment|json_encode|raw) : '[]' }},
-    bySituation: {{ stats.bySituation is defined ? (stats.bySituation|json_encode|raw) : '[]' }},
-    byCommune: {{ stats.byCommune is defined ? (stats.byCommune|json_encode|raw) : '[]' }},
-    byCommuneParticipants: {{ stats.byCommuneParticipants is defined ? (stats.byCommuneParticipants|json_encode|raw) : '[]' }},
-    byDateCount: {{ stats.byDateCount is defined ? (stats.byDateCount|json_encode|raw) : '[]' }}
+    byAge: {{ stats.byAge is defined ? (stats.byAge|json_encode(json_safe)|raw) : '[]' }},
+    byAccompaniment: {{ stats.byAccompaniment is defined ? (stats.byAccompaniment|json_encode(json_safe)|raw) : '[]' }},
+    bySituation: {{ stats.bySituation is defined ? (stats.bySituation|json_encode(json_safe)|raw) : '[]' }},
+    byCommune: {{ stats.byCommune is defined ? (stats.byCommune|json_encode(json_safe)|raw) : '[]' }},
+    byCommuneParticipants: {{ stats.byCommuneParticipants is defined ? (stats.byCommuneParticipants|json_encode(json_safe)|raw) : '[]' }},
+    byDateCount: {{ stats.byDateCount is defined ? (stats.byDateCount|json_encode(json_safe)|raw) : '[]' }}
     {% if stats.byQuestions is defined and stats.byQuestions|length > 0 %}
         {% for question in stats.byQuestions %}
-        , '{{ question.key }}': {{ question.data|json_encode|raw }}
+        , {{ question.key|json_encode(json_safe)|raw }}: {{ question.data|json_encode(json_safe)|raw }}
         {% endfor %}
     {% endif %}
 };
@@ -471,10 +474,9 @@ function createChart(key) {
     }
 }
 
-function toggleChart(key) {
+function toggleChart(key, button) {
     const table = document.getElementById('table-' + key);
     const chartContainer = document.getElementById('chart-' + key);
-    const button = event.currentTarget;
     const icon = button.querySelector('i');
 
     if (!table || !chartContainer) {
@@ -508,8 +510,8 @@ function toggleQuestionsStats() {
         // Initialize charts for questions if not already done
         {% if stats.byQuestions is defined and stats.byQuestions|length > 0 %}
             {% for question in stats.byQuestions %}
-            if (!charts['{{ question.key }}'] && chartData['{{ question.key }}'] && chartData['{{ question.key }}'].length > 0) {
-                createChart('{{ question.key }}');
+            if (!charts[{{ question.key|json_encode(json_safe)|raw }}] && chartData[{{ question.key|json_encode(json_safe)|raw }}] && chartData[{{ question.key|json_encode(json_safe)|raw }}].length > 0) {
+                createChart({{ question.key|json_encode(json_safe)|raw }});
             }
             {% endfor %}
         {% endif %}
@@ -525,6 +527,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (chartData[key] && chartData[key].length > 0) {
             createChart(key);
         }
+    });
+
+    document.querySelectorAll('.btn-toggle-chart').forEach(btn => {
+        btn.addEventListener('click', () => toggleChart(btn.dataset.chartKey, btn));
+    });
+    document.querySelectorAll('.btn-toggle-questions-stats').forEach(btn => {
+        btn.addEventListener('click', toggleQuestionsStats);
+    });
+    document.querySelectorAll('.btn-print-stats').forEach(btn => {
+        btn.addEventListener('click', () => window.print());
     });
 });
 </script>
