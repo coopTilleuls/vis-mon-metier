@@ -74,7 +74,7 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center" style="background: transparent; padding-left: 0; padding-right: 0;">
                                 <span>{{ match }}</span>
                                 {% if can_manage_matches %}
-                                    <a href="{{ path('admin_questionnaire_unmatch', {id: match.id}) }}" class="btn btn-danger action-delete" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette immersion ?')">
+                                    <a href="{{ path('admin_questionnaire_unmatch', {id: match.id}) }}" class="btn btn-danger action-delete js-confirm-unmatch">
                                         <i class="fas fa-unlink me-1"></i> Annuler
                                     </a>
                                 {% endif %}
@@ -202,11 +202,11 @@
                         <div class="mb-3 mt-4 d-flex justify-content-between align-items-center">
                             <h3 class="section-title">Liste des profils les plus compatibles</h3>
                             <div class="d-flex gap-2 d-print-none">
-                                <button onclick="window.print()" class="btn btn-secondary">
+                                <button type="button" class="btn btn-secondary js-print-scores">
                                     <i class="fas fa-chart-column me-1"></i> Analyse des scores
                                 </button>
                                 {% if existingMatches|length > 0 %}
-                                    <button onclick="printImmersionSheet()" class="btn btn-primary">
+                                    <button type="button" class="btn btn-primary js-print-immersion-sheet">
                                         <i class="fas fa-handshake me-1"></i> Fiche immersion
                                     </button>
                                 {% endif %}
@@ -472,6 +472,20 @@
                 return new bootstrap.Popover(popoverTriggerEl, {
                     customClass: 'constraint-popover'
                 });
+            });
+
+            document.querySelectorAll('.js-confirm-unmatch').forEach(function(el) {
+                el.addEventListener('click', function(e) {
+                    if (!window.confirm('Êtes-vous sûr de vouloir annuler cette immersion ?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+            document.querySelectorAll('.js-print-scores').forEach(function(el) {
+                el.addEventListener('click', function() { window.print(); });
+            });
+            document.querySelectorAll('.js-print-immersion-sheet').forEach(function(el) {
+                el.addEventListener('click', printImmersionSheet);
             });
         });
 
