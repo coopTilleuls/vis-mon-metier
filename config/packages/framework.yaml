@@ -2,6 +2,10 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
+    # Assumes the app runs behind an ingress controller inside a private k8s
+    # cluster — the whole 10.0.0.0/8 range is trusted to set X-Forwarded-*.
+    # Tighten this if the deployment moves outside that perimeter, or
+    # X-Forwarded-For becomes spoofable.
     trusted_proxies: '10.0.0.0/8'
     trusted_headers: ['forwarded', 'x-forwarded-for', 'x-forwarded-proto']
 
@@ -10,6 +14,9 @@ framework:
         handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
         cookie_lifetime: 7200
         gc_maxlifetime: 7200
+        cookie_secure: auto
+        cookie_samesite: lax
+        cookie_httponly: true
 
     #esi: true
     #fragments: true
