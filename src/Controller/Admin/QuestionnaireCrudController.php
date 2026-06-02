@@ -412,7 +412,7 @@ class QuestionnaireCrudController extends AbstractCrudController
 
         usort($results, fn ($a, $b) => $b['score'] <=> $a['score']);
 
-        return array_slice($results, 0, 10);
+        return array_slice($results, 0, 20);
     }
 
     /**
