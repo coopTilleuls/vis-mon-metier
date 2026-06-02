@@ -24,6 +24,11 @@ class ModelQuestionnaireAutosaveController extends AbstractController
     #[Route('/admin/model-questionnaire/{id}/autosave', name: 'admin_model_questionnaire_autosave', methods: ['POST'])]
     public function autosave(ModelQuestionnaire $questionnaire, Request $request): JsonResponse
     {
+        $csrfToken = $request->headers->get('X-CSRF-Token');
+        if (null === $csrfToken || !$this->isCsrfTokenValid('autosave', $csrfToken)) {
+            return $this->json(['error' => 'Invalid CSRF token'], Response::HTTP_FORBIDDEN);
+        }
+
         $payload = $request->toArray();
         $field = $payload['field'] ?? null;
         $data = $payload['data'] ?? null;
