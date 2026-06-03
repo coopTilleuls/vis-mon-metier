@@ -22,7 +22,9 @@
         "session",
         "user",
         "stats",
-        "matching"
+        "matching",
+        "deps",
+        "security"
       ]
     ],
     "scope-empty": [
