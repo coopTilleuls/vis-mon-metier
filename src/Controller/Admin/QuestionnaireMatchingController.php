@@ -113,6 +113,17 @@ class QuestionnaireMatchingController extends AbstractController
             return $this->redirectBack($request, $sourceId);
         }
 
+        $employerMatchesCount = $repo->count(['entreprise' => $employer]);
+
+        if ($employerMatchesCount >= $employer->getNombreImmersion()) {
+            $this->addFlash('danger', sprintf(
+                'L\'employeur a déjà atteint son nombre maximum d\'immersions (%d).',
+                $employer->getNombreImmersion()
+            ));
+
+            return $this->redirectBack($request, $sourceId);
+        }
+
         // Create the match
         $appariement = new Appariement();
         $appariement->setParticipant($participant);

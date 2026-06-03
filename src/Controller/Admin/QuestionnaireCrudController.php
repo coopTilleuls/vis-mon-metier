@@ -317,6 +317,9 @@ class QuestionnaireCrudController extends AbstractCrudController
             }
         }
 
+        $currentReachedMax = Type::EMPLOYEUR === $questionnaire->getType()
+            && $questionnaire->getAppariements()->count() >= $questionnaire->getNombreImmersion();
+
         $results = [];
         $currentScores = $questionnaire->getReponsesScore() ?? [];
         $questionsSchema = $session->getModelQuestionnaire()->getQuestionsDisposition();
@@ -358,6 +361,9 @@ class QuestionnaireCrudController extends AbstractCrudController
                 }
             }
 
+            $candidateReachedMax = Type::EMPLOYEUR === $candidate->getType()
+                && $candidate->getAppariements()->count() >= $candidate->getNombreImmersion();
+
             $detailUrl = $this->adminUrlGenerator
                 ->setController(self::class)
                 ->setAction(Action::DETAIL)
@@ -376,12 +382,18 @@ class QuestionnaireCrudController extends AbstractCrudController
                 $isAvailable = true;
                 $unavailableReason = '';
 
-                if (in_array($dateStr, $currentBusyDates, true)) {
+                if ($currentReachedMax) {
                     $isAvailable = false;
-                    $unavailableReason = 'Vous êtes indisponible';
+                    $unavailableReason = 'Nombre maximum d\'immersions atteint';
+                } elseif ($candidateReachedMax) {
+                    $isAvailable = false;
+                    $unavailableReason = 'Professionnel·le a atteint son nombre maximum d\'immersions';
+                } elseif (in_array($dateStr, $currentBusyDates, true)) {
+                    $isAvailable = false;
+                    $unavailableReason = 'Date indisponible';
                 } elseif (in_array($dateStr, $candidateBusyDates, true)) {
                     $isAvailable = false;
-                    $unavailableReason = 'Candidat indisponible';
+                    $unavailableReason = 'Indisponible à cette date';
                 }
 
                 $formattedDates[] = [
