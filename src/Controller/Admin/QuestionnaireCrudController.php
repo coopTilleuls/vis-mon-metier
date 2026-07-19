@@ -9,6 +9,7 @@ use App\Entity\Roles;
 use App\Entity\User;
 use App\Repository\QuestionnaireRepository;
 use App\Security\Voter\QuestionnaireVoter;
+use App\Service\MatchScoreCalculator;
 use App\ValueObject\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -42,6 +43,7 @@ class QuestionnaireCrudController extends AbstractCrudController
         private readonly EntityManagerInterface $entityManager,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly QuestionnaireRepository $questionnaireRepository,
+        private readonly MatchScoreCalculator $matchScoreCalculator,
     ) {
     }
 
@@ -287,9 +289,9 @@ class QuestionnaireCrudController extends AbstractCrudController
                 continue;
             }
             if (Type::EMPLOYEUR === $questionnaire->getType()) {
-                $scores[] = $this->calculateMatchScore($currentScores, $candidateScores);
+                $scores[] = $this->matchScoreCalculator->calculate($currentScores, $candidateScores);
             } else {
-                $scores[] = $this->calculateMatchScore($candidateScores, $currentScores);
+                $scores[] = $this->matchScoreCalculator->calculate($candidateScores, $currentScores);
             }
         }
 
@@ -351,9 +353,9 @@ class QuestionnaireCrudController extends AbstractCrudController
             $candidateScores = $candidate->getReponsesScore() ?? [];
 
             if (Type::EMPLOYEUR === $questionnaire->getType()) {
-                $score = $this->calculateMatchScore($currentScores, $candidateScores);
+                $score = $this->matchScoreCalculator->calculate($currentScores, $candidateScores);
             } else {
-                $score = $this->calculateMatchScore($candidateScores, $currentScores);
+                $score = $this->matchScoreCalculator->calculate($candidateScores, $currentScores);
             }
 
             $contact = $candidate->getContact();
@@ -478,31 +480,6 @@ class QuestionnaireCrudController extends AbstractCrudController
         }
 
         return array_unique($normalized);
-    }
-
-    /**
-     * @param array<mixed> $employerAnswers
-     * @param array<mixed> $participantAnswers
-     */
-    public function calculateMatchScore(array $employerAnswers, array $participantAnswers): int
-    {
-        $totalDistance = 0;
-        $maxDistancePossible = 0;
-        foreach ($employerAnswers as $criteriaId => $employerValue) {
-            if (!isset($participantAnswers[$criteriaId])) {
-                continue;
-            }
-            $participantValue = $participantAnswers[$criteriaId];
-            $distance = abs($employerValue - $participantValue);
-            $totalDistance += $distance;
-            $maxDistancePossible += 3;
-        }
-
-        if (0 === $maxDistancePossible) {
-            return 0;
-        }
-
-        return (int) (100 - (($totalDistance / $maxDistancePossible) * 100));
     }
 
     /**
