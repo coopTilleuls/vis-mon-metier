@@ -1,0 +1,207 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_title %}Suivi des immersions{% endblock %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <style>
+        .suivi-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: flex-end; margin-bottom: 1rem; }
+        .suivi-toolbar .field { display: flex; flex-direction: column; gap: .25rem; }
+        .suivi-toolbar label { font-size: .8rem; font-weight: 600; margin: 0; }
+        .suivi-recap { display: flex; flex-wrap: wrap; gap: 1.25rem; padding: .75rem 1rem; margin-bottom: 1rem;
+            background: var(--green-light-color, #eef6ee); border-radius: .5rem; font-size: .9rem; }
+        .suivi-recap .stat b { font-size: 1.1rem; }
+        .suivi-recap .warn { color: #b02a37; }
+        .suivi-table-wrapper { max-height: calc(100vh - 320px); overflow: auto; border: 1px solid #dee2e6; border-radius: .5rem; }
+        .suivi-table { margin: 0; font-size: .85rem; white-space: nowrap; }
+        .suivi-table thead th { position: sticky; top: 0; z-index: 2; background: #fff;
+            box-shadow: inset 0 -2px 0 #dee2e6; cursor: pointer; user-select: none; }
+        .suivi-table thead th.no-sort { cursor: default; }
+        .suivi-table thead th .arrow { opacity: .35; font-size: .7rem; }
+        .suivi-table tbody tr.is-phantom { background: #fff8e6; }
+        .suivi-table td.obs { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+        .suivi-empty { padding: 2rem; text-align: center; color: #6c757d; }
+    </style>
+{% endblock %}
+
+{% block main %}
+    {% if session is null %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i> Aucune session sélectionnée ou ouverte.
+        </div>
+    {% else %}
+        {# --- Barre de filtres (serveur, form GET) --- #}
+        <form method="get" class="suivi-toolbar">
+            <div class="field">
+                <label for="f-session">Session</label>
+                <select id="f-session" name="session" class="form-select form-select-sm" onchange="this.form.submit()">
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {{ s.id == session.id ? 'selected' }}>{{ s.nom }}{{ s.statut == 'ouverte' ? ' (ouverte)' }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if isAdmin %}
+                <div class="field">
+                    <label for="f-referent">Référent·e</label>
+                    <select id="f-referent" name="referent" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Tous</option>
+                        {% for r in referents %}
+                            <option value="{{ r.id }}" {{ r.id == selectedReferentId ? 'selected' }}>{{ r.prenom }} {{ r.nomFamille }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+
+            <div class="field">
+                <label for="f-statut">Statut</label>
+                <select id="f-statut" class="form-select form-select-sm js-filter-statut">
+                    <option value="">Tous</option>
+                    {% for statut in statutChoices %}
+                        <option value="{{ statut.value }}">{{ statut.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="f-search">Recherche</label>
+                <input id="f-search" type="search" class="form-control form-control-sm js-search" placeholder="Nom, entreprise, métier…">
+            </div>
+
+            <div class="field">
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="f-phantom" name="sansImmersion" value="1"
+                           {{ showPhantom ? 'checked' }} onchange="this.form.submit()">
+                    <label class="form-check-label" for="f-phantom">Volontaires sans immersion</label>
+                </div>
+            </div>
+        </form>
+
+        {# --- Bandeau récap --- #}
+        {% if recap %}
+            <div class="suivi-recap">
+                <span class="stat">Volontaires&nbsp;<b>{{ recap.volontaires }}</b></span>
+                <span class="stat">Immersions&nbsp;<b>{{ recap.immersions }}</b></span>
+                <span class="stat">Entreprises&nbsp;<b>{{ recap.entreprises }}</b></span>
+                {% if recap.sansImmersion > 0 %}
+                    <span class="stat warn">⚠ {{ recap.sansImmersion }} volontaire{{ recap.sansImmersion > 1 ? 's' }} sans immersion</span>
+                {% endif %}
+                {% if recap.sousQuota is not null and recap.sousQuota > 0 %}
+                    <span class="stat warn">⚠ {{ recap.sousQuota }} entreprise{{ recap.sousQuota > 1 ? 's' }} sous quota</span>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {# --- Tableau --- #}
+        <div class="suivi-table-wrapper">
+            <table class="table table-hover table-sm suivi-table js-suivi-table">
+                <thead>
+                    <tr>
+                        <th data-type="text">Volontaire <span class="arrow">↕</span></th>
+                        <th data-type="text">Commune <span class="arrow">↕</span></th>
+                        <th data-type="text">Situation <span class="arrow">↕</span></th>
+                        <th data-type="text">Référent·e <span class="arrow">↕</span></th>
+                        <th data-type="text">Entreprise <span class="arrow">↕</span></th>
+                        <th data-type="text">Métier <span class="arrow">↕</span></th>
+                        <th data-type="date">Date <span class="arrow">↕</span></th>
+                        <th data-type="text">Statut <span class="arrow">↕</span></th>
+                        <th class="no-sort">Obs. immersion</th>
+                        <th class="no-sort">Obs. volontaire</th>
+                        <th data-type="text">Mail <span class="arrow">↕</span></th>
+                        <th class="no-sort">Tél.</th>
+                        <th data-type="num">Score <span class="arrow">↕</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr class="{{ row.isPhantom ? 'is-phantom' }}"
+                            data-statut="{{ row.isPhantom ? 'none' : row.statut.value }}">
+                            <td data-sort="{{ row.volontaire|lower }}">
+                                {% if row.volontaireUrl %}<a href="{{ row.volontaireUrl }}">{{ row.volontaire }}</a>{% else %}{{ row.volontaire }}{% endif %}
+                            </td>
+                            <td>{{ row.commune ?? '—' }}</td>
+                            <td>{{ row.situation ?? '—' }}</td>
+                            <td>{{ row.referent ?? '—' }}</td>
+                            <td data-sort="{{ row.entreprise|lower }}">
+                                {% if row.entrepriseUrl %}<a href="{{ row.entrepriseUrl }}">{{ row.entreprise }}</a>{% else %}—{% endif %}
+                            </td>
+                            <td>{{ row.metier ?? '—' }}</td>
+                            <td data-sort="{{ row.date ? row.date|date('Y-m-d') : '' }}">{{ row.date ? row.date|date('d/m/Y') : '—' }}</td>
+                            <td>
+                                {% if row.isPhantom %}
+                                    <span class="badge bg-light text-dark border">Sans immersion</span>
+                                {% else %}
+                                    <span class="badge bg-{{ row.statut.couleur }}">{{ row.statut.label }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="obs" title="{{ row.observations }}">{{ row.observations ?? '—' }}</td>
+                            <td class="obs" title="{{ row.observationsVolontaire }}">{{ row.observationsVolontaire ?? '—' }}</td>
+                            <td>{% if row.email %}<a href="mailto:{{ row.email }}">{{ row.email }}</a>{% else %}—{% endif %}</td>
+                            <td>{% if row.telephone %}<a href="tel:{{ row.telephone }}">{{ row.telephone }}</a>{% else %}—{% endif %}</td>
+                            <td data-sort="{{ row.score ?? -1 }}" class="text-center">
+                                {% if row.score is not null %}<span class="badge bg-secondary">{{ row.score }}%</span>{% else %}—{% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="13" class="suivi-empty">Aucune immersion pour cette sélection.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    <script>
+        (function () {
+            const table = document.querySelector('.js-suivi-table');
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+            const search = document.querySelector('.js-search');
+            const statutFilter = document.querySelector('.js-filter-statut');
+
+            // --- Filtrage (recherche plein texte + statut), côté client ---
+            function applyFilters() {
+                const q = (search.value || '').toLowerCase().trim();
+                const st = statutFilter.value;
+                tbody.querySelectorAll('tr').forEach(function (tr) {
+                    if (!tr.dataset.statut) return; // ligne "vide"
+                    const matchText = !q || tr.textContent.toLowerCase().includes(q);
+                    const matchStatut = !st || tr.dataset.statut === st;
+                    tr.style.display = (matchText && matchStatut) ? '' : 'none';
+                });
+            }
+            search && search.addEventListener('input', applyFilters);
+            statutFilter && statutFilter.addEventListener('change', applyFilters);
+
+            // --- Tri par colonne ---
+            const headers = table.querySelectorAll('thead th');
+            headers.forEach(function (th, index) {
+                if (th.classList.contains('no-sort')) return;
+                th.addEventListener('click', function () {
+                    const type = th.dataset.type || 'text';
+                    const asc = th.dataset.dir !== 'asc';
+                    headers.forEach(h => delete h.dataset.dir);
+                    th.dataset.dir = asc ? 'asc' : 'desc';
+
+                    const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.dataset.statut);
+                    rows.sort(function (a, b) {
+                        const av = cellVal(a.children[index], type);
+                        const bv = cellVal(b.children[index], type);
+                        if (av < bv) return asc ? -1 : 1;
+                        if (av > bv) return asc ? 1 : -1;
+                        return 0;
+                    });
+                    rows.forEach(r => tbody.appendChild(r));
+                });
+            });
+
+            function cellVal(td, type) {
+                const raw = td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
+                if (type === 'num') return parseFloat(raw) || 0;
+                return raw.toLowerCase();
+            }
+        })();
+    </script>
+{% endblock %}
