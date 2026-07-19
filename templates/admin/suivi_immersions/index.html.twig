@@ -37,7 +37,7 @@
         </div>
     {% else %}
         {# --- Barre de filtres (serveur, form GET) --- #}
-        <form method="get" class="suivi-toolbar">
+        <form method="get" action="{{ path('admin_suivi_immersions') }}" class="suivi-toolbar">
             <div class="field">
                 <label for="f-session">Session</label>
                 <select id="f-session" name="session" class="form-select form-select-sm" onchange="this.form.submit()">
