@@ -8,6 +8,7 @@ use App\Entity\Questionnaire;
 use App\Entity\Session;
 use App\ValueObject\Type;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -38,6 +39,97 @@ class QuestionnaireRepository extends ServiceEntityRepository
             ->getResult();
 
         return $result;
+    }
+
+    /**
+     * Volontaires d'une session sans aucune immersion (lignes « fantômes » du suivi), avec
+     * fetch-join contact + référent. Filtre optionnel par référents.
+     *
+     * @param list<int>|null $referentIds
+     *
+     * @return list<Questionnaire>
+     */
+    public function findParticipantsSansImmersion(Session $session, ?array $referentIds = null): array
+    {
+        $qb = $this->createQueryBuilder('q')
+            ->join('q.contact', 'c')->addSelect('c')
+            ->leftJoin('c.referent', 'r')->addSelect('r')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :type')
+            ->andWhere('q.appaire = false')
+            ->orderBy('c.nomFamille', 'ASC')
+            ->addOrderBy('c.prenom', 'ASC')
+            ->setParameter('session', $session)
+            ->setParameter('type', Type::PARTICIPANT);
+
+        $this->applyReferentFilter($qb, $referentIds);
+
+        /** @var list<Questionnaire> $result */
+        $result = $qb->getQuery()->getResult();
+
+        return $result;
+    }
+
+    /**
+     * @param list<int>|null $referentIds
+     */
+    public function countParticipantsSansImmersion(Session $session, ?array $referentIds = null): int
+    {
+        $qb = $this->createQueryBuilder('q')
+            ->select('count(q.id)')
+            ->leftJoin('q.contact', 'c')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :type')
+            ->andWhere('q.appaire = false')
+            ->setParameter('session', $session)
+            ->setParameter('type', Type::PARTICIPANT);
+
+        $this->applyReferentFilter($qb, $referentIds);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Nombre d'entreprises dont le quota d'immersions n'est pas rempli
+     * (immersions validées < nombreImmersion).
+     */
+    public function countEnterprisesUnderQuota(Session $session): int
+    {
+        $rows = $this->createQueryBuilder('q')
+            ->select('q.id')
+            ->leftJoin('q.appariementsEntreprise', 'a')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :type')
+            ->groupBy('q.id')
+            ->having('count(a.id) < q.nombreImmersion')
+            ->setParameter('session', $session)
+            ->setParameter('type', Type::EMPLOYEUR)
+            ->getQuery()
+            ->getResult();
+
+        return count($rows);
+    }
+
+    /**
+     * Restreint la requête aux volontaires rattachés aux référents donnés (alias contact = 'c').
+     * null = pas de filtre ; [] = aucun résultat.
+     *
+     * @param list<int>|null $referentIds
+     */
+    private function applyReferentFilter(QueryBuilder $qb, ?array $referentIds): void
+    {
+        if (null === $referentIds) {
+            return;
+        }
+
+        if ([] === $referentIds) {
+            $qb->andWhere('1 = 0');
+
+            return;
+        }
+
+        $qb->andWhere('c.referent IN (:referentIds)')
+            ->setParameter('referentIds', $referentIds);
     }
 
     public function countInactiveParticipants(Session $session): int
