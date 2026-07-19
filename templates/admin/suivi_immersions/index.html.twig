@@ -111,11 +111,11 @@
                         <th data-type="text">Métier <span class="arrow">↕</span></th>
                         <th data-type="date">Date <span class="arrow">↕</span></th>
                         <th data-type="text">Statut <span class="arrow">↕</span></th>
-                        <th class="no-sort">Obs. immersion</th>
-                        <th class="no-sort">Obs. volontaire</th>
                         <th data-type="text">Mail <span class="arrow">↕</span></th>
                         <th class="no-sort">Tél.</th>
                         <th data-type="num">Score <span class="arrow">↕</span></th>
+                        <th class="no-sort">Obs. immersion</th>
+                        <th class="no-sort">Obs. volontaire</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,6 +147,11 @@
                                     </select>
                                 {% endif %}
                             </td>
+                            <td>{% if row.email %}<a href="mailto:{{ row.email }}">{{ row.email }}</a>{% else %}—{% endif %}</td>
+                            <td>{% if row.telephone %}<a href="tel:{{ row.telephone }}">{{ row.telephone }}</a>{% else %}—{% endif %}</td>
+                            <td data-sort="{{ row.score ?? -1 }}" class="text-center">
+                                {% if row.score is not null %}<span class="badge bg-secondary">{{ row.score }}%</span>{% else %}—{% endif %}
+                            </td>
                             {% if row.isPhantom %}
                                 <td class="obs text-muted">—</td>
                             {% else %}
@@ -161,11 +166,6 @@
                                 data-token="{{ csrf_token('suivi_volontaire_' ~ row.volontaireId) }}"
                                 data-field="observations"
                                 contenteditable="true">{{ row.observationsVolontaire }}</td>
-                            <td>{% if row.email %}<a href="mailto:{{ row.email }}">{{ row.email }}</a>{% else %}—{% endif %}</td>
-                            <td>{% if row.telephone %}<a href="tel:{{ row.telephone }}">{{ row.telephone }}</a>{% else %}—{% endif %}</td>
-                            <td data-sort="{{ row.score ?? -1 }}" class="text-center">
-                                {% if row.score is not null %}<span class="badge bg-secondary">{{ row.score }}%</span>{% else %}—{% endif %}
-                            </td>
                         </tr>
                     {% else %}
                         <tr><td colspan="13" class="suivi-empty">Aucune immersion pour cette sélection.</td></tr>
