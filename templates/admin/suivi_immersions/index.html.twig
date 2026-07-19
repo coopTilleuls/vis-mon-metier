@@ -20,6 +20,12 @@
         .suivi-table thead th .arrow { opacity: .35; font-size: .7rem; }
         .suivi-table tbody tr.is-phantom { background: #fff8e6; }
         .suivi-table td.obs { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+        .suivi-table td.js-editable { white-space: normal; min-width: 140px; cursor: text; }
+        .suivi-table td.js-editable:focus { outline: 2px solid var(--green-color, #4a7); background: #fff; overflow: visible; }
+        .suivi-table td.js-editable:empty::before { content: '—'; color: #adb5bd; }
+        .suivi-table .js-statut { width: auto; min-width: 110px; font-size: .8rem; }
+        .suivi-table td .saved-flash { color: #198754; font-weight: 600; }
+        .suivi-table td .error-flash { color: #b02a37; font-weight: 600; }
         .suivi-empty { padding: 2rem; text-align: center; color: #6c757d; }
     </style>
 {% endblock %}
@@ -131,11 +137,30 @@
                                 {% if row.isPhantom %}
                                     <span class="badge bg-light text-dark border">Sans immersion</span>
                                 {% else %}
-                                    <span class="badge bg-{{ row.statut.couleur }}">{{ row.statut.label }}</span>
+                                    <select class="form-select form-select-sm js-statut badge-select bg-{{ row.statut.couleur }}"
+                                            data-url="{{ path('admin_suivi_immersion_update', {id: row.immersionId}) }}"
+                                            data-token="{{ csrf_token('suivi_immersion_' ~ row.immersionId) }}">
+                                        {% for statut in statutChoices %}
+                                            <option value="{{ statut.value }}" data-couleur="{{ statut.couleur }}"
+                                                    {{ statut == row.statut ? 'selected' }}>{{ statut.label }}</option>
+                                        {% endfor %}
+                                    </select>
                                 {% endif %}
                             </td>
-                            <td class="obs" title="{{ row.observations }}">{{ row.observations ?? '—' }}</td>
-                            <td class="obs" title="{{ row.observationsVolontaire }}">{{ row.observationsVolontaire ?? '—' }}</td>
+                            {% if row.isPhantom %}
+                                <td class="obs text-muted">—</td>
+                            {% else %}
+                                <td class="obs js-editable"
+                                    data-url="{{ path('admin_suivi_immersion_update', {id: row.immersionId}) }}"
+                                    data-token="{{ csrf_token('suivi_immersion_' ~ row.immersionId) }}"
+                                    data-field="observations"
+                                    contenteditable="true">{{ row.observations }}</td>
+                            {% endif %}
+                            <td class="obs js-editable"
+                                data-url="{{ path('admin_suivi_volontaire_update', {id: row.volontaireId}) }}"
+                                data-token="{{ csrf_token('suivi_volontaire_' ~ row.volontaireId) }}"
+                                data-field="observations"
+                                contenteditable="true">{{ row.observationsVolontaire }}</td>
                             <td>{% if row.email %}<a href="mailto:{{ row.email }}">{{ row.email }}</a>{% else %}—{% endif %}</td>
                             <td>{% if row.telephone %}<a href="tel:{{ row.telephone }}">{{ row.telephone }}</a>{% else %}—{% endif %}</td>
                             <td data-sort="{{ row.score ?? -1 }}" class="text-center">
@@ -202,6 +227,51 @@
                 if (type === 'num') return parseFloat(raw) || 0;
                 return raw.toLowerCase();
             }
+
+            // --- Édition inline (AJAX) ---
+            function save(url, token, field, value, onOk) {
+                const body = new URLSearchParams();
+                body.append('_token', token);
+                body.append(field, value);
+                fetch(url, {
+                    method: 'POST',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'},
+                    body: body,
+                }).then(function (resp) {
+                    return resp.json().then(function (data) { return {ok: resp.ok, data: data}; });
+                }).then(function (res) {
+                    if (res.ok && res.data.ok) {
+                        onOk && onOk(res.data);
+                    } else {
+                        alert('Échec de l\'enregistrement : ' + (res.data.error || 'erreur inconnue'));
+                    }
+                }).catch(function () {
+                    alert('Échec de l\'enregistrement (réseau).');
+                });
+            }
+
+            // Statut : select -> POST au change
+            table.querySelectorAll('.js-statut').forEach(function (sel) {
+                sel.addEventListener('change', function () {
+                    save(sel.dataset.url, sel.dataset.token, 'statut', sel.value, function (data) {
+                        sel.className = sel.className.replace(/bg-\S+/g, 'bg-' + data.couleur);
+                        sel.closest('tr').dataset.statut = data.statut;
+                    });
+                });
+            });
+
+            // Observations : contenteditable -> POST au blur si modifié
+            table.querySelectorAll('td.js-editable').forEach(function (td) {
+                td.addEventListener('focus', function () { td.dataset.original = td.textContent; });
+                td.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); td.blur(); }
+                });
+                td.addEventListener('blur', function () {
+                    const value = td.textContent.trim();
+                    if (value === (td.dataset.original || '').trim()) return;
+                    save(td.dataset.url, td.dataset.token, td.dataset.field, value);
+                });
+            });
         })();
     </script>
 {% endblock %}

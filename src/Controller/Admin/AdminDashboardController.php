@@ -24,9 +24,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class AdminDashboardController extends AbstractDashboardController
@@ -213,6 +215,101 @@ class AdminDashboardController extends AbstractDashboardController
             'telephone' => $contact?->getNumeroTelephone(),
             'score' => null,
         ];
+    }
+
+    #[Route('/admin/suivi-immersions/immersion/{id}', name: 'admin_suivi_immersion_update', methods: ['POST'])]
+    #[IsGranted(Roles::REFERENT)]
+    public function updateImmersion(Appariement $immersion, Request $request): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('suivi_immersion_'.$immersion->getId(), (string) $request->request->get('_token'))) {
+            return new JsonResponse(['error' => 'Jeton CSRF invalide.'], Response::HTTP_FORBIDDEN);
+        }
+
+        if (!$this->canEditImmersion($immersion)) {
+            return new JsonResponse(['error' => 'Accès refusé.'], Response::HTTP_FORBIDDEN);
+        }
+
+        if ($request->request->has('statut')) {
+            $statut = StatutImmersion::tryFrom((string) $request->request->get('statut'));
+            if (null === $statut) {
+                return new JsonResponse(['error' => 'Statut invalide.'], Response::HTTP_BAD_REQUEST);
+            }
+            $immersion->setStatut($statut);
+        }
+
+        if ($request->request->has('observations')) {
+            $observations = trim((string) $request->request->get('observations'));
+            $immersion->setObservations('' !== $observations ? $observations : null);
+        }
+
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'ok' => true,
+            'statut' => $immersion->getStatut()->value,
+            'label' => $immersion->getStatut()->label(),
+            'couleur' => $immersion->getStatut()->couleur(),
+        ]);
+    }
+
+    #[Route('/admin/suivi-immersions/volontaire/{id}', name: 'admin_suivi_volontaire_update', methods: ['POST'])]
+    #[IsGranted(Roles::REFERENT)]
+    public function updateVolontaire(Questionnaire $participant, Request $request): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('suivi_volontaire_'.$participant->getId(), (string) $request->request->get('_token'))) {
+            return new JsonResponse(['error' => 'Jeton CSRF invalide.'], Response::HTTP_FORBIDDEN);
+        }
+
+        if (!$this->canEditVolontaire($participant)) {
+            return new JsonResponse(['error' => 'Accès refusé.'], Response::HTTP_FORBIDDEN);
+        }
+
+        $contact = $participant->getContact();
+        if (null === $contact) {
+            return new JsonResponse(['error' => 'Contact introuvable.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $observations = trim((string) $request->request->get('observations'));
+        $contact->setObservationsVolontaire('' !== $observations ? $observations : null);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['ok' => true]);
+    }
+
+    /**
+     * Référents du user courant, ou null s'il est ADMIN (aucune restriction).
+     *
+     * @return list<int>|null
+     */
+    private function referentScopeIds(): ?array
+    {
+        if ($this->isGranted(Roles::ADMIN)) {
+            return null;
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return $user->getReferents()->map(fn (Referent $r) => $r->getId())->toArray();
+    }
+
+    private function canEditVolontaire(Questionnaire $participant): bool
+    {
+        $scopeIds = $this->referentScopeIds();
+        if (null === $scopeIds) {
+            return true;
+        }
+
+        $referent = $participant->getContact()?->getReferent();
+
+        return null !== $referent && in_array($referent->getId(), $scopeIds, true);
+    }
+
+    private function canEditImmersion(Appariement $immersion): bool
+    {
+        $participant = $immersion->getParticipant();
+
+        return null !== $participant && $this->canEditVolontaire($participant);
     }
 
     private function questionnaireDetailUrl(int $id): string
