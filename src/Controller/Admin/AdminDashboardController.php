@@ -99,7 +99,9 @@ class AdminDashboardController extends AbstractDashboardController
 
         if ($isAdmin) {
             $referents = $this->entityManager->getRepository(Referent::class)->findBy([], ['nomFamille' => 'ASC', 'prenom' => 'ASC']);
-            $selectedReferentId = $request->query->getInt('referent') ?: null;
+            // Option « Tous » soumet une valeur vide : ne pas utiliser getInt() qui lève une 400 sur chaîne vide.
+            $referentParam = $request->query->get('referent');
+            $selectedReferentId = (null !== $referentParam && '' !== $referentParam) ? (int) $referentParam : null;
             if (null !== $selectedReferentId) {
                 $referentIds = [$selectedReferentId];
             }
