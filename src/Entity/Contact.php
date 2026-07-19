@@ -114,6 +114,10 @@ class Contact
     #[Map(if: false)]
     private ?Referent $referent = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Map(if: false)]
+    private ?string $observationsVolontaire = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -231,6 +235,18 @@ class Contact
     public function setReferent(?Referent $referent): static
     {
         $this->referent = $referent;
+
+        return $this;
+    }
+
+    public function getObservationsVolontaire(): ?string
+    {
+        return $this->observationsVolontaire;
+    }
+
+    public function setObservationsVolontaire(?string $observationsVolontaire): static
+    {
+        $this->observationsVolontaire = $observationsVolontaire;
 
         return $this;
     }

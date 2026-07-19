@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\ValueObject\StatutImmersion;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -25,6 +26,12 @@ class Appariement
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
     private ?\DateTimeImmutable $dateMatch = null;
+
+    #[ORM\Column(type: 'string', length: 20, enumType: StatutImmersion::class, options: ['default' => StatutImmersion::Proposee->value])]
+    private StatutImmersion $statut = StatutImmersion::Proposee;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $observations = null;
 
     public function getId(): ?int
     {
@@ -65,6 +72,30 @@ class Appariement
     public function setDateMatch(?\DateTimeImmutable $dateMatch): static
     {
         $this->dateMatch = $dateMatch;
+
+        return $this;
+    }
+
+    public function getStatut(): StatutImmersion
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(StatutImmersion $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getObservations(): ?string
+    {
+        return $this->observations;
+    }
+
+    public function setObservations(?string $observations): static
+    {
+        $this->observations = $observations;
 
         return $this;
     }
