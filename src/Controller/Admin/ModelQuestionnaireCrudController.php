@@ -46,7 +46,8 @@ class ModelQuestionnaireCrudController extends AbstractCrudController
     {
         yield TextField::new('nom', 'Nom');
 
-        yield ArrayField::new('communes', 'Liste des communes proposées');
+        yield ArrayField::new('communes', 'Liste des communes proposées')
+            ->setHelp('Ne pas ajouter « Autre » à la liste : cette option est présente par défaut.');
 
         yield BooleanField::new('active', 'Actif')
             ->renderAsSwitch(false);
