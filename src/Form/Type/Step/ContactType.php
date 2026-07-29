@@ -124,6 +124,7 @@ final class ContactType extends AbstractType
             ->add('situation', ChoiceType::class, [
                 'choices' => [
                     Contact::SALARIE => Contact::SALARIE,
+                    Contact::FONCTIONNAIRE => Contact::FONCTIONNAIRE,
                     Contact::DEMANDEUR_EMPLOI => Contact::DEMANDEUR_EMPLOI,
                     Contact::SCOLAIRE_ETUDIANT => Contact::SCOLAIRE_ETUDIANT,
                     Contact::AUTRE => Contact::AUTRE,

@@ -16,6 +16,7 @@ class Contact
     public const DEMANDEUR_EMPLOI = 'Demandeur·euse d\'emploi';
     public const SCOLAIRE_ETUDIANT = 'Scolaire, Etudiant·e';
     public const SALARIE = 'Salarié·e';
+    public const FONCTIONNAIRE = 'Fonctionnaire';
     public const AUTRE = 'Autre';
     public const MAJEUR = 'Plus de 18 ans';
     public const MINEUR = 'Moins de 18 ans';
@@ -49,7 +50,7 @@ class Contact
     private ?string $numeroTelephone = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Choice(choices: [self::SALARIE, self::DEMANDEUR_EMPLOI, self::SCOLAIRE_ETUDIANT, self::AUTRE], message: 'Type invalide')]
+    #[Assert\Choice(choices: [self::SALARIE, self::DEMANDEUR_EMPLOI, self::SCOLAIRE_ETUDIANT, self::FONCTIONNAIRE, self::AUTRE], message: 'Type invalide')]
     private ?string $situation = null;
 
     #[ORM\Column(length: 50, nullable: true)]

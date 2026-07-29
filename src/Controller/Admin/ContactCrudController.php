@@ -181,6 +181,7 @@ class ContactCrudController extends AbstractCrudController
             yield ChoiceField::new('situation', 'Situation')
                 ->setChoices([
                     'Salarié' => Contact::SALARIE,
+                    'Fonctionnaire' => Contact::FONCTIONNAIRE,
                     'Demandeur d\'emploi' => Contact::DEMANDEUR_EMPLOI,
                     'Scolaire / Étudiant·e' => Contact::SCOLAIRE_ETUDIANT,
                     'Autre' => Contact::AUTRE,

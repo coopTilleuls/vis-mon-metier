@@ -57,6 +57,7 @@ final class Contact
                 ContactEntity::SCOLAIRE_ETUDIANT,
                 ContactEntity::DEMANDEUR_EMPLOI,
                 ContactEntity::SALARIE,
+                ContactEntity::FONCTIONNAIRE,
                 ContactEntity::AUTRE,
             ],
                 message: 'Veuillez choisir une situation valide.'),
