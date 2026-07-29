@@ -35,29 +35,33 @@ class AdminDashboardController extends AbstractDashboardController
     public function index(): Response
     {
         $stats = null;
-        $activeSession = $this->entityManager->getRepository(Session::class)->findOneBy(['statut' => Session::STATUT_OUVERT], ['id' => 'DESC']);
+        $sessionRepository = $this->entityManager->getRepository(Session::class);
+        $openSession = $sessionRepository->findOneBy(['statut' => Session::STATUT_OUVERT], ['id' => 'DESC']);
+        // Fall back to the most recent session so the dashboard keeps showing
+        // the last session that took place even once it is closed.
+        $displaySession = $openSession ?? $sessionRepository->findOneBy([], ['id' => 'DESC']);
 
-        if ($activeSession) {
+        if ($displaySession) {
             $questionnaireRepository = $this->questionnaireRepository;
             $stats = [
-                'sessionId' => $activeSession->getId(),
-                'sessionName' => $activeSession->getNom(),
-                'participants' => $questionnaireRepository->countParticipants($activeSession),
-                'jobs' => $questionnaireRepository->countJobs($activeSession),
-                'appariement' => $this->appariementRepository->countBySession($activeSession),
-                'byAge' => $questionnaireRepository->getParticipantsByAge($activeSession),
-                'bySituation' => $questionnaireRepository->getParticipantsBySituation($activeSession),
-                'byAccompaniment' => $questionnaireRepository->getParticipantsByAccompaniment($activeSession),
-                'byCommune' => $questionnaireRepository->getEnterprisesByCommune($activeSession),
-                'byCommuneParticipants' => $questionnaireRepository->getParticipantsByCommune($activeSession),
-                'byDateCount' => $questionnaireRepository->getParticipantsByDateCount($activeSession),
-                'byQuestions' => $questionnaireRepository->getStatisticsByQuestion($activeSession),
+                'sessionId' => $displaySession->getId(),
+                'sessionName' => $displaySession->getNom(),
+                'participants' => $questionnaireRepository->countParticipants($displaySession),
+                'jobs' => $questionnaireRepository->countJobs($displaySession),
+                'appariement' => $this->appariementRepository->countBySession($displaySession),
+                'byAge' => $questionnaireRepository->getParticipantsByAge($displaySession),
+                'bySituation' => $questionnaireRepository->getParticipantsBySituation($displaySession),
+                'byAccompaniment' => $questionnaireRepository->getParticipantsByAccompaniment($displaySession),
+                'byCommune' => $questionnaireRepository->getEnterprisesByCommune($displaySession),
+                'byCommuneParticipants' => $questionnaireRepository->getParticipantsByCommune($displaySession),
+                'byDateCount' => $questionnaireRepository->getParticipantsByDateCount($displaySession),
+                'byQuestions' => $questionnaireRepository->getStatisticsByQuestion($displaySession),
             ];
         }
 
         return $this->render('admin/dashboard.html.twig', [
             'stats' => $stats,
-            'hasActiveSession' => (bool) $activeSession,
+            'hasActiveSession' => (bool) $openSession,
         ]);
     }
 
