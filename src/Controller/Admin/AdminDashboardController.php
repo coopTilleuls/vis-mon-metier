@@ -47,6 +47,7 @@ class AdminDashboardController extends AbstractDashboardController
                 'sessionId' => $displaySession->getId(),
                 'sessionName' => $displaySession->getNom(),
                 'participants' => $questionnaireRepository->countParticipants($displaySession),
+                'inactiveParticipants' => $questionnaireRepository->countInactiveParticipants($displaySession),
                 'jobs' => $questionnaireRepository->countJobs($displaySession),
                 'appariement' => $this->appariementRepository->countBySession($displaySession),
                 'byAge' => $questionnaireRepository->getParticipantsByAge($displaySession),

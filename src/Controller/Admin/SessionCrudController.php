@@ -120,6 +120,7 @@ class SessionCrudController extends AbstractCrudController
             'sessionId' => $session->getId(),
             'sessionName' => $session->getNom(),
             'participants' => $questionnaireRepository->countParticipants($session),
+            'inactiveParticipants' => $questionnaireRepository->countInactiveParticipants($session),
             'jobs' => $questionnaireRepository->countJobs($session),
             'appariement' => $this->appariementRepository->countBySession($session),
             'byAge' => $questionnaireRepository->getParticipantsByAge($session),

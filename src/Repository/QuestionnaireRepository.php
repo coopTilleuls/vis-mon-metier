@@ -31,12 +31,26 @@ class QuestionnaireRepository extends ServiceEntityRepository
         $result = $this->createQueryBuilder('q')
             ->where('q.session = :session')
             ->andWhere('q.type = :targetType')
+            ->andWhere('q.actif = true')
             ->setParameter('session', $questionnaire->getSession())
             ->setParameter('targetType', $targetType)
             ->getQuery()
             ->getResult();
 
         return $result;
+    }
+
+    public function countInactiveParticipants(Session $session): int
+    {
+        return (int) $this->createQueryBuilder('q')
+            ->select('count(q.id)')
+            ->where('q.session = :session')
+            ->andWhere('q.type = :type')
+            ->andWhere('q.actif = false')
+            ->setParameter('session', $session)
+            ->setParameter('type', Type::PARTICIPANT)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function countParticipants(Session $session): int

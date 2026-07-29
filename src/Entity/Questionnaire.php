@@ -60,6 +60,9 @@ class Questionnaire
     #[ORM\Column(options: ['default' => false])]
     private bool $appaire = false;
 
+    #[ORM\Column(options: ['default' => true])]
+    private bool $actif = true;
+
     /**
      * @var Collection<int, Appariement>
      */
@@ -217,6 +220,16 @@ class Questionnaire
     public function setAppaire(bool $appaire): void
     {
         $this->appaire = $appaire;
+    }
+
+    public function isActif(): bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): void
+    {
+        $this->actif = $actif;
     }
 
     /**

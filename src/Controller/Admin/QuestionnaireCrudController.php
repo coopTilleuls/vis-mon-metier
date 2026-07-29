@@ -112,10 +112,23 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->setLabel(false)
             ->setHtmlAttributes(['title' => 'Modifier Réponses']);
 
+        $deactivate = Action::new('deactivate', 'Passer en inactif')
+            ->linkToRoute('admin_questionnaire_toggle_actif', fn (Questionnaire $questionnaire): array => ['id' => $questionnaire->getId()])
+            ->setIcon('fa fa-user-slash')
+            ->setHtmlAttributes(['onclick' => "return confirm('Passer ce volontaire en inactif ? Il sortira du pool de matching et ses appariements en cours seront annulés.')"])
+            ->displayIf(fn (Questionnaire $questionnaire): bool => Type::PARTICIPANT === $questionnaire->getType() && $questionnaire->isActif());
+
+        $reactivate = Action::new('reactivate', 'Réactiver')
+            ->linkToRoute('admin_questionnaire_toggle_actif', fn (Questionnaire $questionnaire): array => ['id' => $questionnaire->getId()])
+            ->setIcon('fa fa-user-check')
+            ->displayIf(fn (Questionnaire $questionnaire): bool => Type::PARTICIPANT === $questionnaire->getType() && !$questionnaire->isActif());
+
         $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->add(Crud::PAGE_INDEX, $editAnswers)
             ->add(Crud::PAGE_DETAIL, $editAnswers)
+            ->add(Crud::PAGE_DETAIL, $deactivate)
+            ->add(Crud::PAGE_DETAIL, $reactivate)
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->remove(Crud::PAGE_INDEX, Action::EDIT)
             ->disable(Action::NEW, Action::EDIT)
@@ -136,6 +149,8 @@ class QuestionnaireCrudController extends AbstractCrudController
             ->setPermission(Action::DETAIL, QuestionnaireVoter::VIEW)
             ->setPermission(Action::DELETE, QuestionnaireVoter::DELETE)
             ->setPermission('editAnswers', QuestionnaireVoter::EDIT_ANSWERS)
+            ->setPermission('deactivate', Roles::ADMIN)
+            ->setPermission('reactivate', Roles::ADMIN)
             ->setPermission(Action::BATCH_DELETE, Roles::ADMIN)
         ;
 
@@ -200,6 +215,12 @@ class QuestionnaireCrudController extends AbstractCrudController
 
                     return null !== $range['max'] ? $range['max'].'%' : '-';
                 });
+        }
+
+        if (!$isEmployeur) {
+            yield BooleanField::new('actif', 'Volontaire actif')
+                ->renderAsSwitch(false)
+                ->onlyOnDetail();
         }
 
         yield DateTimeField::new('createdAt', 'Créé le')
@@ -290,6 +311,7 @@ class QuestionnaireCrudController extends AbstractCrudController
         $qb = $this->entityManager->getRepository(Questionnaire::class)->createQueryBuilder('q')
             ->where('q.session = :session')
             ->andWhere('q.type = :targetType')
+            ->andWhere('q.actif = true')
             ->setParameter('session', $session)
             ->setParameter('targetType', $targetType);
 

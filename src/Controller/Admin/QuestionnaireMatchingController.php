@@ -188,6 +188,56 @@ class QuestionnaireMatchingController extends AbstractController
         return $this->redirectToRoute('admin');
     }
 
+    #[Route('/admin/questionnaire/{id}/toggle-actif', name: 'admin_questionnaire_toggle_actif')]
+    #[IsGranted(Roles::ADMIN)]
+    public function toggleActif(int $id, Request $request): Response
+    {
+        $questionnaire = $this->entityManager->getRepository(Questionnaire::class)->find($id);
+
+        if (!$questionnaire) {
+            $this->addFlash('danger', 'Questionnaire introuvable.');
+            $referer = $request->headers->get('referer');
+
+            return $referer ? $this->redirect($referer) : $this->redirectToRoute('admin');
+        }
+
+        if ($questionnaire->isActif()) {
+            // Deactivate: cancel every current match, then drop it from the pool.
+            $partners = [];
+            foreach ($questionnaire->getAppariements()->toArray() as $appariement) {
+                $partner = $appariement->getParticipant() === $questionnaire
+                    ? $appariement->getEntreprise()
+                    : $appariement->getParticipant();
+                if ($partner) {
+                    $partners[] = $partner;
+                }
+                $this->entityManager->remove($appariement);
+            }
+            $questionnaire->setActif(false);
+            $questionnaire->setAppaire(false);
+            $this->entityManager->flush();
+
+            foreach ($partners as $partner) {
+                $partner->setAppaire($partner->getAppariements()->count() > 0);
+            }
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le volontaire a été passé en inactif et ses appariements en cours ont été annulés.');
+        } else {
+            $questionnaire->setActif(true);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le volontaire a été réactivé.');
+        }
+
+        $referer = $request->headers->get('referer');
+        if ($referer) {
+            return $this->redirect($referer);
+        }
+
+        return $this->redirectBack($request, $id);
+    }
+
     private function redirectBack(Request $request, int $entityId): Response
     {
         $referer = $request->headers->get('referer');
