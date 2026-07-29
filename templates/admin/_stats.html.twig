@@ -387,8 +387,18 @@ function createChart(key) {
         return;
     }
 
-    const labels = data.map(item => item.label);
-    
+    const MAX_LABEL_LENGTH = 25;
+    const truncateLabel = (label) =>
+        (typeof label === 'string' && label.length > MAX_LABEL_LENGTH)
+            ? label.slice(0, MAX_LABEL_LENGTH - 1).trimEnd() + '…'
+            : label;
+    // Keep the full labels so the chart tooltip can show them untruncated.
+    const fullLabels = data.map(item => item.label);
+    const labels = fullLabels.map(truncateLabel);
+    const tooltipCallbacks = {
+        title: (items) => (items.length ? fullLabels[items[0].dataIndex] : ''),
+    };
+
     // Check if data has separate counts for participants and employers
     const hasTypesSeparated = data[0] && ('countParticipant' in data[0] || 'countEmployeur' in data[0]);
     
@@ -434,6 +444,9 @@ function createChart(key) {
                     legend: {
                         display: true,
                         position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: tooltipCallbacks
                     }
                 }
             }
@@ -467,6 +480,9 @@ function createChart(key) {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        callbacks: tooltipCallbacks
                     }
                 }
             }
