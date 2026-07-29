@@ -62,6 +62,8 @@ class AdminDashboardController extends AbstractDashboardController
         return $this->render('admin/dashboard.html.twig', [
             'stats' => $stats,
             'hasActiveSession' => (bool) $openSession,
+            'inscriptionVolontaireOuverte' => $openSession?->isInscriptionVolontaireOuverte() ?? false,
+            'inscriptionEntrepriseOuverte' => $openSession?->isInscriptionEntrepriseOuverte() ?? false,
         ]);
     }
 

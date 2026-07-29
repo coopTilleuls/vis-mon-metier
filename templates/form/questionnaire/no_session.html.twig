@@ -6,16 +6,16 @@
     <link rel="stylesheet" href="{{ asset('styles/questionnaire.css') }}">
 {% endblock %}
 
-{% block title %}Aucune session ouverte{% endblock %}
+{% block title %}{{ title|default('Aucune session ouverte') }}{% endblock %}
 
 {% block body %}
     {% embed 'form/questionnaire/_layout.html.twig' with {'show_stepper': false} %}
         {% block content %}
             <div class="px-5 text-center d-flex flex-column gap-3 align-items-center justify-content-center flex-grow-1">
                 <i class="fas fa-calendar-times text-green" style="font-size: 4rem;"></i>
-                <h1 class="h2 text-green fw-bold">Pas de session ouverte pour le moment.</h1>
+                <h1 class="h2 text-green fw-bold">{{ title|default('Pas de session ouverte pour le moment.') }}</h1>
                 <p class="text-muted">
-                    Nous n'avons actuellement aucune session d'immersion active.<br>
+                    {{ message|default("Nous n'avons actuellement aucune session d'immersion active.") }}<br>
                 </p>
             </div>
         {% endblock %}

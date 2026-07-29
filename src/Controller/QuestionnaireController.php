@@ -48,6 +48,19 @@ class QuestionnaireController extends AbstractController
             return $this->render('form/questionnaire/no_session.html.twig');
         }
 
+        $inscriptionOuverte = $isPro
+            ? $currentSession->isInscriptionEntrepriseOuverte()
+            : $currentSession->isInscriptionVolontaireOuverte();
+
+        if (!$inscriptionOuverte) {
+            return $this->render('form/questionnaire/no_session.html.twig', [
+                'title' => 'Inscriptions bientôt ouvertes',
+                'message' => $isPro
+                    ? 'Les inscriptions pour les structures ne sont pas encore ouvertes pour cette session.'
+                    : 'Les inscriptions pour les volontaires ne sont pas encore ouvertes pour cette session.',
+            ]);
+        }
+
         if ($isPro) {
             $this->handlePrefill($request, $questionnaireData);
         }

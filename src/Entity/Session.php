@@ -36,6 +36,12 @@ class Session
     #[Assert\Choice(choices: [self::STATUT_BROUILLON, self::STATUT_OUVERT, self::STATUT_FERME], message: 'Statut invalide')]
     private string $statut = self::STATUT_BROUILLON;
 
+    #[ORM\Column(options: ['default' => true])]
+    private bool $inscriptionVolontaireOuverte = true;
+
+    #[ORM\Column(options: ['default' => true])]
+    private bool $inscriptionEntrepriseOuverte = true;
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?ModelQuestionnaire $modelQuestionnaire = null;
@@ -103,6 +109,30 @@ class Session
             self::STATUT_FERME => self::STATUT_FERME,
             self::STATUT_BROUILLON => self::STATUT_BROUILLON,
         ];
+    }
+
+    public function isInscriptionVolontaireOuverte(): bool
+    {
+        return $this->inscriptionVolontaireOuverte;
+    }
+
+    public function setInscriptionVolontaireOuverte(bool $inscriptionVolontaireOuverte): static
+    {
+        $this->inscriptionVolontaireOuverte = $inscriptionVolontaireOuverte;
+
+        return $this;
+    }
+
+    public function isInscriptionEntrepriseOuverte(): bool
+    {
+        return $this->inscriptionEntrepriseOuverte;
+    }
+
+    public function setInscriptionEntrepriseOuverte(bool $inscriptionEntrepriseOuverte): static
+    {
+        $this->inscriptionEntrepriseOuverte = $inscriptionEntrepriseOuverte;
+
+        return $this;
     }
 
     public function getModelQuestionnaire(): ?ModelQuestionnaire

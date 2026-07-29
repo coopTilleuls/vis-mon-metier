@@ -16,6 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -63,6 +64,12 @@ class SessionCrudController extends AbstractCrudController
         yield DateField::new('dateFin', 'Date fin session');
         yield ChoiceField::new('statut', 'Statut de la session')
             ->setChoices(Session::getStatutChoices());
+        yield BooleanField::new('inscriptionVolontaireOuverte', 'Inscriptions volontaires ouvertes')
+            ->renderAsSwitch(true)
+            ->setHelp('Autorise l\'accès au formulaire volontaire (la session doit aussi être « ouverte »).');
+        yield BooleanField::new('inscriptionEntrepriseOuverte', 'Inscriptions entreprises ouvertes')
+            ->renderAsSwitch(true)
+            ->setHelp('Autorise l\'accès au formulaire professionnel·le (la session doit aussi être « ouverte »).');
         yield AssociationField::new('modelQuestionnaire', 'Questionnaire à associer')
             ->autocomplete()
             ->setRequired(false)
