@@ -208,8 +208,9 @@ if (consentCheckbox) {
 
 			<div class="d-flex flex-column gap-2">
 
+			{% if not is_pro %}
 				<div class="p-4 rounded-4 shadow-lg">
-					<h6 class="h4 text-green fw-bold mb-3">{% if is_pro %}Coordonnées du signataire de la convention de stage{% else %}Votre identité{% endif %}</h6>
+					<h6 class="h4 text-green fw-bold mb-3">Votre identité</h6>
 					<div class="row gx-3 gy-4">
 						<div class="col-lg-6">
 							{{ form_row(form.contact.prenom, {'attr': {'class': 'form-control'}}) }}
@@ -217,160 +218,170 @@ if (consentCheckbox) {
 						<div class="col-lg-6">
 							{{ form_row(form.contact.nomFamille, {'attr': {'label': 'Nom','class': 'form-control'}}) }}
 						</div>
-						{% if is_pro %}
-						<div class="col-lg-12">
-							{{ form_row(form.contact.fonctionSignataire, {'attr': {'class': 'form-control'}}) }}
-						</div>
-						{% else %}
-							{% do form.contact.fonctionSignataire.setRendered() %}
-						{% endif %}
 						<div class="col-6">
 							{{ form_row(form.contact.email, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
 						</div>
-						{% if not is_pro %}
-							<div class="col-lg-6">
-								{{ form_row(form.contact.commune, {'attr': {'class': 'form-select', 'data-commune-select': 'true'}}) }}
-							</div>
-						{% endif %}
+						<div class="col-lg-6">
+							{{ form_row(form.contact.commune, {'attr': {'class': 'form-select', 'data-commune-select': 'true'}}) }}
+						</div>
 						<div class="col-lg-6">
 							{{ form_row(form.contact.numeroTelephone, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
 						</div>
-						{% if not is_pro %}
-							<div class="col-lg-6 d-none" id="commune-autre-wrapper">
-								{{ form_row(form.contact.communeAutre, {'attr': {'class': 'form-control'}}) }}
-							</div>
-						{% endif %}
+						<div class="col-lg-6 d-none" id="commune-autre-wrapper">
+							{{ form_row(form.contact.communeAutre, {'attr': {'class': 'form-control'}}) }}
+						</div>
 					</div>
 				</div>
-
-				{% if not is_pro %}
-					<div class="col-12 mt-4">
-						<div class="p-4 rounded-4 shadow-lg">
-							<h6 class="h4 text-green fw-bold mb-3">Votre situation</h6>
-							<div class="row gx-3 gy-4">
-								<div class="col-lg-6">
-									{{ form_row(form.contact.situation, {'attr': {'class': 'form-select'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.trancheAge, {'attr': {'class': 'form-select'}}) }}
-								</div>
+				{% do form.contact.fonctionSignataire.setRendered() %}
+				<div class="col-12 mt-4">
+					<div class="p-4 rounded-4 shadow-lg">
+						<h6 class="h4 text-green fw-bold mb-3">Votre situation</h6>
+						<div class="row gx-3 gy-4">
+							<div class="col-lg-6">
+								{{ form_row(form.contact.situation, {'attr': {'class': 'form-select'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.trancheAge, {'attr': {'class': 'form-select'}}) }}
 							</div>
 						</div>
 					</div>
-					<div class="col-12 mt-4">
-						<div class="p-4 rounded-4 shadow-lg">
-							<h6 class="h4 text-green fw-bold mb-3">Référent·e (optionnel)</h6>
-							<div class="mb-3">
+				</div>
+				<div class="col-12 mt-4">
+					<div class="p-4 rounded-4 shadow-lg">
+						<h6 class="h4 text-green fw-bold mb-3">Référent·e (optionnel)</h6>
+						<div class="mb-3">
+							<small class="text-muted">
+								<i class="fas fa-info-circle me-1"></i>
+								À compléter si vous êtes suivi·e par un·e référent·e de structure (scolaire, mission locale, france travail...)
+							</small>
+						</div>
+						<div class="row g-3">
+							<div class="col-md-12">
+								{{ form_row(form.contact.referent, {'attr': {'class': 'form-select'}}) }}
+							</div>
+						</div>
+					</div>
+				</div>
+				{% do form.contact.nomEntreprise.setRendered() %}
+				{% do form.contact.secteurActivite.setRendered() %}
+				{% do form.contact.nombreEmployes.setRendered() %}
+				{% do form.contact.adresseEntreprise.setRendered() %}
+				{% do form.contact.metier.setRendered() %}
+				{% do form.contact.nombreImmersion.setRendered() %}
+				{% do form.contact.immersionMemeDate.setRendered() %}
+				{% do form.contact.prenomTuteur.setRendered() %}
+				{% do form.contact.nomFamilleTuteur.setRendered() %}
+				{% do form.contact.fonctionTuteur.setRendered() %}
+				{% do form.contact.emailTuteur.setRendered() %}
+				{% do form.contact.telephoneTuteur.setRendered() %}
+				{% do form.contact.siret.setRendered() %}
+				{% do form.contact.horaires.setRendered() %}
+				{% do form.contact.epiDisponible.setRendered() %}
+				{% do form.contact.autresMesuresPrevention.setRendered() %}
+				{% do form.contact.precisionMesuresPrevention.setRendered() %}
+			{% else %}
+				<div class="col-12">
+					<div class="p-4 rounded-4 shadow-lg">
+						<div class="row g-3">
+							<h6 class="h4 text-green fw-bold mb-3">Informations entreprise</h6>
+							<div class="col-12">
+								{{ form_row(form.contact.nomEntreprise, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.secteurActivite, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.nombreEmployes, {'attr': {'class': 'form-select'}}) }}
+							</div>
+							<div class="col-lg-12">
+								{{ form_row(form.contact.adresseEntreprise, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.commune, {'attr': {'class': 'form-select'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.siret, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-12">
+								{{ form_row(form.contact.metier, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.nombreImmersion, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-12" id="immersion-meme-date-wrapper">
+								{{ form_row(form.contact.immersionMemeDate) }}
+							</div>
+							<div class="col-lg-12">
+								{{ form_row(form.contact.horaires, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-12">
+								{{ form_row(form.contact.epiDisponible) }}
+							</div>
+							<div class="col-12" data-autres-mesures-wrapper="true">
+								{{ form_row(form.contact.autresMesuresPrevention) }}
+							</div>
+							<div class="col-12 d-none" id="precision-mesures-wrapper">
+								{{ form_row(form.contact.precisionMesuresPrevention, {'attr': {'class': 'form-control'}}) }}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 mt-4">
+					<div class="p-4 rounded-4 shadow-lg">
+						<div class="row g-3">
+							<h6 class="h4 text-green fw-bold mb-3">Tuteur ou tutrice pendant l'immersion</h6>
+							<div>
 								<small class="text-muted">
 									<i class="fas fa-info-circle me-1"></i>
-									À compléter si vous êtes suivi·e par un·e référent·e de structure (scolaire, mission locale, france travail...)
+									Peut être la même personne que le Représentant Structure.
 								</small>
 							</div>
-							<div class="row g-3">
-								<div class="col-md-12">
-									{{ form_row(form.contact.referent, {'attr': {'class': 'form-select'}}) }}
-								</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.prenomTuteur, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.nomFamilleTuteur, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-12">
+								{{ form_row(form.contact.fonctionTuteur, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.emailTuteur, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.telephoneTuteur, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
 							</div>
 						</div>
 					</div>
-					{% do form.contact.nomEntreprise.setRendered() %}
-					{% do form.contact.secteurActivite.setRendered() %}
-					{% do form.contact.nombreEmployes.setRendered() %}
-					{% do form.contact.adresseEntreprise.setRendered() %}
-					{% do form.contact.metier.setRendered() %}
-					{% do form.contact.nombreImmersion.setRendered() %}
-					{% do form.contact.immersionMemeDate.setRendered() %}
-					{% do form.contact.prenomTuteur.setRendered() %}
-					{% do form.contact.nomFamilleTuteur.setRendered() %}
-					{% do form.contact.fonctionTuteur.setRendered() %}
-					{% do form.contact.emailTuteur.setRendered() %}
-					{% do form.contact.telephoneTuteur.setRendered() %}
-					{% do form.contact.siret.setRendered() %}
-					{% do form.contact.horaires.setRendered() %}
-					{% do form.contact.epiDisponible.setRendered() %}
-					{% do form.contact.autresMesuresPrevention.setRendered() %}
-					{% do form.contact.precisionMesuresPrevention.setRendered() %}
-				{% else %}
-					<div class="col-12 mt-4">
-						<div class="p-4 rounded-4 shadow-lg">
-							<div class="row g-3">
-								<h6 class="h4 text-green fw-bold mb-3">Informations entreprise</h6>
-								<div class="col-12">
-									{{ form_row(form.contact.nomEntreprise, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.secteurActivite, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.nombreEmployes, {'attr': {'class': 'form-select'}}) }}
-								</div>
-								<div class="col-lg-12">
-									{{ form_row(form.contact.adresseEntreprise, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.commune, {'attr': {'class': 'form-select'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.siret, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-12">
-									{{ form_row(form.contact.metier, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.nombreImmersion, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-12" id="immersion-meme-date-wrapper">
-									{{ form_row(form.contact.immersionMemeDate) }}
-								</div>
-								<div class="col-lg-12">
-									{{ form_row(form.contact.horaires, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-12">
-									{{ form_row(form.contact.epiDisponible) }}
-								</div>
-								<div class="col-12" data-autres-mesures-wrapper="true">
-									{{ form_row(form.contact.autresMesuresPrevention) }}
-								</div>
-								<div class="col-12 d-none" id="precision-mesures-wrapper">
-									{{ form_row(form.contact.precisionMesuresPrevention, {'attr': {'class': 'form-control'}}) }}
-								</div>
+				</div>
+				<div class="col-12 mt-4">
+					<div class="p-4 rounded-4 shadow-lg">
+						<h6 class="h4 text-green fw-bold mb-3">Coordonnées du Représentant Structure</h6>
+						<div class="row gx-3 gy-4">
+							<div class="col-lg-6">
+								{{ form_row(form.contact.prenom, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.nomFamille, {'attr': {'label': 'Nom','class': 'form-control'}}) }}
+							</div>
+							<div class="col-lg-12">
+								{{ form_row(form.contact.fonctionSignataire, {'attr': {'class': 'form-control'}}) }}
+							</div>
+							<div class="col-6">
+								{{ form_row(form.contact.email, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
+							</div>
+							<div class="col-lg-6">
+								{{ form_row(form.contact.numeroTelephone, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
 							</div>
 						</div>
 					</div>
-					<div class="col-12 mt-4">
-						<div class="p-4 rounded-4 shadow-lg">
-							<div class="row g-3">
-								<h6 class="h4 text-green fw-bold mb-3">Tuteur ou tutrice pendant l'immersion</h6>
-								<div>
-									<small class="text-muted">
-										<i class="fas fa-info-circle me-1"></i>
-										Peut être la même personne que le signataire de la convention.
-									</small>
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.prenomTuteur, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.nomFamilleTuteur, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-12">
-									{{ form_row(form.contact.fonctionTuteur, {'attr': {'class': 'form-control'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.emailTuteur, {'attr': {'class': 'form-control', 'placeholder': 'exemple@email.com'}}) }}
-								</div>
-								<div class="col-lg-6">
-									{{ form_row(form.contact.telephoneTuteur, {'attr': {'class': 'form-control', 'placeholder': '06 12 34 56 78'}}) }}
-								</div>
-							</div>
-						</div>
-					</div>
-
-					{% do form.contact.situation.setRendered() %}
-					{% do form.contact.trancheAge.setRendered() %}
-					{% do form.contact.referent.setRendered() %}
-				{% endif %}
-				{% do form.contact.setRendered() %}
+				</div>
+				{% do form.contact.situation.setRendered() %}
+				{% do form.contact.trancheAge.setRendered() %}
+				{% do form.contact.referent.setRendered() %}
+				{% do form.contact.communeAutre.setRendered() %}
+			{% endif %}
+			{% do form.contact.setRendered() %}
 			</div>
 		{% endblock %}
 		{% block questionnaire_reponsesScore_step %}

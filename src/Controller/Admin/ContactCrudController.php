@@ -116,7 +116,7 @@ class ContactCrudController extends AbstractCrudController
             }
         }
 
-        yield FormField::addPanel('Coordonnées du signataire de la convention de stage');
+        yield FormField::addPanel($renderProFields ? 'Coordonnées du Représentant Structure' : 'Coordonnées du signataire de la convention de stage');
         yield ChoiceField::new('type', 'Type')
             ->setChoices(Type::choiceOptions())
             ->renderAsBadges([
@@ -128,7 +128,7 @@ class ContactCrudController extends AbstractCrudController
         yield TextField::new('prenom', 'Prénom');
         yield TextField::new('nomFamille', 'Nom');
         if ($renderProFields) {
-            yield TextField::new('fonctionSignataire', 'Fonction signataire')->hideOnIndex();
+            yield TextField::new('fonctionSignataire', 'Fonction du Représentant Structure')->hideOnIndex();
         }
         yield EmailField::new('email', 'Email');
         yield TextField::new('numeroTelephone', 'Téléphone')

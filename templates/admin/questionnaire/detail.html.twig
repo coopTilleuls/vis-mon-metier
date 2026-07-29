@@ -113,7 +113,7 @@
                                 <p><strong>Commune :</strong> {{ questionnaire.contact.commune }}</p>
                             </div>
                             <div class="col-6">
-                                <p><strong>Signataire :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}{% if questionnaire.contact.fonctionSignataire %} — {{ questionnaire.contact.fonctionSignataire }}{% endif %}</p>
+                                <p><strong>Représentant Structure :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}{% if questionnaire.contact.fonctionSignataire %} — {{ questionnaire.contact.fonctionSignataire }}{% endif %}</p>
                                 <p><strong>Tuteur ou tutrice :</strong> {{ questionnaire.contact.prenomTuteur }} {{ questionnaire.contact.nomFamilleTuteur }}{% if questionnaire.contact.fonctionTuteur %} — {{ questionnaire.contact.fonctionTuteur }}{% endif %}</p>
                             </div>
                         </div>
@@ -382,7 +382,7 @@
                                 {% if questionnaire.contact.adresseEntreprise %}<p><strong>Adresse :</strong> {{ questionnaire.contact.adresseEntreprise }}</p>{% endif %}
                                 {% if questionnaire.metier %}<p><strong>Métier proposé :</strong> {{ questionnaire.metier }}</p>{% endif %}
 
-                                <p class="card-section">Signataire</p>
+                                <p class="card-section">Représentant Structure</p>
                                 <p><strong>Nom :</strong> {{ questionnaire.contact.prenom }} {{ questionnaire.contact.nomFamille }}{% if questionnaire.contact.fonctionSignataire %} — {{ questionnaire.contact.fonctionSignataire }}{% endif %}</p>
                                 <p><strong>Email :</strong> {{ questionnaire.contact.email }}</p>
                                 {% if questionnaire.contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ questionnaire.contact.numeroTelephone }}</p>{% endif %}
@@ -424,7 +424,7 @@
                                     {% if other_contact.adresseEntreprise %}<p><strong>Adresse :</strong> {{ other_contact.adresseEntreprise }}</p>{% endif %}
                                     {% if other_metier %}<p><strong>Métier proposé :</strong> {{ other_metier }}</p>{% endif %}
 
-                                    <p class="card-section">Signataire</p>
+                                    <p class="card-section">Représentant Structure</p>
                                     <p><strong>Nom :</strong> {{ other_contact.prenom }} {{ other_contact.nomFamille }}{% if other_contact.fonctionSignataire %} — {{ other_contact.fonctionSignataire }}{% endif %}</p>
                                     <p><strong>Email :</strong> {{ other_contact.email }}</p>
                                     {% if other_contact.numeroTelephone %}<p><strong>Téléphone :</strong> {{ other_contact.numeroTelephone }}</p>{% endif %}
