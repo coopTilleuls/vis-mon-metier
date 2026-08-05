@@ -36,10 +36,11 @@ class AdminDashboardController extends AbstractDashboardController
     {
         $stats = null;
         $sessionRepository = $this->entityManager->getRepository(Session::class);
-        $openSession = $sessionRepository->findOneBy(['statut' => Session::STATUT_OUVERT], ['id' => 'DESC']);
-        // Fall back to the most recent session so the dashboard keeps showing
-        // the last session that took place even once it is closed.
-        $displaySession = $openSession ?? $sessionRepository->findOneBy([], ['id' => 'DESC']);
+        $openSession = $sessionRepository->findOneBy(['statut' => Session::STATUT_OUVERT], ['dateDebut' => 'DESC', 'dateFin' => 'DESC']);
+        // Fall back to the most recent *closed* session so the dashboard keeps
+        // showing the last session that took place even once it is closed.
+        // Draft (brouillon) sessions are intentionally excluded.
+        $displaySession = $openSession ?? $sessionRepository->findOneBy(['statut' => Session::STATUT_FERME], ['dateDebut' => 'DESC', 'dateFin' => 'DESC']);
 
         if ($displaySession) {
             $questionnaireRepository = $this->questionnaireRepository;
