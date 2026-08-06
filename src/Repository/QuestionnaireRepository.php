@@ -53,12 +53,13 @@ class QuestionnaireRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function countParticipants(Session $session): int
+    public function countActiveParticipants(Session $session): int
     {
         return (int) $this->createQueryBuilder('q')
             ->select('count(q.id)')
             ->where('q.session = :session')
             ->andWhere('q.type = :type')
+            ->andWhere('q.actif = true')
             ->setParameter('session', $session)
             ->setParameter('type', Type::PARTICIPANT)
             ->getQuery()
