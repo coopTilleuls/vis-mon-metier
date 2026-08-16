@@ -1,9 +1,6 @@
 @font-face {
     font-family: 'Baby Child';
-    src: url('../fonts/baby-child-regular.woff2') format('woff2'),
-         url('../fonts/baby-child-regular.woff') format('woff'),
-         url('../fonts/baby-child-regular.otf') format('opentype'),
-         url('../fonts/baby-child-regular.ttf') format('truetype');
+    src: url('../fonts/baby-child-regular.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
