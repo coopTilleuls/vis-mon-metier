@@ -8,7 +8,6 @@ use App\Entity\Questionnaire;
 use App\Entity\Session;
 use App\ValueObject\Type;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,6 +15,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class QuestionnaireRepository extends ServiceEntityRepository
 {
+    use ReferentFilterTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Questionnaire::class);
@@ -108,28 +109,6 @@ class QuestionnaireRepository extends ServiceEntityRepository
             ->getResult();
 
         return count($rows);
-    }
-
-    /**
-     * Restreint la requête aux volontaires rattachés aux référents donnés (alias contact = 'c').
-     * null = pas de filtre ; [] = aucun résultat.
-     *
-     * @param list<int>|null $referentIds
-     */
-    private function applyReferentFilter(QueryBuilder $qb, ?array $referentIds): void
-    {
-        if (null === $referentIds) {
-            return;
-        }
-
-        if ([] === $referentIds) {
-            $qb->andWhere('1 = 0');
-
-            return;
-        }
-
-        $qb->andWhere('c.referent IN (:referentIds)')
-            ->setParameter('referentIds', $referentIds);
     }
 
     public function countInactiveParticipants(Session $session): int

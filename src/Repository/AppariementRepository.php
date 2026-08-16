@@ -14,6 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AppariementRepository extends ServiceEntityRepository
 {
+    use ReferentFilterTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Appariement::class);
@@ -53,14 +55,7 @@ class AppariementRepository extends ServiceEntityRepository
             ->addOrderBy('a.dateMatch', 'ASC')
             ->setParameter('session', $session);
 
-        if (null !== $referentIds) {
-            if ([] === $referentIds) {
-                $qb->andWhere('1 = 0');
-            } else {
-                $qb->andWhere('pc.referent IN (:referentIds)')
-                    ->setParameter('referentIds', $referentIds);
-            }
-        }
+        $this->applyReferentFilter($qb, $referentIds, 'pc');
 
         /** @var list<Appariement> $result */
         $result = $qb->getQuery()->getResult();
