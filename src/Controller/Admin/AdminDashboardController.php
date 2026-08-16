@@ -99,7 +99,10 @@ class AdminDashboardController extends AbstractDashboardController
         $sessionRepository = $this->entityManager->getRepository(Session::class);
         $sessions = $sessionRepository->findBy([], ['id' => 'DESC']);
 
-        $requestedSessionId = $request->query->getInt('session');
+        // Lecture brute puis cast : getInt() lève une 400 sur une valeur non entière
+        // (chaîne vide ou non numérique) — même précaution que pour le filtre référent.
+        $sessionParam = $request->query->get('session');
+        $requestedSessionId = (null !== $sessionParam && '' !== $sessionParam) ? (int) $sessionParam : 0;
         $session = $requestedSessionId > 0
             ? $sessionRepository->find($requestedSessionId)
             : $sessionRepository->findOneBy(['statut' => Session::STATUT_OUVERT], ['id' => 'DESC']);
