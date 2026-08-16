@@ -23,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,6 +41,7 @@ class AdminDashboardController extends AbstractDashboardController
         private readonly BrandProvider $brandProvider,
         private readonly MatchScoreCalculator $matchScoreCalculator,
         private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly AdminContextProvider $adminContextProvider,
     ) {
     }
 
@@ -83,6 +85,17 @@ class AdminDashboardController extends AbstractDashboardController
     #[Route('/admin/suivi-immersions', name: 'admin_suivi_immersions')]
     public function suiviImmersions(Request $request): Response
     {
+        // Atteinte en direct (URL brute tapée à la main), la route ne dispose pas de
+        // l'AdminContext (`ea`) requis par le layout EasyAdmin dès que le dashboard a
+        // été servi dans le worker → 500. On rejoue alors la requête via la route du
+        // dashboard EA (qui construit le contexte), en conservant les filtres GET.
+        if (null === $this->adminContextProvider->getContext()) {
+            return $this->redirectToRoute('admin', array_merge(
+                $request->query->all(),
+                ['routeName' => 'admin_suivi_immersions'],
+            ));
+        }
+
         $sessionRepository = $this->entityManager->getRepository(Session::class);
         $sessions = $sessionRepository->findBy([], ['id' => 'DESC']);
 
@@ -108,7 +121,7 @@ class AdminDashboardController extends AbstractDashboardController
         } else {
             /** @var User $user */
             $user = $this->getUser();
-            $referentIds = $user->getReferents()->map(fn (Referent $r) => $r->getId())->toArray();
+            $referentIds = array_values($user->getReferents()->map(fn (Referent $r) => $r->getId())->toArray());
         }
 
         $showPhantom = $request->query->getBoolean('sansImmersion');
@@ -292,7 +305,7 @@ class AdminDashboardController extends AbstractDashboardController
         /** @var User $user */
         $user = $this->getUser();
 
-        return $user->getReferents()->map(fn (Referent $r) => $r->getId())->toArray();
+        return array_values($user->getReferents()->map(fn (Referent $r) => $r->getId())->toArray());
     }
 
     private function canEditVolontaire(Questionnaire $participant): bool
