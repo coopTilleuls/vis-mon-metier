@@ -7,23 +7,37 @@
     <style>
         .suivi-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: flex-end; margin-bottom: 1rem; }
         .suivi-toolbar .field { display: flex; flex-direction: column; gap: .25rem; }
-        .suivi-toolbar label { font-size: .8rem; font-weight: 600; margin: 0; }
-        .suivi-recap { display: flex; flex-wrap: wrap; gap: 1.25rem; padding: .75rem 1rem; margin-bottom: 1rem;
-            background: var(--green-light-color, #eef6ee); border-radius: .5rem; font-size: .9rem; }
-        .suivi-recap .stat b { font-size: 1.1rem; }
-        .suivi-recap .warn { color: #b02a37; }
+        .suivi-toolbar label { font-size: .9rem; font-weight: 600; margin: 0; }
+        /* Angles arrondis cohérents avec le récap et le tableau */
+        .suivi-toolbar .form-select,
+        .suivi-toolbar .form-control { border-radius: .5rem; }
+        .suivi-recap { display: flex; flex-wrap: wrap; align-items: stretch; gap: .5rem 1rem;
+            padding: .6rem .9rem; margin-bottom: 1rem; background: #fff; border: 1px solid #e5e7eb;
+            border-radius: .6rem; font-size: .9rem; color: #334155; }
+        .suivi-recap .recap-group { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.1rem; }
+        .suivi-recap .recap-divider { width: 1px; align-self: stretch; background: #e5e7eb; margin: 0 .25rem; }
+        .suivi-recap .recap-item { display: inline-flex; align-items: baseline; gap: .35rem; white-space: nowrap; }
+        .suivi-recap .recap-item b { font-size: 1.15rem; font-weight: 700; color: var(--green-color, #2f6f4f); line-height: 1; }
+        .suivi-recap .recap-item .label { color: #64748b; }
+        /* Groupe « à traiter » : accent ambre sur un manque, neutre sinon */
+        .suivi-recap .recap-item--gap b { color: #b45309; }
+        .suivi-recap .recap-item--ok b { color: #15803d; }
+        .suivi-recap .recap-item--muted b { color: #94a3b8; }
         .suivi-table-wrapper { max-height: calc(100vh - 320px); overflow: auto; border: 1px solid #dee2e6; border-radius: .5rem; }
         .suivi-table { margin: 0; font-size: .85rem; white-space: nowrap; }
         .suivi-table thead th { position: sticky; top: 0; z-index: 2; background: #fff;
             box-shadow: inset 0 -2px 0 #dee2e6; cursor: pointer; user-select: none; }
         .suivi-table thead th.no-sort { cursor: default; }
-        .suivi-table thead th .arrow { opacity: .35; font-size: .7rem; }
+        .suivi-table thead th .arrow { margin-left: .3rem; font-size: .72rem; opacity: .35; }
+        .suivi-table thead th[data-dir] .arrow { opacity: 1; color: var(--green-color, #2f6f4f); }
         .suivi-table tbody tr.is-phantom { background: #fff8e6; }
         .suivi-table td.obs { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
         .suivi-table td.js-editable { white-space: normal; min-width: 140px; cursor: text; }
         .suivi-table td.js-editable:focus { outline: 2px solid var(--green-color, #4a7); background: #fff; overflow: visible; }
         .suivi-table td.js-editable:empty::before { content: '—'; color: #adb5bd; }
-        .suivi-table .js-statut { width: auto; min-width: 110px; font-size: .8rem; }
+        .suivi-table .js-statut { width: auto; min-width: 110px; font-size: .8rem; border-radius: .5rem; }
+        /* « Proposée » (seul statut en secondary) : gris plus clair, texte foncé lisible */
+        .suivi-table .js-statut.bg-secondary { background-color: #e9ecef !important; color: #495057 !important; }
         .suivi-table td .saved-flash { color: #198754; font-weight: 600; }
         .suivi-table td .error-flash { color: #b02a37; font-weight: 600; }
         .suivi-empty { padding: 2rem; text-align: center; color: #6c757d; }
@@ -91,18 +105,27 @@
             </div>
         </form>
 
-        {# --- Bandeau récap --- #}
+        {# --- Bandeau récap : inventaire (gauche) | à suivre (droite) --- #}
         {% if recap %}
             <div class="suivi-recap">
-                <span class="stat">Volontaires&nbsp;<b>{{ recap.volontaires }}</b></span>
-                <span class="stat">Immersions&nbsp;<b>{{ recap.immersions }}</b></span>
-                <span class="stat">Entreprises&nbsp;<b>{{ recap.entreprises }}</b></span>
-                {% if recap.sansImmersion > 0 %}
-                    <span class="stat warn">⚠ {{ recap.sansImmersion }} volontaire{{ recap.sansImmersion > 1 ? 's' }} sans immersion</span>
-                {% endif %}
-                {% if recap.entreprisesDisponibles is not null and recap.entreprisesDisponibles > 0 %}
-                    <span class="stat">{{ recap.entreprisesDisponibles }} entreprise{{ recap.entreprisesDisponibles > 1 ? 's' }} disponible{{ recap.entreprisesDisponibles > 1 ? 's' }} pour immersion</span>
-                {% endif %}
+                <div class="recap-group">
+                    <span class="recap-item"><b>{{ recap.volontaires }}</b> <span class="label">volontaire{{ recap.volontaires > 1 ? 's' }}</span></span>
+                    <span class="recap-item"><b>{{ recap.immersions }}</b> <span class="label">immersion{{ recap.immersions > 1 ? 's' }}</span></span>
+                    <span class="recap-item"><b>{{ recap.entreprisesAvecImmersion }}</b> <span class="label">entreprise{{ recap.entreprisesAvecImmersion > 1 ? 's' }} engagée{{ recap.entreprisesAvecImmersion > 1 ? 's' }}</span></span>
+                </div>
+
+                <span class="recap-divider" aria-hidden="true"></span>
+
+                <div class="recap-group">
+                    <span class="recap-item {{ recap.volontairesSansImmersion > 0 ? 'recap-item--gap' : 'recap-item--ok' }}">
+                        <b>{{ recap.volontairesSansImmersion }}</b> <span class="label">volontaire{{ recap.volontairesSansImmersion > 1 ? 's' }} sans immersion</span>
+                    </span>
+                    {% if recap.entreprisesDisponibles is not null %}
+                        <span class="recap-item {{ recap.entreprisesDisponibles == 0 ? 'recap-item--muted' }}">
+                            <b>{{ recap.entreprisesDisponibles }}</b> <span class="label">entreprise{{ recap.entreprisesDisponibles > 1 ? 's' }} disponible{{ recap.entreprisesDisponibles > 1 ? 's' }} pour immersion</span>
+                        </span>
+                    {% endif %}
+                </div>
             </div>
         {% endif %}
 
@@ -111,17 +134,17 @@
             <table class="table table-hover table-sm suivi-table js-suivi-table">
                 <thead>
                     <tr>
-                        <th data-type="text">Volontaire <span class="arrow">↕</span></th>
-                        <th data-type="text">Commune <span class="arrow">↕</span></th>
-                        <th data-type="text">Situation <span class="arrow">↕</span></th>
-                        <th data-type="text">Référent·e <span class="arrow">↕</span></th>
-                        <th data-type="text">Entreprise <span class="arrow">↕</span></th>
-                        <th data-type="text">Métier <span class="arrow">↕</span></th>
-                        <th data-type="date">Date <span class="arrow">↕</span></th>
-                        <th data-type="text">Statut <span class="arrow">↕</span></th>
-                        <th data-type="text">Mail <span class="arrow">↕</span></th>
+                        <th data-type="text">Volontaire <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="text">Commune <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="text">Situation <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="text">Référent·e <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="text">Entreprise <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="text">Métier <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="date">Date <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="text">Statut <i class="fas fa-sort arrow"></i></th>
+                        <th data-type="text">Mail <i class="fas fa-sort arrow"></i></th>
                         <th class="no-sort">Tél.</th>
-                        <th data-type="num">Score <span class="arrow">↕</span></th>
+                        <th data-type="num">Score <i class="fas fa-sort arrow"></i></th>
                         <th class="no-sort">Obs. immersion</th>
                         <th class="no-sort">Obs. volontaire</th>
                     </tr>
@@ -158,7 +181,11 @@
                             <td>{% if row.email %}<a href="mailto:{{ row.email }}">{{ row.email }}</a>{% else %}—{% endif %}</td>
                             <td>{% if row.telephone %}<a href="tel:{{ row.telephone }}">{{ row.telephone }}</a>{% else %}—{% endif %}</td>
                             <td data-sort="{{ row.score ?? -1 }}" class="text-center">
-                                {% if row.score is not null %}<span class="badge bg-secondary">{{ row.score }}%</span>{% else %}—{% endif %}
+                                {% if row.score is null %}—
+                                {% elseif row.score >= 75 %}<span class="badge badge-success">{{ row.score }}%</span>
+                                {% elseif row.score >= 50 %}<span class="badge badge-warning">{{ row.score }}%</span>
+                                {% else %}<span class="badge badge-danger">{{ row.score }}%</span>
+                                {% endif %}
                             </td>
                             {% if row.isPhantom %}
                                 <td class="obs text-muted">—</td>
@@ -209,14 +236,24 @@
             statutFilter && statutFilter.addEventListener('change', applyFilters);
 
             // --- Tri par colonne ---
+            // Icône dynamique : fa-sort (neutre) sur les colonnes inactives,
+            // fa-arrow-up / fa-arrow-down sur la colonne triée (asc / desc).
+            function setArrow(th, dir) {
+                const icon = th.querySelector('.arrow');
+                if (!icon) return;
+                icon.classList.remove('fa-sort', 'fa-arrow-up', 'fa-arrow-down');
+                icon.classList.add(dir === 'asc' ? 'fa-arrow-up' : (dir === 'desc' ? 'fa-arrow-down' : 'fa-sort'));
+            }
+
             const headers = table.querySelectorAll('thead th');
             headers.forEach(function (th, index) {
                 if (th.classList.contains('no-sort')) return;
                 th.addEventListener('click', function () {
                     const type = th.dataset.type || 'text';
                     const asc = th.dataset.dir !== 'asc';
-                    headers.forEach(h => delete h.dataset.dir);
+                    headers.forEach(function (h) { delete h.dataset.dir; setArrow(h, null); });
                     th.dataset.dir = asc ? 'asc' : 'desc';
+                    setArrow(th, asc ? 'asc' : 'desc');
 
                     const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.dataset.statut);
                     rows.sort(function (a, b) {
@@ -231,7 +268,15 @@
             });
 
             function cellVal(td, type) {
-                const raw = td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
+                // La cellule Statut contient un <select> : td.textContent renverrait toutes
+                // les options ; on lit la valeur sélectionnée (à jour même après édition inline).
+                const statut = td.querySelector('select.js-statut');
+                let raw;
+                if (statut) {
+                    raw = statut.value;
+                } else {
+                    raw = td.dataset.sort !== undefined ? td.dataset.sort : td.textContent.trim();
+                }
                 if (type === 'num') return parseFloat(raw) || 0;
                 return raw.toLowerCase();
             }

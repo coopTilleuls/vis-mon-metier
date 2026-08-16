@@ -133,21 +133,29 @@ class AdminDashboardController extends AbstractDashboardController
         $recap = null;
 
         if (null !== $session) {
+            $immersionRows = [];
             foreach ($this->appariementRepository->findForSuivi($session, $referentIds) as $immersion) {
-                $rows[] = $this->buildImmersionRow($immersion);
+                $immersionRows[] = $this->buildImmersionRow($immersion);
             }
 
+            $rows = $immersionRows;
             if ($showPhantom) {
                 foreach ($this->questionnaireRepository->findParticipantsSansImmersion($session, $referentIds) as $participant) {
                     $rows[] = $this->buildPhantomRow($participant);
                 }
             }
 
+            // Récap calculé sur l'ensemble des immersions du périmètre (référent) et
+            // indépendant de l'affichage des lignes « sans immersion ». Les compteurs se
+            // recoupent : volontaires = (avec immersion) + (sans immersion).
+            $volontairesSansImmersion = $this->questionnaireRepository->countParticipantsSansImmersion($session, $referentIds);
+            $volontairesAvecImmersion = count(array_unique(array_filter(array_column($immersionRows, 'volontaireId'))));
+
             $recap = [
-                'volontaires' => count(array_unique(array_filter(array_column($rows, 'volontaireId')))),
-                'immersions' => count(array_filter($rows, fn ($r) => !$r['isPhantom'])),
-                'entreprises' => count(array_unique(array_filter(array_column($rows, 'entrepriseId')))),
-                'sansImmersion' => $this->questionnaireRepository->countParticipantsSansImmersion($session, $referentIds),
+                'volontaires' => $volontairesAvecImmersion + $volontairesSansImmersion,
+                'immersions' => count($immersionRows),
+                'entreprisesAvecImmersion' => count(array_unique(array_filter(array_column($immersionRows, 'entrepriseId')))),
+                'volontairesSansImmersion' => $volontairesSansImmersion,
                 'entreprisesDisponibles' => $isAdmin ? $this->questionnaireRepository->countEnterprisesAvailableForImmersion($session) : null,
             ];
         }
@@ -355,10 +363,10 @@ class AdminDashboardController extends AbstractDashboardController
             ->setPermission(Roles::ADMIN);
         yield MenuItem::linkToCrud('Contacts', 'fas fa-users', Contact::class);
         yield MenuItem::linkToCrud('Résultats de matchings', 'fas fa-clipboard-list', Questionnaire::class);
-        yield MenuItem::linkToRoute('Suivi des immersions', 'fas fa-table-list', 'admin_suivi_immersions');
         yield MenuItem::linkToCrud('Référent·es', 'fas fa-person', Referent::class)
             ->setPermission(Roles::ADMIN);
         yield MenuItem::linkToCrud('Utilisateur·ices', 'fas fa-user', User::class)
             ->setPermission(Roles::ADMIN);
+        yield MenuItem::linkToRoute('Suivi des immersions', 'fas fa-table-list', 'admin_suivi_immersions');
     }
 }
