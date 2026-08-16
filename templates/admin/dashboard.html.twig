@@ -5,15 +5,15 @@
 {% block main %}
     {% if stats %}
         {% if hasActiveSession %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="d-flex flex-row gap-2 h-100">
+            <div class="col-md-8 col-lg-8 mb-4">
+                <div class="d-flex flex-row flex-wrap gap-2">
                     {% if inscriptionVolontaireOuverte %}
-                        <a href="{{ path('app_questionnaire_new') }}" target="_blank" class="btn btn-action-dashboard h-50 d-flex align-items-center justify-content-center">
+                        <a href="{{ path('app_questionnaire_new') }}" target="_blank" class="btn btn-action-dashboard flex-fill d-flex align-items-center justify-content-center">
                             <i class="fas fa-user me-2"></i> Accès formulaire volontaires
                         </a>
                     {% endif %}
                     {% if inscriptionEntrepriseOuverte %}
-                        <a href="{{ path('app_questionnaire_new', {'pro': 1}) }}" target="_blank" class="btn btn-action-dashboard h-50 d-flex align-items-center justify-content-center">
+                        <a href="{{ path('app_questionnaire_new', {'pro': 1}) }}" target="_blank" class="btn btn-action-dashboard flex-fill d-flex align-items-center justify-content-center">
                             <i class="fas fa-briefcase me-2"></i> Accès formulaire professionnel·le·s
                         </a>
                     {% endif %}

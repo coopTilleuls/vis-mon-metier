@@ -508,6 +508,10 @@ div[id="Question"] > .je-object__container > .btn-group .json-editor-btn-delete 
     justify-content: center;
     transition: all 0.2s ease;
     height: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-align: center;
+    line-height: 1.2;
 }
 
 .btn-action-dashboard:hover {
