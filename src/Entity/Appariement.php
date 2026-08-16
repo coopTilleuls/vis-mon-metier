@@ -30,9 +30,6 @@ class Appariement
     #[ORM\Column(type: 'string', length: 20, enumType: StatutImmersion::class, options: ['default' => StatutImmersion::Proposee->value])]
     private StatutImmersion $statut = StatutImmersion::Proposee;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $observations = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -84,18 +81,6 @@ class Appariement
     public function setStatut(StatutImmersion $statut): static
     {
         $this->statut = $statut;
-
-        return $this;
-    }
-
-    public function getObservations(): ?string
-    {
-        return $this->observations;
-    }
-
-    public function setObservations(?string $observations): static
-    {
-        $this->observations = $observations;
 
         return $this;
     }

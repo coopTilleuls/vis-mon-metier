@@ -204,7 +204,6 @@ class AdminDashboardController extends AbstractDashboardController
             'metier' => $entreprise?->getMetier(),
             'date' => $immersion->getDateMatch(),
             'statut' => $immersion->getStatut(),
-            'observations' => $immersion->getObservations(),
             'observationsVolontaire' => $participantContact?->getObservationsVolontaire(),
             'email' => $participantContact?->getEmail(),
             'telephone' => $participantContact?->getNumeroTelephone(),
@@ -235,7 +234,6 @@ class AdminDashboardController extends AbstractDashboardController
             'metier' => null,
             'date' => null,
             'statut' => null,
-            'observations' => null,
             'observationsVolontaire' => $contact?->getObservationsVolontaire(),
             'email' => $contact?->getEmail(),
             'telephone' => $contact?->getNumeroTelephone(),
@@ -261,11 +259,6 @@ class AdminDashboardController extends AbstractDashboardController
                 return new JsonResponse(['error' => 'Statut invalide.'], Response::HTTP_BAD_REQUEST);
             }
             $immersion->setStatut($statut);
-        }
-
-        if ($request->request->has('observations')) {
-            $observations = trim((string) $request->request->get('observations'));
-            $immersion->setObservations('' !== $observations ? $observations : null);
         }
 
         $this->entityManager->flush();
