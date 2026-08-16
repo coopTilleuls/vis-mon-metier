@@ -36,8 +36,16 @@
             <i class="fas fa-exclamation-triangle me-2"></i> Aucune session sélectionnée ou ouverte.
         </div>
     {% else %}
-        {# --- Barre de filtres (serveur, form GET) --- #}
-        <form method="get" action="{{ path('admin_suivi_immersions') }}" class="suivi-toolbar">
+        {# --- Barre de filtres (serveur, form GET) ---
+           On soumet via la route du dashboard EasyAdmin (`/admin`) avec `routeName` en
+           champ caché, et non vers la route brute `/admin/suivi-immersions` : cette
+           dernière ne reconstruit pas l'AdminContext (`ea`) une fois le dashboard servi
+           (worker mode) → HTTP 500 dans le layout EA. Passer par `/admin?routeName=…`
+           reproduit le lien du menu (linkToRoute) : `ea` est construit et les filtres
+           GET sont transmis au contrôleur. NB : un form GET écrase la query string de
+           `action`, d'où le champ caché plutôt qu'un param dans l'URL. #}
+        <form method="get" action="{{ path('admin') }}" class="suivi-toolbar">
+            <input type="hidden" name="routeName" value="admin_suivi_immersions">
             <div class="field">
                 <label for="f-session">Session</label>
                 <select id="f-session" name="session" class="form-select form-select-sm" onchange="this.form.submit()">
