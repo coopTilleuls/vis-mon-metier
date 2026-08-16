@@ -100,8 +100,8 @@
                 {% if recap.sansImmersion > 0 %}
                     <span class="stat warn">⚠ {{ recap.sansImmersion }} volontaire{{ recap.sansImmersion > 1 ? 's' }} sans immersion</span>
                 {% endif %}
-                {% if recap.sousQuota is not null and recap.sousQuota > 0 %}
-                    <span class="stat warn">⚠ {{ recap.sousQuota }} entreprise{{ recap.sousQuota > 1 ? 's' }} sous quota</span>
+                {% if recap.entreprisesDisponibles is not null and recap.entreprisesDisponibles > 0 %}
+                    <span class="stat">{{ recap.entreprisesDisponibles }} entreprise{{ recap.entreprisesDisponibles > 1 ? 's' }} disponible{{ recap.entreprisesDisponibles > 1 ? 's' }} pour immersion</span>
                 {% endif %}
             </div>
         {% endif %}

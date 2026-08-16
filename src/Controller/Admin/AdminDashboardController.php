@@ -148,7 +148,7 @@ class AdminDashboardController extends AbstractDashboardController
                 'immersions' => count(array_filter($rows, fn ($r) => !$r['isPhantom'])),
                 'entreprises' => count(array_unique(array_filter(array_column($rows, 'entrepriseId')))),
                 'sansImmersion' => $this->questionnaireRepository->countParticipantsSansImmersion($session, $referentIds),
-                'sousQuota' => $isAdmin ? $this->questionnaireRepository->countEnterprisesUnderQuota($session) : null,
+                'entreprisesDisponibles' => $isAdmin ? $this->questionnaireRepository->countEnterprisesAvailableForImmersion($session) : null,
             ];
         }
 

@@ -92,11 +92,12 @@ class QuestionnaireRepository extends ServiceEntityRepository
     }
 
     /**
-     * Nombre d'entreprises dont le quota d'immersions n'est pas rempli
-     * (immersions non annulées < nombreImmersion). Les immersions au statut
-     * « annulée » ne comptent pas : leur créneau est de nouveau disponible.
+     * Nombre d'entreprises encore disponibles pour une immersion, c'est-à-dire
+     * dont les places ne sont pas toutes pourvues (immersions non annulées <
+     * nombreImmersion). Les immersions au statut « annulée » ne comptent pas :
+     * leur créneau redevient disponible.
      */
-    public function countEnterprisesUnderQuota(Session $session): int
+    public function countEnterprisesAvailableForImmersion(Session $session): int
     {
         $rows = $this->createQueryBuilder('q')
             ->select('q.id')
