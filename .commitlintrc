@@ -7,6 +7,8 @@
       "always",
       [
         "cicd",
+        "admin",
+        "dashboard",
         "unit",
         "integration",
         "functional",
@@ -18,6 +20,7 @@
         "questionnaire",
         "referent",
         "appariement",
+        "immersion",
         "modelQuestionnaire",
         "session",
         "user",
