@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Questionnaire;
 use App\Entity\Session;
+use App\ValueObject\StatutImmersion;
 use App\ValueObject\Type;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -92,7 +93,8 @@ class QuestionnaireRepository extends ServiceEntityRepository
 
     /**
      * Nombre d'entreprises dont le quota d'immersions n'est pas rempli
-     * (immersions validées < nombreImmersion).
+     * (immersions non annulées < nombreImmersion). Les immersions au statut
+     * « annulée » ne comptent pas : leur créneau est de nouveau disponible.
      */
     public function countEnterprisesUnderQuota(Session $session): int
     {
@@ -102,9 +104,10 @@ class QuestionnaireRepository extends ServiceEntityRepository
             ->where('q.session = :session')
             ->andWhere('q.type = :type')
             ->groupBy('q.id')
-            ->having('count(a.id) < q.nombreImmersion')
+            ->having('sum(case when a.statut != :annulee then 1 else 0 end) < q.nombreImmersion')
             ->setParameter('session', $session)
             ->setParameter('type', Type::EMPLOYEUR)
+            ->setParameter('annulee', StatutImmersion::Annulee->value)
             ->getQuery()
             ->getResult();
 
