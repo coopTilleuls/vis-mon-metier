@@ -1,6 +1,7 @@
 :root {
     --sidebar-max-width: 280px;
     --form-type-check-input-checked-bg: var(--green-light-color);
+    --form-switch-checked-bg: var(--green-light-color);
     --badge-boolean-true-bg: var(--green-light-color);
     --badge-boolean-true-color: white;
     --badge-boolean-false-box-shadow: none;
