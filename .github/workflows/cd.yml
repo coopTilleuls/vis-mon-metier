@@ -21,9 +21,35 @@ jobs:
         type=semver,pattern={{major}}.{{minor}}
         type=sha
 
+  # The nonprod GKE nodes (targeted by develop deploys) are stopped outside
+  # business hours by nodes_pools_scheduler.tf (start 8h / stop 18h, Mon-Fri,
+  # Europe/Paris). Deploys triggered from develop are skipped outside that
+  # window; a 17h cutoff leaves margin for the helm upgrade to finish before
+  # nodes stop at 18h.
+  check-business-hours:
+    name: Check business hours
+    if: github.ref_name == 'develop'
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.check.outputs.allowed }}
+    steps:
+      - name: Check current time is within business hours
+        id: check
+        run: |
+          day=$(TZ=Europe/Paris date +%u)
+          hour=$(TZ=Europe/Paris date +%-H)
+          allowed=false
+          if [ "$day" -le 5 ] && [ "$hour" -ge 8 ] && [ "$hour" -lt 17 ]; then
+            allowed=true
+          fi
+          echo "allowed=$allowed" >> "$GITHUB_OUTPUT"
+
   deploy-pays-de-blain:
     name: Deploy Pays de Blain
-    needs: [build]
+    needs: [build, check-business-hours]
+    if: |
+      always() && needs.build.result == 'success' &&
+      (github.ref_name != 'develop' || needs.check-business-hours.outputs.allowed == 'true')
     uses: ./.github/workflows/deploy.yml
     concurrency: ${{ github.ref }}-deploy-pays-de-blain
     with:
@@ -37,7 +63,10 @@ jobs:
 
   deploy-cceg:
     name: Deploy CCEG
-    needs: [build]
+    needs: [build, check-business-hours]
+    if: |
+      always() && needs.build.result == 'success' &&
+      (github.ref_name != 'develop' || needs.check-business-hours.outputs.allowed == 'true')
     uses: ./.github/workflows/deploy.yml
     concurrency: ${{ github.ref }}-deploy-cceg
     with:
