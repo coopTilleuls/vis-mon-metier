@@ -66,9 +66,11 @@ class SessionCrudController extends AbstractCrudController
             ->setChoices(Session::getStatutChoices());
         yield BooleanField::new('inscriptionVolontaireOuverte', 'Inscriptions volontaires ouvertes')
             ->renderAsSwitch(true)
+            ->onlyOnForms()
             ->setHelp('Autorise l\'accès au formulaire volontaire (la session doit aussi être « ouverte »).');
         yield BooleanField::new('inscriptionEntrepriseOuverte', 'Inscriptions entreprises ouvertes')
             ->renderAsSwitch(true)
+            ->onlyOnForms()
             ->setHelp('Autorise l\'accès au formulaire professionnel·le (la session doit aussi être « ouverte »).');
         yield AssociationField::new('modelQuestionnaire', 'Questionnaire à associer')
             ->autocomplete()
