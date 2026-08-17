@@ -34,6 +34,9 @@
         .suivi-table tbody tr.is-phantom { background: #fff8e6; }
         /* Colonnes texte longues tronquées (valeur complète au survol via title) */
         .suivi-table td.cell-ell { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+        /* Les liens (Volontaire/Entreprise/Mail) doivent tronquer eux-mêmes, sinon ils
+           élargissent la colonne et déclenchent un scroll horizontal */
+        .suivi-table td.cell-ell a { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
         .suivi-table td.obs { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
         .suivi-table td.js-editable { white-space: normal; min-width: 90px; cursor: text; }
         .suivi-table td.js-editable:focus { outline: 2px solid var(--green-color, #4a7); background: #fff; overflow: visible; }
@@ -155,16 +158,16 @@
                     {% for row in rows %}
                         <tr class="{{ row.isPhantom ? 'is-phantom' }}"
                             data-statut="{{ row.isPhantom ? 'none' : row.statut.value }}">
-                            <td data-sort="{{ row.volontaire|lower }}">
+                            <td class="cell-ell" data-sort="{{ row.volontaire|lower }}" title="{{ row.volontaire }}">
                                 {% if row.volontaireUrl %}<a href="{{ row.volontaireUrl }}">{{ row.volontaire }}</a>{% else %}{{ row.volontaire }}{% endif %}
                             </td>
-                            <td>{{ row.commune ?? '—' }}</td>
+                            <td class="cell-ell" title="{{ row.commune }}">{{ row.commune ?? '—' }}</td>
                             <td class="cell-ell" title="{{ row.situation }}">{{ row.situation ?? '—' }}</td>
-                            <td>{{ row.referent ?? '—' }}</td>
+                            <td class="cell-ell" title="{{ row.referent }}">{{ row.referent ?? '—' }}</td>
                             <td class="cell-ell" data-sort="{{ row.entreprise|lower }}">
                                 {% if row.entrepriseUrl %}<a href="{{ row.entrepriseUrl }}" title="{{ row.entreprise }}">{{ row.entreprise }}</a>{% else %}—{% endif %}
                             </td>
-                            <td>{{ row.metier ?? '—' }}</td>
+                            <td class="cell-ell" title="{{ row.metier }}">{{ row.metier ?? '—' }}</td>
                             <td data-sort="{{ row.date ? row.date|date('Y-m-d') : '' }}">{{ row.date ? row.date|date('d/m/Y') : '—' }}</td>
                             <td>
                                 {% if row.isPhantom %}
@@ -181,7 +184,7 @@
                                 {% endif %}
                             </td>
                             <td class="cell-ell">{% if row.email %}<a href="mailto:{{ row.email }}" title="{{ row.email }}">{{ row.email }}</a>{% else %}—{% endif %}</td>
-                            <td>{% if row.telephone %}<a href="tel:{{ row.telephone }}">{{ row.telephone }}</a>{% else %}—{% endif %}</td>
+                            <td class="cell-ell">{% if row.telephone %}<a href="tel:{{ row.telephone }}" title="{{ row.telephone }}">{{ row.telephone }}</a>{% else %}—{% endif %}</td>
                             <td data-sort="{{ row.score ?? -1 }}" class="text-center">
                                 {% if row.score is null %}—
                                 {% elseif row.score >= 75 %}<span class="badge badge-success">{{ row.score }}%</span>
