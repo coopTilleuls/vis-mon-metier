@@ -1,7 +1,8 @@
 {
-  "name": "app",
+  "name": "pays-de-blain-vis-mon-metier",
   "version": "1.0.0",
-  "description": "A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework, with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!",
+  "private": true,
+  "description": "Vis mon métier — mise en relation entre professionnels et personnes en découverte de métier",
   "main": "index.js",
   "directories": {
     "doc": "docs",
@@ -11,8 +12,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Les-Tilleuls.coop",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0"

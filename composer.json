@@ -1,8 +1,8 @@
 {
-    "name": "symfony/skeleton",
+    "name": "cooptilleuls/pays-de-blain-vis-mon-metier",
     "type": "project",
-    "license": "MIT",
-    "description": "A minimal Symfony project recommended to create bare bones applications",
+    "license": "PolyForm-Noncommercial-1.0.0",
+    "description": "Vis mon métier — mise en relation entre professionnels et personnes en découverte de métier",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
@@ -21,6 +21,7 @@
         "symfony/framework-bundle": "7.4.*",
         "symfony/monolog-bundle": "^4.0.2",
         "symfony/object-mapper": "7.4.*",
+        "symfony/rate-limiter": "7.4.*",
         "symfony/runtime": "7.4.*",
         "symfony/yaml": "7.4.*"
     },

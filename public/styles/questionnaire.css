@@ -1,7 +1,7 @@
 @font-face {
-    font-family: 'Baby Child';
-    src: url('../fonts/baby-child-regular.otf') format('opentype');
-    font-weight: normal;
+    font-family: 'Dancing Script';
+    src: url('../fonts/DancingScript-Bold.woff2') format('woff2');
+    font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
@@ -54,9 +54,9 @@ body {
 }
 
 .sidebar-title-line1 {
-    font-family: 'Baby Child', cursive;
+    font-family: 'Dancing Script', cursive;
     font-size: 3.2rem;
-    font-weight: normal;
+    font-weight: 700;
     color: white;
     line-height: 1;
     display: block;

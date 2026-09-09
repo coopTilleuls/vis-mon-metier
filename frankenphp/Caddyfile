@@ -50,17 +50,16 @@
 	# Disable Topics tracking if not enabled explicitly: https://github.com/jkarlin/topics
 	header ?Permissions-Policy "browsing-topics=()"
 
-	# Baseline security headers (todo_security.md P2.8)
+	# Baseline security headers — see docs/security.md
 	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
 	header X-Content-Type-Options "nosniff"
 	header Referrer-Policy "strict-origin-when-cross-origin"
 	header Cross-Origin-Opener-Policy "same-origin"
 	header X-Frame-Options "DENY"
 
-	# Content-Security-Policy in report-only mode (todo_security.md P2.7).
-	# 'unsafe-inline' kept until inline onclick handlers are removed from admin
-	# templates (P3.12). 'unsafe-eval' kept until @json-editor usage no longer
-	# needs it. Tighten once those land.
+	# Content-Security-Policy in report-only mode. The "CSP" section of
+	# docs/security.md lists what still requires 'unsafe-inline' / 'unsafe-eval'
+	# and the steps to promote this header to enforcing mode.
 	header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'; style-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com 'unsafe-inline'; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'"
 
 	@phpRoute {

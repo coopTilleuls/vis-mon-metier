@@ -1,6 +1,4 @@
-
-
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+# Vis mon métier
 
 ## Getting Started
 
@@ -12,8 +10,9 @@
 
 ## Start project
 1. First run migrations: `docker compose exec php bin/console doctrine:migration:migrate`
-2. Run this command: `docker compose exec php bin/console app:create-users` to create back-office log
-3. You can then load fixtures: `docker compose exec php bin/console app:import-data-2024`
+2. Create the back-office accounts: `docker compose exec php bin/console app:create-users`
+<br>A random password is generated for each account and printed once — store it. Pass `--password=…` to set your own.
+3. You can then load fixtures: `docker compose exec php bin/console app:load-test-fixtures`
 <br>Or to set your own config, see `docs/guide-administration-vis-mon-metier.md`.
 4. You can finally access the homepage on: `/` and questionnaires on: `/questionnaire` and `/questionnaire?pro`.
 
@@ -23,8 +22,17 @@ run: `docker compose exec php vendor/bin/phpstan analyse src/`
 
 ## License
 
-Symfony Docker is available under the MIT License.
+The source code is available under the [PolyForm Noncommercial License 1.0.0](LICENSE):
+you may use, modify and redistribute it for any noncommercial purpose.
+
+The public authorities' logos, themes and graphic identities shipped with it are
+**not** covered by that license and remain proprietary. See [NOTICE.md](NOTICE.md)
+before reusing this repository.
 
 ## Credits
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+Developed by [Les-Tilleuls.coop](https://les-tilleuls.coop) for Pays de Blain Communauté
+and the Communauté de Communes d'Erdre & Gesvres.
+
+Built on [Symfony Docker](https://github.com/dunglas/symfony-docker) by
+[Kévin Dunglas](https://dunglas.dev), available under the MIT License.

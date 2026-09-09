@@ -26,3 +26,6 @@ phpstan.neon
 config/reference.php
 
 bolt.db
+
+.env.deploy
+tt

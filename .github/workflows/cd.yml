@@ -12,14 +12,37 @@ jobs:
   build:
     name: Build
     uses: ./.github/workflows/build.yml
+    secrets: inherit
     with:
       tags: |
-        type=ref,event=branch
         type=ref,event=pr
         type=ref,event=tag
         type=semver,pattern={{version}}
         type=semver,pattern={{major}}.{{minor}}
-        type=sha
+        type=raw,value=sha-{{sha}}
+
+  # The nonprod GKE nodes (targeted by develop deploys) are stopped outside
+  # business hours by nodes_pools_scheduler.tf (start 8h / stop 18h, Mon-Fri,
+  # Europe/Paris). Deploys triggered from develop are skipped outside that
+  # window; a 17h cutoff leaves margin for the helm upgrade to finish before
+  # nodes stop at 18h.
+  check-business-hours:
+    name: Check business hours
+    if: github.ref_name == 'develop'
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.check.outputs.allowed }}
+    steps:
+      - name: Check current time is within business hours
+        id: check
+        run: |
+          day=$(TZ=Europe/Paris date +%u)
+          hour=$(TZ=Europe/Paris date +%-H)
+          allowed=false
+          if [ "$day" -le 5 ] && [ "$hour" -ge 8 ] && [ "$hour" -lt 17 ]; then
+            allowed=true
+          fi
+          echo "allowed=$allowed" >> "$GITHUB_OUTPUT"
 
   # The nonprod GKE nodes (targeted by develop deploys) are stopped outside
   # business hours by nodes_pools_scheduler.tf (start 8h / stop 18h, Mon-Fri,

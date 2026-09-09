@@ -149,7 +149,6 @@ class LoadTestFixturesCommand extends Command
             'Session Fermée Déc 2025 (fermée, dates postérieures à l\'ouverte)',
             'Session Fermée 2024 (fermée, dates plus anciennes)',
             'Session Brouillon 2026 (brouillon, dates les plus récentes de toutes)',
-            'Login admin: admin@vis-mon-metier.fr / 123456',
         ]);
 
         return Command::SUCCESS;

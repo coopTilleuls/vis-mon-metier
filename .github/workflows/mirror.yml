@@ -1,0 +1,66 @@
+name: Mirror to public repository
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-public-repository
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Publish filtered history
+    # Never run from the mirror itself, should Actions ever be re-enabled there.
+    if: github.repository == 'coopTilleuls/pays-de-blain-vis-mon-metier'
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_REMOTE: git@github.com:coopTilleuls/vis-mon-metier.git
+      # Paths that must never reach the public mirror: the 2024 dataset carries
+      # real employer names, and the font was licensed for personal use only.
+      UNPUBLISHABLE_PATHS: >-
+        src/DataFixtures/answers_2024.csv
+        public/fonts/baby-child-regular.otf
+        bolt.db
+    steps:
+      - name: Install git-filter-repo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-filter-repo
+
+      - name: Mirror-clone the private repository
+        run: git clone --mirror "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" repo.git
+
+      - name: Strip unpublishable paths from history
+        working-directory: repo.git
+        run: |
+          args=()
+          for path in $UNPUBLISHABLE_PATHS; do
+            args+=(--path "$path")
+          done
+          git filter-repo --force "${args[@]}" --invert-paths
+
+      - name: Refuse to publish if a path survived the filter
+        working-directory: repo.git
+        run: |
+          for path in $UNPUBLISHABLE_PATHS; do
+            if [ "$(git rev-list --all --count -- "$path")" != 0 ]; then
+              echo "::error::$path survived the filter — refusing to publish"
+              exit 1
+            fi
+          done
+
+      - name: Authenticate against the public repository
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.PUBLIC_MIRROR_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # filter-repo rewrites every commit deterministically, so unchanged commits
+      # keep their hashes and this only ever fast-forwards the mirror.
+      - name: Push main to the public mirror
+        working-directory: repo.git
+        run: git push --force "$PUBLIC_REMOTE" refs/heads/main:refs/heads/main
