@@ -31,6 +31,14 @@
 	encode zstd br gzip
 
 	mercure {
+		# Share the hub between the addresses listed in SERVER_NAME (e.g. "localhost, php:80")
+		name default
+		# Keep the legacy JWT validation mode used so far (required by Mercure for publisher_jwt/subscriber_jwt)
+		protocol_version_compatibility 8
+		# Transport to use (Bolt), formerly set with the MERCURE_TRANSPORT_URL environment variable
+		transport bolt {
+			path /data/mercure.db
+		}
 		# Publisher JWT key
 		publisher_jwt {env.MERCURE_PUBLISHER_JWT_KEY} {env.MERCURE_PUBLISHER_JWT_ALG}
 		# Subscriber JWT key
